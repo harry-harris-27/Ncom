@@ -7,7 +7,7 @@ Note that this library is not complete:
 - [ ] Test thoroughly. :)
 
 ## Code Example
-Decoding
+### Decoding
 ```C#
 // Get NCOM data from somewhere. E.g. an UDP packet.
 byte[] data;
@@ -23,8 +23,19 @@ foreach (NcomPacket pkt in pkts)
     }
 }
 ```
+or
+```C#
+// Decoding a single NCOM packet
+NcomPacketA pkt = new NcomPacketA();
 
-Encoding
+// Get NCOM data from somewhere
+byte[] data;
+
+// Decode
+pkt.Unmarshal(data, 0);
+```
+
+### Encoding
 ```C#
 NcomPacketA ncom = new NcomPacketA();
 

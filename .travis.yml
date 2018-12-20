@@ -1,2 +1,4 @@
 language: csharp
 solution: NCOM.sln
+script:
+- xbuild ./Fibonacci/Fibonacci.sln

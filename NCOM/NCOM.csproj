@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="Enumerations\NavigationStatus.cs" />
     <Compile Include="Enumerations\PositionVelocityOrientationMode.cs" />
-    <Compile Include="IMarshal.cs" />
     <Compile Include="NcomPacket.cs" />
     <Compile Include="NcomPacketA.cs" />
     <Compile Include="NcomPacketB.cs" />
@@ -57,7 +56,6 @@
     <Compile Include="Utilities\DataStream.cs" />
     <Compile Include="Utilities\Endian.cs" />
     <Compile Include="Utilities\EnumParser.cs" />
-    <Compile Include="Utilities\Int24.cs" />
     <Compile Include="Utilities\NcomPacketFactory.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -24,7 +24,7 @@ namespace NCOM.StatusChannels
     /// list will repeat approximately once every 200 NCOM structure-A packets.
     /// </para>
     /// </summary>
-    public abstract class StatusChannel : IMarshal
+    public abstract class StatusChannel
     {
 
         /* ---------- Constructors ------------------------------------------------------------/**/

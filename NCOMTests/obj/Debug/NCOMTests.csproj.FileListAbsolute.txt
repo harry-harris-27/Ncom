@@ -14,3 +14,5 @@ C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NC
 C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NCOMTests.csproj.CopyComplete
 C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NCOMTests.dll
 C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NCOMTests.pdb
+C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NCOMTests.Properties.Resources.resources
+C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOMTests\obj\Debug\NCOMTests.csproj.GenerateResource.cache

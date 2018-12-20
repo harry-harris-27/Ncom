@@ -44,7 +44,7 @@ namespace NCOM
     /// </remarks>
     /// <seealso cref="NcomPacketA"/>
     /// <seealso cref="NcomPacketB"/>
-    public abstract class NcomPacket : IMarshal
+    public abstract class NcomPacket
     {
 
         /* ---------- Constants ---------------------------------------------------------------/**/
@@ -117,6 +117,30 @@ namespace NCOM
 
 
         /* ---------- Public methods ----------------------------------------------------------/**/
+        
+        public override bool Equals(object value)
+        {
+            // Is it null?
+            if (value is null) return false;
+
+            // Is the same object
+            if (ReferenceEquals(this, value)) return true;
+
+            // Is same type?
+            if (value.GetType() != this.GetType()) return false;
+
+            return IsEqual((NcomPacket)value);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + (byte)NavigationStatus;
+
+            return hash;
+        }
 
         /// <summary>
         /// Marshals the data into a byte array of length <see cref="PACKET_LENGTH"/>.
@@ -163,7 +187,7 @@ namespace NCOM
                     NavigationStatus = (NavigationStatus)buffer[offset + 20];
 
                     // Calculate Checksum 3
-                    Checksum3 = CalculateChecksum(buffer, offset, 71) == buffer[offset + PACKET_LENGTH - 2];
+                    Checksum3 = CalculateChecksum(buffer, offset, 70) == buffer[offset + PACKET_LENGTH - 2];
 
                     // Unmarshalled OK, return true
                     return true;
@@ -190,7 +214,7 @@ namespace NCOM
         /// checksums also allow check validity of data upto that point without having to wait for 
         /// the whole packet.
         /// </remarks>
-        protected byte CalculateChecksum(byte[] buffer, int offset, int length)
+        protected static byte CalculateChecksum(byte[] buffer, int offset, int length)
         {
             byte cs = 0;
 
@@ -204,6 +228,23 @@ namespace NCOM
             }            
 
             return cs;
+        }
+        
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine type and null checks in 
+        /// <see cref="Equals(object)"/>. When overriding the default equals method, override this 
+        /// method instead.
+        /// </summary>
+        /// <param name="pkt">The NCOM packet to check to</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Note that this method does not implement any non-nullity checks. If there is the 
+        /// possiblity that NCOM packet argument could be null, then use the default 
+        /// <see cref="Equals(object)"/> method.
+        /// </remarks>
+        protected virtual bool IsEqual(NcomPacket pkt)
+        {
+            return this.NavigationStatus == pkt.NavigationStatus;
         }
 
     }

@@ -54,8 +54,10 @@
     <Compile Include="StatusChannels\StatusChannel3.cs" />
     <Compile Include="StatusChannels\StatusChannelFactory.cs" />
     <Compile Include="Utilities\ByteHandling.cs" />
+    <Compile Include="Utilities\DataStream.cs" />
     <Compile Include="Utilities\Endian.cs" />
     <Compile Include="Utilities\EnumParser.cs" />
+    <Compile Include="Utilities\Int24.cs" />
     <Compile Include="Utilities\NcomPacketFactory.cs" />
   </ItemGroup>
   <ItemGroup />

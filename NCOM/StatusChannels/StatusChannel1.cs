@@ -52,6 +52,33 @@ namespace NCOM.StatusChannels
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
 
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + base.GetHashCode();
+
+            hash = (hash * mul) + PositionXInnovation;
+            hash = (hash * mul) + PositionYInnovation;
+            hash = (hash * mul) + PositionZInnovation;
+            hash = (hash * mul) + (PositionXInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (PositionYInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (PositionZInnovationValid ? 1 : 0);
+            hash = (hash * mul) + VelocityXInnovation;
+            hash = (hash * mul) + VelocityYInnovation;
+            hash = (hash * mul) + VelocityZInnovation;
+            hash = (hash * mul) + (VelocityXInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (VelocityYInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (VelocityZInnovationValid ? 1 : 0);
+            hash = (hash * mul) + OrientationHeadingInnovation;
+            hash = (hash * mul) + OrientationPitchInnovation;
+            hash = (hash * mul) + (OrientationHeadingInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (OrientationPitchInnovationValid ? 1 : 0);
+
+            return hash;
+        }
+
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
@@ -130,6 +157,39 @@ namespace NCOM.StatusChannels
             OrientationHeadingInnovationValid = (buffer[offset] & INNOVATION_VALID_MASK) == 0x01;
 
             return true;
+        }
+
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine checks in 
+        /// <see cref="Equals(object)"/>.
+        /// To override the default equals method, override this method instead.
+        /// </summary>
+        /// <param name="pkt"></param>
+        /// <returns></returns>
+        protected override bool IsEqual(StatusChannel data)
+        {
+            StatusChannel1 chan = data as StatusChannel1;
+
+            return base.IsEqual(chan)
+                && this.PositionXInnovation == chan.PositionXInnovation
+                && this.PositionYInnovation == chan.PositionYInnovation
+                && this.PositionZInnovation == chan.PositionZInnovation
+                && this.PositionXInnovationValid == chan.PositionXInnovationValid
+                && this.PositionYInnovationValid == chan.PositionYInnovationValid
+                && this.PositionZInnovationValid == chan.PositionZInnovationValid
+                && this.VelocityXInnovation == chan.VelocityXInnovation
+                && this.VelocityYInnovation == chan.VelocityYInnovation
+                && this.VelocityZInnovation == chan.VelocityZInnovation
+                && this.VelocityXInnovationValid == chan.VelocityXInnovationValid
+                && this.VelocityYInnovationValid == chan.VelocityYInnovationValid
+                && this.VelocityZInnovationValid == chan.VelocityZInnovationValid
+                && this.OrientationHeadingInnovation == chan.OrientationHeadingInnovation
+                && this.OrientationPitchInnovation == chan.OrientationPitchInnovation
+                && this.OrientationHeadingInnovationValid == chan.OrientationHeadingInnovationValid
+                && this.OrientationPitchInnovationValid == chan.OrientationPitchInnovationValid;
+
         }
 
     }

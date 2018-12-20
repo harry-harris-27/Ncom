@@ -50,6 +50,21 @@ namespace NCOM.StatusChannels
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
 
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + base.GetHashCode();
+
+            hash = (hash * mul) + PrimaryGNSSReceiverCharacters.GetHashCode();
+            hash = (hash * mul) + PrimaryGNSSReceiverPackets.GetHashCode();
+            hash = (hash * mul) + PrimaryGNSSReceiverCharactersNotUnderstood.GetHashCode();
+            hash = (hash * mul) + PrimaryGNSSReceiverPacketsNotUsed.GetHashCode();
+
+            return hash;
+        }
+
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
@@ -96,5 +111,27 @@ namespace NCOM.StatusChannels
             
             return true;
         }
+
+
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine checks in 
+        /// <see cref="Equals(object)"/>.
+        /// To override the default equals method, override this method instead.
+        /// </summary>
+        /// <param name="pkt"></param>
+        /// <returns></returns>
+        protected override bool IsEqual(StatusChannel data)
+        {
+            StatusChannel2 chan = data as StatusChannel2;
+
+            return base.IsEqual(chan)
+                && this.PrimaryGNSSReceiverCharacters == chan.PrimaryGNSSReceiverCharacters
+                && this.PrimaryGNSSReceiverPackets == chan.PrimaryGNSSReceiverPackets
+                && this.PrimaryGNSSReceiverCharactersNotUnderstood == chan.PrimaryGNSSReceiverCharactersNotUnderstood
+                && this.PrimaryGNSSReceiverPacketsNotUsed == chan.PrimaryGNSSReceiverPacketsNotUsed;
+        }
+
     }
 }

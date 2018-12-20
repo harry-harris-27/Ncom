@@ -14,5 +14,28 @@ namespace NCOM
     public class NcomPacketB : NcomPacket
     {
         public NcomPacketB() : base() { }
+
+
+        /* ---------- Public Methods ----------------------------------------------------------/**/
+
+        public override int GetHashCode()
+        {
+            //int hash = 13;
+            //int mul = 7;
+
+            //hash = (hash * mul) + (byte)NavigationStatus;
+
+            //return hash;
+            return base.GetHashCode();
+        }
+
+
+        /* ---------- Protected Methods -------------------------------------------------------/**/
+
+        /// <inheritdoc />
+        protected override bool IsEqual(NcomPacket pkt)
+        {
+            return base.IsEqual(pkt);
+        }
     }
 }

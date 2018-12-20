@@ -55,6 +55,22 @@ namespace NCOM.StatusChannels
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
 
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + base.GetHashCode();
+
+            hash = (hash * mul) + NorthPositionAccuracy.GetHashCode();
+            hash = (hash * mul) + EastPositionAccuracy.GetHashCode();
+            hash = (hash * mul) + DownPositionAccuracy.GetHashCode();
+            hash = (hash * mul) + Age;
+            hash = (hash * mul) + ABDRobotUMACStatus;
+
+            return hash;
+        }
+
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
@@ -105,5 +121,28 @@ namespace NCOM.StatusChannels
 
             return true;
         }
+
+
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine checks in 
+        /// <see cref="Equals(object)"/>.
+        /// To override the default equals method, override this method instead.
+        /// </summary>
+        /// <param name="pkt"></param>
+        /// <returns></returns>
+        protected override bool IsEqual(StatusChannel data)
+        {
+            StatusChannel3 chan = data as StatusChannel3;
+
+            return base.IsEqual(chan)
+                && this.NorthPositionAccuracy == chan.NorthPositionAccuracy
+                && this.EastPositionAccuracy == chan.EastPositionAccuracy
+                && this.DownPositionAccuracy == chan.DownPositionAccuracy
+                && this.Age == chan.Age
+                && this.ABDRobotUMACStatus == chan.ABDRobotUMACStatus;
+        }
+
     }
 }

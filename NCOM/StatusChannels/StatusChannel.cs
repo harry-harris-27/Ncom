@@ -44,6 +44,30 @@ namespace NCOM.StatusChannels
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
 
+        public override bool Equals(object value)
+        {
+            // Is it null?
+            if (value is null) return false;
+
+            // Is the same object
+            if (ReferenceEquals(this, value)) return true;
+
+            // Is same type?
+            if (value.GetType() != this.GetType()) return false;
+
+            return IsEqual((StatusChannel)value);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + StatusChannelByte;
+
+            return hash;
+        }
+
         public virtual byte[] Marshal()
         {
             return new byte[MarshalLength];
@@ -52,6 +76,21 @@ namespace NCOM.StatusChannels
         public virtual bool Unmarshal(byte[] buffer, int offset)
         {
             return offset + MarshalLength < buffer.Length;
+        }
+
+
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine checks in 
+        /// <see cref="Equals(object)"/>.
+        /// To override the default equals method, override this method instead.
+        /// </summary>
+        /// <param name="pkt"></param>
+        /// <returns></returns>
+        protected virtual bool IsEqual(StatusChannel pkt)
+        {
+            return this.StatusChannelByte == pkt.StatusChannelByte;
         }
 
     }

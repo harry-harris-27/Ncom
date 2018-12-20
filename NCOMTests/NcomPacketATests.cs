@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NCOM;
+using NCOM.StatusChannels;
 using NCOM.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,52 +14,165 @@ namespace NCOM.Tests
     public class NcomPacketATests
     {
 
-        private string ncomHex = "E7EC04494600EEFAFF5C7FFEA4F1FF08F9FF71F8FF043F50DBDD2DCB0EED3F79C3624E7FCCA5BF986BC7422B9BFED410FE11F6FF54B3DE792E0086AFFFEB253000B5000C0B0000F7";
-
-
-        [TestInitialize]
-        public void Init()
+        private static readonly byte[] blankNcomBytes = new byte[]
         {
-            
+            0xE7,                                               // Sync
+            0x00, 0x00,                                         // Time
+            0x00, 0x00, 0x00,                                   // Acceleration X
+            0x00, 0x00, 0x00,                                   // Acceleration Y
+            0x00, 0x00, 0x00,                                   // Acceleration Z
+            0x00, 0x00, 0x00,                                   // Angular Rate X
+            0x00, 0x00, 0x00,                                   // Angular Rate Y
+            0x00, 0x00, 0x00,                                   // Angular Rate Z
+            0x00,                                               // Nav status
+            0x00,                                               // Checksum 1
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     // Latitude
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     // Longitude
+            0x00, 0x00, 0x00, 0x00,                             // Altitude
+            0x00, 0x00, 0x00,                                   // North velocity
+            0x00, 0x00, 0x00,                                   // East Velocity
+            0x00, 0x00, 0x00,                                   // Down velocity
+            0x00, 0x00, 0x00,                                   // Heading
+            0x00, 0x00, 0x00,                                   // Pitch
+            0x00, 0x00, 0x00,                                   // Roll
+            0x00,                                               // Checksum 2
+            0x00,                                               // Status channel byte
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     // Status channel
+            0x00                                                // Checksum 3
+        };
+
+
+        [TestMethod()]
+        public void TestEquals()
+        {
+            // Create ncom packets
+            NcomPacketA[] pkts = new NcomPacketA[2];
+            for (int i = 0; i < pkts.Length; i++)
+            {
+                pkts[i] = new NcomPacketA()
+                {
+                    Time = 0,
+                    AccelerationX = 0,
+                    AccelerationY = 0,
+                    AccelerationZ = 0,
+                    AngularRateX = 0,
+                    AngularRateY = 0,
+                    AngularRateZ = 0,
+                    NavigationStatus = 0,
+                    Latitude = 0,
+                    Longitude = 0,
+                    Altitude = 0,
+                    NorthVelocity = 0,
+                    EastVelocity = 0,
+                    DownVelocity = 0,
+                    Heading = 0,
+                    Pitch = 0,
+                    Roll = 0,
+                    StatusChannel = new StatusChannel0()
+                    {
+                        FullTime = 0,
+                        NumberOfSatellites = 0,
+                        MainGNSSPositionMode = 0,
+                        MainGNSSVelocityMode = 0,
+                        DualAntennaSystemsOrientationMode = 0
+                    }
+                };
+            }
+
+            // Test not equal to null reference
+            Assert.AreNotEqual(pkts[0], null);
+
+            // Test same object
+            Assert.AreEqual(pkts[0], pkts[0]);
+
+            // Test 2 different objects
+            Assert.AreEqual(pkts[0], pkts[1]);
+            Assert.AreEqual(pkts[1], pkts[0]);     // Transitive
+
+            // Change one packet
+            pkts[1].Time = 1;
+            Assert.AreNotEqual(pkts[0], pkts[1]);
+            Assert.AreNotEqual(pkts[1], pkts[0]);     // Transitive
         }
 
 
         [TestMethod()]
-        public void MarshalTest()
+        public void BlankMarshalTest()
         {
-            // Get byte data
-            byte[] data = HexStringToBytes(ncomHex);
-
-            // Create an NCOM packet and marshal the hex string
-            List<NcomPacket> listNcom = new NcomPacketFactory().ProcessNcom(data);
-
-            // Check that length != 1 then failed
-            if (listNcom.Count != 1)
+            // Create a blank NCOM structure A packet
+            NcomPacketA ncom = new NcomPacketA()
             {
-                Assert.Fail("Unexcepted length. Expected 1, got " + listNcom.Count);
-                return;
-            }
+                Time = 0,
+                AccelerationX = 0,
+                AccelerationY = 0,
+                AccelerationZ = 0,
+                AngularRateX = 0,
+                AngularRateY = 0,
+                AngularRateZ = 0,
+                NavigationStatus = Enumerations.NavigationStatus.Invalid,
+                Latitude = 0,
+                Longitude = 0,
+                Altitude = 0,
+                NorthVelocity = 0,
+                EastVelocity = 0,
+                DownVelocity = 0,
+                Heading = 0,
+                Pitch = 0,
+                Roll = 0,
+                StatusChannel = new StatusChannel0()
+                {
+                    FullTime = 0,
+                    NumberOfSatellites = 0,
+                    MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.None,
+                    MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.None,
+                    DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.None
+                }
+            };
 
-            // Check decoded is packet A
-            NcomPacketA pkt = listNcom[0] as NcomPacketA;
-            if (pkt == null)
+            // Marshal
+            byte[] marshalled = ncom.Marshal();
+
+            // Check 2 arrays are equal
+            for (int i = 0; i < marshalled.Length; i++)
             {
-                Assert.Fail("Decoded NCOM packet is not of type NcomPacketA");
-                return;
+                Assert.AreEqual(blankNcomBytes[i], marshalled[i]);
             }
-
-            // Todo: Check values
-            Assert.IsTrue(true);
         }
 
-
-
-        private static byte[] HexStringToBytes(string hex)
+        [TestMethod()]
+        public void BlankUnmarshalTest()
         {
-            return Enumerable.Range(0, hex.Length)
-                    .Where(x => x % 2 == 0)
-                    .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                    .ToArray();
+            // Unmarshal NCOM data
+            NcomPacketA pkt = new NcomPacketA();
+            pkt.Unmarshal(blankNcomBytes, 0);
+
+            // Everything should be zero
+            Assert.AreEqual(0, pkt.Time);
+            Assert.AreEqual(0, pkt.AccelerationX);
+            Assert.AreEqual(0, pkt.AccelerationY);
+            Assert.AreEqual(0, pkt.AccelerationZ);
+            Assert.AreEqual(0, pkt.AngularRateX);
+            Assert.AreEqual(0, pkt.AngularRateY);
+            Assert.AreEqual(0, pkt.AngularRateZ);
+            Assert.AreEqual(0, (byte)pkt.NavigationStatus);
+            Assert.AreEqual(0, pkt.Latitude);
+            Assert.AreEqual(0, pkt.Longitude);
+            Assert.AreEqual(0, pkt.Altitude);
+            Assert.AreEqual(0, pkt.NorthVelocity);
+            Assert.AreEqual(0, pkt.EastVelocity);
+            Assert.AreEqual(0, pkt.DownVelocity);
+            Assert.AreEqual(0, pkt.Heading);
+            Assert.AreEqual(0, pkt.Pitch);
+            Assert.AreEqual(0, pkt.Roll);
+            Assert.AreEqual(0, pkt.StatusChannel.StatusChannelByte);
+
+            StatusChannel0 chan = pkt.StatusChannel as StatusChannel0;
+            Assert.AreEqual(0, chan.FullTime);
+            Assert.AreEqual(0, chan.NumberOfSatellites);
+            Assert.AreEqual(0, (byte)chan.MainGNSSPositionMode);
+            Assert.AreEqual(0, (byte)chan.MainGNSSVelocityMode);
+            Assert.AreEqual(0, (byte)chan.DualAntennaSystemsOrientationMode);
         }
+
     }
 }

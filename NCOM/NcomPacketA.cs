@@ -190,6 +190,36 @@ namespace NCOM
 
 
         /* ---------- Public methods ----------------------------------------------------------/**/
+        
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + base.GetHashCode();
+
+            hash = (hash * mul) + Time.GetHashCode();
+
+            hash = (hash * mul) + AccelerationX.GetHashCode();
+            hash = (hash * mul) + AccelerationY.GetHashCode();
+            hash = (hash * mul) + AccelerationZ.GetHashCode();
+
+            hash = (hash * mul) + AngularRateX.GetHashCode();
+            hash = (hash * mul) + AngularRateY.GetHashCode();
+            hash = (hash * mul) + AngularRateZ.GetHashCode();
+
+            hash = (hash * mul) + Latitude.GetHashCode();
+            hash = (hash * mul) + Longitude.GetHashCode();
+            hash = (hash * mul) + Altitude.GetHashCode();
+
+            hash = (hash * mul) + NorthVelocity.GetHashCode();
+            hash = (hash * mul) + EastVelocity.GetHashCode();
+            hash = (hash * mul) + DownVelocity.GetHashCode();
+
+            hash = (hash * mul) + (StatusChannel != null ? StatusChannel.GetHashCode() : 0);
+
+            return hash;
+        }
 
         /// <summary>
         /// Marshals the data into a byte array of length <see cref="PACKET_LENGTH"/>.
@@ -432,6 +462,34 @@ namespace NCOM
 
             // Couldn't find packet, return false;
             return false;
+        }
+
+
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <inheritdoc />
+        protected override bool IsEqual(NcomPacket _pkt)
+        {
+            NcomPacketA pkt = _pkt as NcomPacketA;
+
+            return base.IsEqual(pkt)
+                && this.Time == pkt.Time
+                && this.AccelerationX == pkt.AccelerationX
+                && this.AccelerationY == pkt.AccelerationY
+                && this.AccelerationZ == pkt.AccelerationZ
+                && this.AngularRateX == pkt.AngularRateX
+                && this.AngularRateY == pkt.AngularRateY
+                && this.AngularRateZ == pkt.AngularRateZ
+                && this.Latitude == pkt.Latitude
+                && this.Longitude == pkt.Longitude
+                && this.Altitude == pkt.Altitude
+                && this.NorthVelocity == pkt.NorthVelocity
+                && this.EastVelocity == pkt.EastVelocity
+                && this.DownVelocity == pkt.DownVelocity
+                && this.Heading == pkt.Heading
+                && this.Pitch == pkt.Pitch
+                && this.Roll == pkt.Roll
+                && (this.StatusChannel == null ? pkt.StatusChannel == null : this.StatusChannel.Equals(pkt.StatusChannel));
         }
 
     }

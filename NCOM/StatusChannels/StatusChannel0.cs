@@ -40,6 +40,22 @@ namespace NCOM.StatusChannels
 
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
+        
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            int mul = 7;
+
+            hash = (hash * mul) + base.GetHashCode();
+
+            hash = (hash * mul) + FullTime.GetHashCode();
+            hash = (hash * mul) + NumberOfSatellites;
+            hash = (hash * mul) + (byte)MainGNSSPositionMode;
+            hash = (hash * mul) + (byte)MainGNSSVelocityMode;
+            hash = (hash * mul) + (byte)DualAntennaSystemsOrientationMode;
+
+            return hash;
+        }
 
         public override byte[] Marshal()
         {
@@ -70,11 +86,33 @@ namespace NCOM.StatusChannels
             NumberOfSatellites = buffer[offset];
             offset += 1;
 
-            MainGNSSPositionMode = EnumParser.ParseByte(buffer[offset++], PositionVelocityOrientationMode.None);
-            MainGNSSVelocityMode = EnumParser.ParseByte(buffer[offset++], PositionVelocityOrientationMode.None);
-            DualAntennaSystemsOrientationMode = EnumParser.ParseByte(buffer[offset++], PositionVelocityOrientationMode.None);
+            MainGNSSPositionMode = (PositionVelocityOrientationMode)buffer[offset++];
+            MainGNSSVelocityMode = (PositionVelocityOrientationMode)buffer[offset++];
+            DualAntennaSystemsOrientationMode = (PositionVelocityOrientationMode)buffer[offset++];
 
             return true;
+        }
+
+        
+        /* ---------- Protected methods -------------------------------------------------------/**/
+
+        /// <summary>
+        /// A pure implementation of value equality that avoids the routine checks in 
+        /// <see cref="Equals(object)"/>.
+        /// To override the default equals method, override this method instead.
+        /// </summary>
+        /// <param name="pkt"></param>
+        /// <returns></returns>
+        protected override bool IsEqual(StatusChannel data)
+        {
+            StatusChannel0 chan = data as StatusChannel0;
+
+            return base.IsEqual(chan)
+                && this.FullTime == chan.FullTime
+                && this.NumberOfSatellites == chan.NumberOfSatellites
+                && this.MainGNSSPositionMode == chan.MainGNSSPositionMode
+                && this.MainGNSSVelocityMode == chan.MainGNSSVelocityMode
+                && this.DualAntennaSystemsOrientationMode == chan.DualAntennaSystemsOrientationMode;
         }
 
     }

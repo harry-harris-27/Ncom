@@ -1,4 +1,7 @@
 # NCOM.NET
+
+[![Build Status](https://travis-ci.com/harry-harris-27/NCOM.NET.svg?branch=master)](https://travis-ci.com/harry-harris-27/NCOM.NET)
+
 An library built in C# for the encoding and decoding the [OxTS](https://www.oxts.com/) NCOM binary data packet. 
 
 Note that this library is not complete:

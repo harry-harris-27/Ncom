@@ -517,7 +517,7 @@ namespace NCOM
                     // Extract status channel (and status channel byte)
                     StatusChannel = StatusChannelFactory.ProcessStatusChannel(buffer, offset);
                     offset += StatusChannel.STATUS_CHANNEL_LENGTH;
-
+                    
                     // Unmarshalled OK, return true
                     return true;
                 }

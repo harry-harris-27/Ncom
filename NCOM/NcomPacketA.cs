@@ -52,12 +52,82 @@ namespace NCOM
 
 
         /* ---------- Private variables -------------------------------------------------------/**/
-
-        private ushort _time = 0;
+        
 
         /* ---------- Constructors ------------------------------------------------------------/**/
 
-        public NcomPacketA() :base() { }
+        /// <summary>
+        /// Base constructor
+        /// </summary>
+        public NcomPacketA() : base() { }
+
+        /// <summary>
+        /// Copy Constructor
+        /// </summary>
+        /// <param name="pkt"></param>
+        public NcomPacketA(NcomPacketA pkt) : base(pkt)
+        {
+            if (pkt != null)
+            {
+                this.Time = pkt.Time;
+
+                this.AccelerationX = pkt.AccelerationX;
+                this.AccelerationY = pkt.AccelerationY;
+                this.AccelerationZ = pkt.AccelerationZ;
+
+                this.AngularRateX = pkt.AngularRateX;
+                this.AngularRateY = pkt.AngularRateY;
+                this.AngularRateZ = pkt.AngularRateZ;
+
+                this.Checksum1 = pkt.Checksum1;
+
+                this.Latitude = pkt.Latitude;
+                this.Longitude = pkt.Longitude;
+                this.Altitude = pkt.Altitude;
+
+                this.DownVelocity = pkt.DownVelocity;
+                this.EastVelocity = pkt.EastVelocity;
+                this.NorthVelocity = pkt.NorthVelocity;
+
+                this.Heading = pkt.Heading;
+                this.Pitch = pkt.Pitch;
+                this.Roll = pkt.Roll;
+
+                this.Checksum2 = pkt.Checksum2;
+
+                this.StatusChannel = StatusChannelFactory.ProcessStatusChannel(pkt.StatusChannel.Marshal());
+            }
+            else
+            {
+                this.Time = 0;
+
+                this.AccelerationX = 0;
+                this.AccelerationY = 0;
+                this.AccelerationZ = 0;
+
+                this.AngularRateX = 0;
+                this.AngularRateY = 0;
+                this.AngularRateZ = 0;
+
+                this.Checksum1 = false;
+
+                this.Latitude = 0;
+                this.Longitude = 0;
+                this.Altitude = 0;
+
+                this.DownVelocity = 0;
+                this.EastVelocity = 0;
+                this.NorthVelocity = 0;
+
+                this.Heading = 0;
+                this.Pitch = 0;
+                this.Roll = 0;
+
+                this.Checksum2 = false;
+
+                this.StatusChannel = new StatusChannel0();
+            }
+        }
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
@@ -173,20 +243,9 @@ namespace NCOM
         public StatusChannel StatusChannel { get; set; }
 
         /// <summary>
-        /// Time is transmitted as milliseconds into the current GPS minute. Range = [0 - 59,999].
+        /// Time is transmitted as milliseconds into the current GPS minute. Range = [0 - 59,999]. 
         /// </summary>
-        public ushort Time
-        {
-            get { return _time; }
-            set
-            {
-                if (value > MAX_TIME_VALUE)
-                {
-                    throw new ArgumentOutOfRangeException("The value for time must be between 0 and " + MAX_TIME_VALUE);
-                }
-                _time = value;
-            }
-        }
+        public ushort Time { get; set; }
 
 
         /* ---------- Public methods ----------------------------------------------------------/**/
@@ -222,7 +281,7 @@ namespace NCOM
         }
 
         /// <summary>
-        /// Marshals the data into a byte array of length <see cref="PACKET_LENGTH"/>.
+        /// Marshals the data into a byte array of length <see cref="NcomPacket.MarshalLength"/>.
         /// </summary>
         /// <returns></returns>
         public override byte[] Marshal()
@@ -236,7 +295,7 @@ namespace NCOM
             // --------
 
             // Insert Time
-            Array.Copy(BitConverter.GetBytes(Time), 0, buffer, p, 2);
+            Array.Copy(BitConverter.GetBytes(Time % MAX_TIME_VALUE), 0, buffer, p, 2);
             p += 2;
 
             // Insert acceleration X
@@ -283,7 +342,7 @@ namespace NCOM
             p += 8;
 
             // Insert Altitude
-            Array.Copy(BitConverter.GetBytes(Altitude), 0, buffer, p, 8);
+            Array.Copy(BitConverter.GetBytes(Altitude), 0, buffer, p, 4);
             p += 4;
 
             // Insert North Velocity
@@ -318,12 +377,15 @@ namespace NCOM
             // Batch S
             // --------
 
-            // Insert status channel byte
-            buffer[p++] = StatusChannel != null ? StatusChannel.StatusChannelByte : (byte)0xFF;
-
             // Insert Status Channel
-            if (StatusChannel != null) Array.Copy(StatusChannel.Marshal(), 0, buffer, p, 8);
-            p += 8;
+            Array.Copy(
+                StatusChannel != null ? StatusChannel.Marshal() : new byte[StatusChannel.STATUS_CHANNEL_LENGTH], 
+                0, 
+                buffer, 
+                p, 
+                StatusChannel.STATUS_CHANNEL_LENGTH
+            );
+            p += StatusChannel.STATUS_CHANNEL_LENGTH;
 
             // Calculate and insert Checksum 3
             buffer[p] = CalculateChecksum(buffer, 1, p - 2);
@@ -452,8 +514,9 @@ namespace NCOM
                     // Batch S
                     // --------
 
+                    // Extract status channel (and status channel byte)
                     StatusChannel = StatusChannelFactory.ProcessStatusChannel(buffer, offset);
-                    offset += 9;
+                    offset += StatusChannel.STATUS_CHANNEL_LENGTH;
 
                     // Unmarshalled OK, return true
                     return true;

@@ -51,30 +51,30 @@ namespace NCOM.Tests
             {
                 pkts[i] = new NcomPacketA()
                 {
-                    Time = 0,
-                    AccelerationX = 0,
-                    AccelerationY = 0,
-                    AccelerationZ = 0,
-                    AngularRateX = 0,
-                    AngularRateY = 0,
-                    AngularRateZ = 0,
-                    NavigationStatus = 0,
-                    Latitude = 0,
-                    Longitude = 0,
-                    Altitude = 0,
-                    NorthVelocity = 0,
-                    EastVelocity = 0,
-                    DownVelocity = 0,
-                    Heading = 0,
-                    Pitch = 0,
-                    Roll = 0,
+                    Time = 1,
+                    AccelerationX = 2,
+                    AccelerationY = 3,
+                    AccelerationZ = 4,
+                    AngularRateX = 5,
+                    AngularRateY = 6,
+                    AngularRateZ = 7,
+                    NavigationStatus = Enumerations.NavigationStatus.Locked,
+                    Latitude = 8,
+                    Longitude = 9,
+                    Altitude = 10,
+                    NorthVelocity = 11,
+                    EastVelocity = 12,
+                    DownVelocity = 13,
+                    Heading = 14,
+                    Pitch = 15,
+                    Roll = 16,
                     StatusChannel = new StatusChannel0()
                     {
-                        FullTime = 0,
-                        NumberOfSatellites = 0,
-                        MainGNSSPositionMode = 0,
-                        MainGNSSVelocityMode = 0,
-                        DualAntennaSystemsOrientationMode = 0
+                        FullTime = 17,
+                        NumberOfSatellites = 18,
+                        MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
+                        MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
+                        DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
                     }
                 };
             }
@@ -90,7 +90,7 @@ namespace NCOM.Tests
             Assert.AreEqual(pkts[1], pkts[0]);     // Transitive
 
             // Change one packet
-            pkts[1].Time = 1;
+            pkts[1].Time = 0;
             Assert.AreNotEqual(pkts[0], pkts[1]);
             Assert.AreNotEqual(pkts[1], pkts[0]);     // Transitive
         }
@@ -172,6 +172,47 @@ namespace NCOM.Tests
             Assert.AreEqual(0, (byte)chan.MainGNSSPositionMode);
             Assert.AreEqual(0, (byte)chan.MainGNSSVelocityMode);
             Assert.AreEqual(0, (byte)chan.DualAntennaSystemsOrientationMode);
+        }
+
+        [TestMethod()]
+        public void CopyConstructorTest()
+        {
+            // Create an NCOM structure A packet
+            NcomPacketA pkt1 = new NcomPacketA()
+            {
+                Time = 1,
+                AccelerationX = 2,
+                AccelerationY = 3,
+                AccelerationZ = 4,
+                AngularRateX = 5,
+                AngularRateY = 6,
+                AngularRateZ = 7,
+                NavigationStatus = Enumerations.NavigationStatus.Locked,
+                Latitude = 8,
+                Longitude = 9,
+                Altitude = 10,
+                NorthVelocity = 11,
+                EastVelocity = 12,
+                DownVelocity = 13,
+                Heading = 14,
+                Pitch = 15,
+                Roll = 16,
+                StatusChannel = new StatusChannel0()
+                {
+                    FullTime = 17,
+                    NumberOfSatellites = 18,
+                    MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
+                    MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
+                    DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
+                }
+            };
+
+            // Copy it
+            NcomPacketA pkt2 = new NcomPacketA(pkt1);
+
+            // Are they equal?
+            Assert.AreNotSame(pkt1, pkt2);
+            Assert.AreEqual(pkt1, pkt2);
         }
 
     }

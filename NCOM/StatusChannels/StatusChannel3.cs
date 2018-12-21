@@ -74,7 +74,7 @@ namespace NCOM.StatusChannels
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
-            int p = 0;
+            int p = 1;
 
             // North position accuracy
             Array.Copy(BitConverter.GetBytes(NorthPositionAccuracy), 0, buffer, p, 2);

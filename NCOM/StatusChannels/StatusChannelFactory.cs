@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 namespace NCOM.StatusChannels
 {
     public static class StatusChannelFactory
-    {
+    { 
 
-        private const int STATUS_CHANNEL_LENGTH = 8;
-
-
-        public static StatusChannel ProcessStatusChannel(byte[] buffer, int offset)
+        public static StatusChannel ProcessStatusChannel(byte[] buffer, int offset = 0)
         {
             // Check the length of the available part of the buffer
-            if (buffer.Length - offset < STATUS_CHANNEL_LENGTH + 1)
+            if (buffer.Length - offset < StatusChannel.STATUS_CHANNEL_LENGTH)
             {
                 throw new ArgumentException("Buffer is smaller than required");
             }
@@ -129,7 +126,7 @@ namespace NCOM.StatusChannels
             }
 
             // If not null, marshal the bytes into the status channel obj
-            channel?.Unmarshal(buffer, offset + 1);
+            channel?.Unmarshal(buffer, offset);
 
             // Return the status channel object
             return channel;

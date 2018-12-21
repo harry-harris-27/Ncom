@@ -68,7 +68,7 @@ namespace NCOM.StatusChannels
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
-            int p = 0;
+            int p = 1;
 
             // Characters received
             Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverCharacters), 0, buffer, p, 2);

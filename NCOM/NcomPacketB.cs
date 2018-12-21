@@ -13,7 +13,22 @@ namespace NCOM
     /// </summary>
     public class NcomPacketB : NcomPacket
     {
+
+        /* ---------- Constructors ------------------------------------------------------------/**/
+
         public NcomPacketB() : base() { }
+
+        public NcomPacketB(NcomPacketB pkt) : base(pkt)
+        {
+            if (pkt != null)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
 
 
         /* ---------- Public Methods ----------------------------------------------------------/**/

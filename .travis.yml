@@ -6,5 +6,5 @@ install:
   - nuget restore ./NCOM.sln
  
 script:
-  - xbuild ./NCOM.sln
+#  - xbuild ./NCOM.sln
   - nunit-console ./NCOM.Tests/bin/Debug/NCOM.Tests.dll

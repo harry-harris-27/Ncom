@@ -27,6 +27,11 @@ namespace NCOM.StatusChannels
     public abstract class StatusChannel
     {
 
+        /* ---------- Constants ---------------------------------------------------------------/**/
+
+        internal const int STATUS_CHANNEL_LENGTH = 9;
+
+
         /* ---------- Constructors ------------------------------------------------------------/**/
 
         public StatusChannel(byte statusChannelByte)
@@ -37,7 +42,7 @@ namespace NCOM.StatusChannels
 
         /* ---------- Properties --------------------------------------------------------------/**/
 
-        public int MarshalLength { get { return 8; } }
+        public int MarshalLength { get { return 9; } }      // 8 + status byte
 
         public byte StatusChannelByte { get; private set; }
 
@@ -70,12 +75,22 @@ namespace NCOM.StatusChannels
 
         public virtual byte[] Marshal()
         {
-            return new byte[MarshalLength];
+            byte[] buf = new byte[MarshalLength];
+
+            // Status byte
+            buf[0] = StatusChannelByte;
+
+            return buf;
         }
 
         public virtual bool Unmarshal(byte[] buffer, int offset)
         {
-            return offset + MarshalLength < buffer.Length;
+            if (offset + MarshalLength > buffer.Length) return false;
+
+            // Status byte
+            StatusChannelByte = buffer[offset];
+
+            return true;
         }
 
 

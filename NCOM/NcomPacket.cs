@@ -79,16 +79,53 @@ namespace NCOM
 
         /* ---------- Constructors ------------------------------------------------------------/**/
 
-        public NcomPacket() { }
+        /// <summary>
+        /// Base constructor
+        /// </summary>
+        /// <remarks>
+        /// Calls the copy constructor <see cref="NcomPacket(NcomPacket)"/> passing a null 
+        /// reference.
+        /// </remarks>
+        public NcomPacket() : this(null)
+        { }
+
+        /// <summary>
+        /// Copy constructor. Deeply copies the specified NCOM packet and returns a new instance.
+        /// If a null reference is passed, a default NCOM packet is returned.
+        /// </summary>
+        /// <param name="pkt">The original NCOM packet object to copy.</param>
+        public NcomPacket(NcomPacket pkt)
+        {
+            if (pkt != null)
+            {
+                this.Checksum3 = pkt.Checksum3;
+                this.NavigationStatus = pkt.NavigationStatus;
+            }
+            else
+            {
+                this.Checksum3 = false;
+                this.NavigationStatus = NavigationStatus.Invalid;
+            }
+        }
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
         
         /// <summary>
-        /// The final checksum that verifies the entire packet (bytes 1-20).
+        /// The final checksum that verifies the entire packet (bytes 1-70).
+        /// <para>
+        /// Note that this is set to <code>false</code> by default. Whenever
+        /// <see cref="Unmarshal(byte[], int)"/> is called, then this value is set to the validity 
+        /// of the packet. If set to false, then the packet's members should assume to be 
+        /// incorrect.
+        /// </para>
         /// </summary>
-        public bool Checksum3 { get; set; }
+        public bool Checksum3 { get; protected set; }
 
+        /// <summary>
+        /// Gets the number of bytes of the marshalled NCOM packet, see 
+        /// <see cref="PACKET_LENGTH"/>.
+        /// </summary>
         public int MarshalLength { get { return PACKET_LENGTH; } }
 
         /// <summary>
@@ -150,6 +187,9 @@ namespace NCOM
         {
             // Create an array of required length
             byte[] buffer = new byte[PACKET_LENGTH];
+
+            // Add the Sync byte
+            buffer[0] = SYNC_BYTE;
 
             // Add the Navigation status byte to the buffer
             buffer[21] = (byte)NavigationStatus;

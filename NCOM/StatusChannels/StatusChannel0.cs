@@ -60,7 +60,7 @@ namespace NCOM.StatusChannels
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
-            int p = 0;
+            int p = 1;
 
             Array.Copy(BitConverter.GetBytes(FullTime), 0, buffer, p, 4);
             p += 4;

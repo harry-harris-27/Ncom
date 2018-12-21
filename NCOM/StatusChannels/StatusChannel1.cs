@@ -82,7 +82,7 @@ namespace NCOM.StatusChannels
         public override byte[] Marshal()
         {
             byte[] buffer = base.Marshal();
-            int p = 0;
+            int p = 1;
 
             // Position X Innovation
             buffer[p] = (byte)((PositionXInnovation << 1) & INNOVATION_MASK);

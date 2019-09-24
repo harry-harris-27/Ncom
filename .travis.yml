@@ -1,0 +1,10 @@
+language: csharp
+solution: ./NCOM.sln
+
+install:
+  - sudo apt-get install nunit-console
+  - nuget restore ./NCOM.sln
+ 
+script:
+  - xbuild ./NCOM.sln
+  - nunit-console ./NCOM.Tests/bin/Debug/NCOM.Tests.dll

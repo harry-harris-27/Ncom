@@ -4,6 +4,9 @@ solution: "./NCOM.sln"
 install:
 - travis_retry nuget restore -source "https://www.nuget.org/api/v2" ./NCOM.sln
 
+before_script:
+- sudo apt-get install nunit-console
+
 script:
-- xbuild ./NCOM.sln
+- xbuild /p:Configuration=Debug ./NCOM.sln
 - nunit-console ./NCOM.Tests/bin/Debug/NCOM.Tests.dll

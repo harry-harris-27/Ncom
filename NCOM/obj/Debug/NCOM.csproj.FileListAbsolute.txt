@@ -1,6 +1,0 @@
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\bin\Debug\NCOM.dll
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\bin\Debug\NCOM.pdb
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\obj\Debug\NCOM.csprojResolveAssemblyReference.cache
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\obj\Debug\NCOM.csproj.CoreCompileInputs.cache
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\obj\Debug\NCOM.dll
-C:\Users\harry\Documents\Visual Studio 2017\Projects\NCOM\NCOM\obj\Debug\NCOM.pdb

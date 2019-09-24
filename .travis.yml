@@ -5,4 +5,4 @@ before_install:
 before_script:
 - nuget restore NCOM.sln
 after_script:
-- nunit-console NCOM.Tests/bin/Debug/NCOM.Tests.dll
+- nunit-console NCOM.Tests/bin/Release/NCOM.Tests.dll

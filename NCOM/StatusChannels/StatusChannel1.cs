@@ -35,57 +35,49 @@ namespace NCOM.StatusChannels
                 PositionZInnovation = source.PositionZInnovation;
                 PositionZInnovationValid = source.PositionZInnovationValid;
 
+                VelocityXInnovation = source.VelocityXInnovation;
+                VelocityXInnovationValid = source.VelocityXInnovationValid;
+
+                VelocityYInnovation = source.VelocityYInnovation;
+                VelocityYInnovationValid = source.VelocityYInnovationValid;
+
+                VelocityZInnovation = source.VelocityZInnovation;
+                VelocityZInnovationValid = source.VelocityZInnovationValid;
+
                 OrientationPitchInnovation = source.OrientationPitchInnovation;
                 OrientationPitchInnovationValid = source.OrientationPitchInnovationValid;
 
                 OrientationHeadingInnovation = source.OrientationHeadingInnovation;
                 OrientationHeadingInnovationValid = source.OrientationHeadingInnovationValid;
             }
-            else
-            {
-                PositionXInnovation = 0;
-                PositionXInnovationValid = false;
-
-                PositionYInnovation = 0;
-                PositionYInnovationValid = false;
-
-                PositionZInnovation = 0;
-                PositionZInnovationValid = false;
-
-                OrientationPitchInnovation = 0;
-                OrientationPitchInnovationValid = false;
-
-                OrientationHeadingInnovation = 0;
-                OrientationHeadingInnovationValid = false;
-            }
         }
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
 
-        public byte PositionXInnovation { get; set; }
-        public bool PositionXInnovationValid { get; set; }
+        public byte PositionXInnovation { get; set; } = 0;
+        public bool PositionXInnovationValid { get; set; } = false;
 
-        public byte PositionYInnovation { get; set; }
-        public bool PositionYInnovationValid { get; set; }
+        public byte PositionYInnovation { get; set; } = 0;
+        public bool PositionYInnovationValid { get; set; } = false;
 
-        public byte PositionZInnovation { get; set; }
-        public bool PositionZInnovationValid { get; set; }
+        public byte PositionZInnovation { get; set; } = 0;
+        public bool PositionZInnovationValid { get; set; } = false;
 
-        public byte VelocityXInnovation { get; set; }
-        public bool VelocityXInnovationValid { get; set; }
+        public byte VelocityXInnovation { get; set; } = 0;
+        public bool VelocityXInnovationValid { get; set; } = false;
 
-        public byte VelocityYInnovation { get; set; }
-        public bool VelocityYInnovationValid { get; set; }
+        public byte VelocityYInnovation { get; set; } = 0;
+        public bool VelocityYInnovationValid { get; set; } = false;
 
-        public byte VelocityZInnovation { get; set; }
-        public bool VelocityZInnovationValid { get; set; }
+        public byte VelocityZInnovation { get; set; } = 0;
+        public bool VelocityZInnovationValid { get; set; } = false;
 
-        public byte OrientationPitchInnovation { get; set; }
-        public bool OrientationPitchInnovationValid { get; set; }
+        public byte OrientationPitchInnovation { get; set; } = 0;
+        public bool OrientationPitchInnovationValid { get; set; } = false;
 
-        public byte OrientationHeadingInnovation { get; set; }
-        public bool OrientationHeadingInnovationValid { get; set; }
+        public byte OrientationHeadingInnovation { get; set; } = 0;
+        public bool OrientationHeadingInnovationValid { get; set; } = false;
 
 
         /* ---------- Public Methods ----------------------------------------------------------/**/

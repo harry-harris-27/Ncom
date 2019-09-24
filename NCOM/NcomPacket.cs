@@ -78,17 +78,7 @@ namespace NCOM
 
 
         /* ---------- Constructors ------------------------------------------------------------/**/
-
-        /// <summary>
-        /// Base constructor
-        /// </summary>
-        /// <remarks>
-        /// Calls the copy constructor <see cref="NcomPacket(NcomPacket)"/> passing a null 
-        /// reference.
-        /// </remarks>
-        public NcomPacket() : this(null)
-        { }
-
+        
         /// <summary>
         /// Copy constructor. Deeply copies the specified NCOM packet and returns a new instance.
         /// If a null reference is passed, a default NCOM packet is returned.
@@ -101,16 +91,11 @@ namespace NCOM
                 this.Checksum3 = pkt.Checksum3;
                 this.NavigationStatus = pkt.NavigationStatus;
             }
-            else
-            {
-                this.Checksum3 = false;
-                this.NavigationStatus = NavigationStatus.Invalid;
-            }
         }
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
-        
+
         /// <summary>
         /// The final checksum that verifies the entire packet (bytes 1-70).
         /// <para>
@@ -120,7 +105,7 @@ namespace NCOM
         /// incorrect.
         /// </para>
         /// </summary>
-        public bool Checksum3 { get; protected set; }
+        public bool Checksum3 { get; protected set; } = false;
 
         /// <summary>
         /// Gets the number of bytes of the marshalled NCOM packet, see 
@@ -150,11 +135,19 @@ namespace NCOM
         /// can be used to updated other solutions with minimal latency.
         /// </para>
         /// </summary>
-        public NavigationStatus NavigationStatus { get; set; }
+        public NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
 
 
         /* ---------- Public methods ----------------------------------------------------------/**/
-        
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="value">The object to compare with the current object.</param>
+        /// <returns>
+        /// <c>true</c> if the specified object is equal to the current object; otherwise 
+        /// <c>false</c>.
+        /// </returns>
         public override bool Equals(object value)
         {
             // Is it null?
@@ -169,6 +162,17 @@ namespace NCOM
             return IsEqual((NcomPacket)value);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data 
+        /// structures like a hash table. 
+        /// </returns>
+        /// <remarks>
+        /// The hash code generation process ignores the <see cref="Checksum3"/> property, since it 
+        /// is not used when testing for equality.
+        /// </remarks>
         public override int GetHashCode()
         {
             int hash = 13;

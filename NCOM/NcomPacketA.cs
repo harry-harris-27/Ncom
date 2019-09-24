@@ -14,9 +14,6 @@ namespace NCOM
     /// packets, the navigation status (byte 21) will have a value of 0, 1, 2, 3, 4, 5, 6, 7, 10, 
     /// 20, 21, 22.
     /// </summary>
-    /// <remarks>
-    /// The definition of a structure-A packet is shown below
-    /// </remarks>
     public class NcomPacketA : NcomPacket
     {
 
@@ -59,7 +56,7 @@ namespace NCOM
         /// <summary>
         /// Base constructor
         /// </summary>
-        public NcomPacketA() : base() { }
+        public NcomPacketA() : this(null) { }
 
         /// <summary>
         /// Copy Constructor
@@ -97,87 +94,57 @@ namespace NCOM
 
                 this.StatusChannel = StatusChannelFactory.Copy(pkt.StatusChannel);
             }
-            else
-            {
-                this.Time = 0;
-
-                this.AccelerationX = 0;
-                this.AccelerationY = 0;
-                this.AccelerationZ = 0;
-
-                this.AngularRateX = 0;
-                this.AngularRateY = 0;
-                this.AngularRateZ = 0;
-
-                this.Checksum1 = false;
-
-                this.Latitude = 0;
-                this.Longitude = 0;
-                this.Altitude = 0;
-
-                this.DownVelocity = 0;
-                this.EastVelocity = 0;
-                this.NorthVelocity = 0;
-
-                this.Heading = 0;
-                this.Pitch = 0;
-                this.Roll = 0;
-
-                this.Checksum2 = false;
-
-                this.StatusChannel = new StatusChannel0();
-            }
         }
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
-        
+
         /// <summary>
         /// Acceleration <i>X</i> is the host object's acceleration in the <i>X</i>-direction (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// m/s^-2.
         /// </summary>
-        public float AccelerationX { get; set; }
+        public float AccelerationX { get; set; } = 0;
 
         /// <summary>
         /// Acceleration <i>Y</i> is the host object's acceleration in the <i>Y</i>-direction (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// m/s^-2.
         /// </summary>
-        public float AccelerationY { get; set; }
+        public float AccelerationY { get; set; } = 0;
 
         /// <summary>
         /// Acceleration <i>Z</i> is the host object's acceleration in the <i>Z</i>-direction (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// m/s^-2.
         /// </summary>
-        public float AccelerationZ { get; set; }
+        public float AccelerationZ { get; set; } = 0;
 
         /// <summary>
         /// The altitude of the INS. Expressed in units of radians.
         /// </summary>
-        public float Altitude { get; set; }
+        public float Altitude { get; set; } = 0;
 
         /// <summary>
         /// Angular rate <i>X</i> is the host object's angular rate about its <i>X</i>-axis (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// radians per second
         /// </summary>
-        public float AngularRateX { get; set; }
+        public float AngularRateX { get; set; } = 0;
 
         /// <summary>
         /// Angular rate <i>Y</i> is the host object's angular rate about its <i>Y</i>-axis (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// radians per second
         /// </summary>
-        public float AngularRateY { get; set; }
+        public float AngularRateY { get; set; } = 0;
 
         /// <summary>
         /// Angular rate <i>Z</i> is the host object's angular rate about its <i>Z</i>-axis (i.e. 
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of 
         /// radians per second
         /// </summary>
-        public float AngularRateZ { get; set; }
+        public float AngularRateZ { get; set; } = 0;
 
         /// <summary>
         /// Checksum 1 allows the software to verify the integrity of bytes 1-21. The sync byte if 
@@ -185,71 +152,83 @@ namespace NCOM
         /// to update a previous solution without waiting for the rest of the packet to be 
         /// received.
         /// </summary>
-        public bool Checksum1 { get; set; }
+        public bool Checksum1 { get; set; } = false;
 
         /// <summary>
         /// Checksum 2 allows the software to verify the integrity of bytes 1-60. The sync byte if 
         /// ignored. For medium-latency output, the full navigation solution is now available 
         /// without waiting for the status updated in the rest of the packet.
         /// </summary>
-        public bool Checksum2 { get; set; }
+        public bool Checksum2 { get; set; } = false;
 
         /// <summary>
         /// Down velocity in units m/s
         /// </summary>
-        public float DownVelocity { get; set; }
+        public float DownVelocity { get; set; } = 0;
 
         /// <summary>
         /// East velocity in units m/s
         /// </summary>
-        public float EastVelocity { get; set; }
+        public float EastVelocity { get; set; } = 0;
 
         /// <summary>
         /// Heading in units of radians. Range +-PI
         /// </summary>
-        public float Heading { get; set; }
+        public float Heading { get; set; } = 0;
 
         /// <summary>
         /// The latitude of the INS. Expressed in units of radians.
         /// </summary>
-        public double Latitude { get; set; }
+        public double Latitude { get; set; } = 0;
 
         /// <summary>
         /// The longitude of the INS. Expressed in units of radians.
         /// </summary>
-        public double Longitude { get; set; }
+        public double Longitude { get; set; } = 0;
 
         /// <summary>
         /// North velocity in units m/s
         /// </summary>
-        public float NorthVelocity { get; set; }
+        public float NorthVelocity { get; set; } = 0;
 
         /// <summary>
         /// Pitch in units of radians. Range +-PI/2
         /// </summary>
-        public float Pitch { get; set; }
+        public float Pitch { get; set; } = 0;
 
         /// <summary>
         /// Roll in units of radians. Range +-PI
         /// </summary>
-        public float Roll { get; set; }
-        
+        public float Roll { get; set; } = 0;
+
         /// <summary>
         /// Bytes 63 to 70 of an NCOM structure-A packet are collectively called Batch S. Batch S 
         /// contains status channel information from the INS. The information transmitted in Batch 
         /// S is defined by the value of the status channel byte, which defines the structure of 
         /// each status channel and the information it contains.
         /// </summary>
-        public StatusChannel StatusChannel { get; set; }
+        public StatusChannel StatusChannel { get; set; } = new StatusChannel0();
 
         /// <summary>
         /// Time is transmitted as milliseconds into the current GPS minute. Range = [0 - 59,999]. 
         /// </summary>
-        public ushort Time { get; set; }
+        public ushort Time { get; set; } = 0;
 
 
         /* ---------- Public methods ----------------------------------------------------------/**/
-        
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data 
+        /// structures like a hash table. 
+        /// </returns>
+        /// <remarks>
+        /// The hash code generation process ignores properties <see cref="Checksum1" />, 
+        /// <see cref="Checksum2" /> and <see cref="Checksum3" />, since they are not used when 
+        /// testing for equality.
+        /// </remarks>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -274,6 +253,10 @@ namespace NCOM
             hash = (hash * mul) + NorthVelocity.GetHashCode();
             hash = (hash * mul) + EastVelocity.GetHashCode();
             hash = (hash * mul) + DownVelocity.GetHashCode();
+
+            hash = (hash * mul) + Heading.GetHashCode();
+            hash = (hash * mul) + Pitch.GetHashCode();
+            hash = (hash * mul) + Roll.GetHashCode();
 
             hash = (hash * mul) + (StatusChannel != null ? StatusChannel.GetHashCode() : 0);
 
@@ -529,8 +512,8 @@ namespace NCOM
 
 
         /* ---------- Protected methods -------------------------------------------------------/**/
+        
 
-        /// <inheritdoc />
         protected override bool IsEqual(NcomPacket _pkt)
         {
             NcomPacketA pkt = _pkt as NcomPacketA;

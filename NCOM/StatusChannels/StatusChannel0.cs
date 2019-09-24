@@ -28,14 +28,6 @@ namespace NCOM.StatusChannels
                 MainGNSSVelocityMode = source.MainGNSSVelocityMode;
                 DualAntennaSystemsOrientationMode = source.DualAntennaSystemsOrientationMode;
             }
-            else
-            {
-                FullTime = 0;
-                NumberOfSatellites = 0;
-                MainGNSSPositionMode = PositionVelocityOrientationMode.None;
-                MainGNSSVelocityMode = PositionVelocityOrientationMode.None;
-                DualAntennaSystemsOrientationMode = PositionVelocityOrientationMode.None;
-            }
         }
 
 
@@ -44,23 +36,23 @@ namespace NCOM.StatusChannels
         /// <summary>
         /// Gets or sets the time in minutes since GPS began (midnight, 6th January 1980)
         /// </summary>
-        public int FullTime { get; set; }
+        public int FullTime { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the number of GPS satellites tracked by the main GNSS receiver
         /// </summary>
-        public byte NumberOfSatellites { get; set; }
+        public byte NumberOfSatellites { get; set; } = 0;
 
 
-        public PositionVelocityOrientationMode MainGNSSPositionMode { get; set; }
+        public PositionVelocityOrientationMode MainGNSSPositionMode { get; set; } = PositionVelocityOrientationMode.None;
 
-        public PositionVelocityOrientationMode MainGNSSVelocityMode { get; set; }
+        public PositionVelocityOrientationMode MainGNSSVelocityMode { get; set; } = PositionVelocityOrientationMode.None;
 
-        public PositionVelocityOrientationMode DualAntennaSystemsOrientationMode { get; set; }
+        public PositionVelocityOrientationMode DualAntennaSystemsOrientationMode { get; set; } = PositionVelocityOrientationMode.None;
 
 
         /* ---------- Public Methods ----------------------------------------------------------/**/
-        
+
         public override int GetHashCode()
         {
             int hash = 13;

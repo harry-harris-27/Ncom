@@ -1,12 +1,8 @@
 language: csharp
-solution: "./NCOM.sln"
-
-install:
-- travis_retry nuget restore -source "https://www.nuget.org/api/v2" ./NCOM.sln
-
-before_script:
+solution: NCOM.sln
+before_install:
 - sudo apt-get install nunit-console
-
-script:
-- xbuild /p:Configuration=Debug ./NCOM.sln
-- nunit-console ./NCOM.Tests/bin/Debug/NCOM.Tests.dll
+before_script:
+- nuget restore NCOM.sln
+after_script:
+- nunit-console NCOM.Tests/bin/Debug/NCOM.Tests.dll

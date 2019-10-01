@@ -1,4 +1,4 @@
-name: CI
+name: Ncom Build
 
 on: [push]
 
@@ -17,4 +17,4 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
           dotnet-version: '2.2.103'
-    - run: dotnet build src/Ncom.sln
+    - run: dotnet build src/Ncom/Ncom/Ncom.csproj

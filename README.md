@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/harry-harris-27/Ncom/workflows/Ncom%20CI/badge.svg)](https://github.com/harry-harris-27/Ncom/actions)
 
-An library built in C# for the encoding and decoding the [OxTS](https://www.oxts.com/) NCOM binary data packet. 
+A small portable .NET library built for the encoding and decoding the [OxTS](https://www.oxts.com/) NCOM binary data packet. 
 
 Note that this library is not complete:
 - [ ] Finish adding Status Channel Enumerations.

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.Utilities
+namespace Ncom.Utilities
 {
-    public static class EnumParser
+    internal static class EnumParser
     {
         
         public static T ParseByte<T>(byte b, T defaultVal) where T : struct, IConvertible

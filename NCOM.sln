@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2011
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCOM", "NCOM\NCOM.csproj", "{99A0AD73-623A-414E-B98F-392C76102F2C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCOM.Tests", "NCOM.Tests\NCOM.Tests.csproj", "{8E4620B8-2785-4EC1-96D7-5D5DBC50825F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ncom", "Ncom\Ncom.csproj", "{8495A62F-94CA-40D8-8209-92D07834C9F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{99A0AD73-623A-414E-B98F-392C76102F2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99A0AD73-623A-414E-B98F-392C76102F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99A0AD73-623A-414E-B98F-392C76102F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99A0AD73-623A-414E-B98F-392C76102F2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E4620B8-2785-4EC1-96D7-5D5DBC50825F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E4620B8-2785-4EC1-96D7-5D5DBC50825F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E4620B8-2785-4EC1-96D7-5D5DBC50825F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E4620B8-2785-4EC1-96D7-5D5DBC50825F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8495A62F-94CA-40D8-8209-92D07834C9F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8495A62F-94CA-40D8-8209-92D07834C9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8495A62F-94CA-40D8-8209-92D07834C9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8495A62F-94CA-40D8-8209-92D07834C9F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

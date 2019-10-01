@@ -1,16 +1,16 @@
-﻿using NCOM.Enumerations;
-using NCOM.StatusChannels;
-using NCOM.Utilities;
+﻿using Ncom.Enumerations;
+using Ncom.StatusChannels;
+using Ncom.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM
+namespace Ncom
 {
     /// <summary>
-    /// NCOM structure-A packets are intended to be used by OxTS customers. In NCOM structure-A 
+    /// Ncom structure-A packets are intended to be used by OxTS customers. In Ncom structure-A 
     /// packets, the navigation status (byte 21) will have a value of 0, 1, 2, 3, 4, 5, 6, 7, 10, 
     /// 20, 21, 22.
     /// </summary>
@@ -202,7 +202,7 @@ namespace NCOM
         public float Roll { get; set; } = 0;
 
         /// <summary>
-        /// Bytes 63 to 70 of an NCOM structure-A packet are collectively called Batch S. Batch S 
+        /// Bytes 63 to 70 of an Ncom structure-A packet are collectively called Batch S. Batch S 
         /// contains status channel information from the INS. The information transmitted in Batch 
         /// S is defined by the value of the status channel byte, which defines the structure of 
         /// each status channel and the information it contains.
@@ -374,24 +374,24 @@ namespace NCOM
             buffer[p] = CalculateChecksum(buffer, 1, p - 2);
             p++;
 
-            // Return the marshalled NCOM packet
+            // Return the marshalled Ncom packet
             return buffer;
         }
 
         /// <summary>
-        /// Unmarshals the data stored in <paramref name="buffer"/> into this instance of an NCOM 
-        /// packet. If no marshalled NCOM packet can be found, false is returned.
+        /// Unmarshals the data stored in <paramref name="buffer"/> into this instance of an Ncom 
+        /// packet. If no marshalled Ncom packet can be found, false is returned.
         /// <para>
         /// If the first byte of the buffer is not <see cref="SYNC_BYTE"/> then the method will 
         /// look for the first occurance of the sync byte.
         /// </para>
         /// </summary>
-        /// <param name="buffer">The byte array containing the marshalled NCOM packet.</param>
+        /// <param name="buffer">The byte array containing the marshalled Ncom packet.</param>
         /// <param name="offset">
         /// The zero-based index indicating the location in the buffer to start looking for a sync 
         /// byte from.
         /// </param>
-        /// <returns>False if no marshalled NCOM packet can be found, otherwise true.</returns>
+        /// <returns>False if no marshalled Ncom packet can be found, otherwise true.</returns>
         public override bool Unmarshal(byte[] buffer, int offset)
         {
             // Seek the sync byte

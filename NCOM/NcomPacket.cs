@@ -1,5 +1,5 @@
-﻿using NCOM.Enumerations;
-using NCOM.Utilities;
+﻿using Ncom.Enumerations;
+using Ncom.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,23 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM
+namespace Ncom
 {
     /// <summary>
     /// <para>
-    /// NCOM is a data format designed by OxTS for the efficient communication of navigation 
+    /// Ncom is a data format designed by OxTS for the efficient communication of navigation 
     /// measurements and other data. It is a very compact format and only includes core 
     /// measurements, which makes it particularly suitable for inertial navigation systems.
     /// </para>
     /// <para>
-    /// The NCOM packet comprises 72 bytes that can be transmitted over Ethernet (port number 3000) 
+    /// The Ncom packet comprises 72 bytes that can be transmitted over Ethernet (port number 3000) 
     /// or RS232 serial links. To increase efficiency, many of the data packets are sent as 24-bit 
     /// sign integer words because 16-bit do not provide the range/precision required for many of 
     /// the quantities, whereas 32-bit precision makes the packet much longer than required.
     /// </para>
     /// <para>
-    /// Two versions of the NCOM packet exist, referred to as NCOM structure-A and NCOM 
-    /// structure-B. Byte 21 of an NCOM packet - the navigation status byte, identifies which 
+    /// Two versions of the Ncom packet exist, referred to as Ncom structure-A and Ncom 
+    /// structure-B. Byte 21 of an Ncom packet - the navigation status byte, identifies which 
     /// structure a packet employees. For implementations of each see <see cref="NcomPacketA"/> and 
     /// <see cref="NcomPacketB"/> respectively.
     /// </para>
@@ -51,7 +51,7 @@ namespace NCOM
 
         /// <summary>
         /// <para>
-        /// The first-byte of an NCOM packet is the sync byte, which always has a value of 0xE7.
+        /// The first-byte of an Ncom packet is the sync byte, which always has a value of 0xE7.
         /// </para>
         /// <para>
         /// Note the in order to reduce latency with RS232 serial transmissions, the sync character 
@@ -68,7 +68,7 @@ namespace NCOM
         public const byte SYNC_BYTE = 0xE7;
 
         /// <summary>
-        /// The length of a marshalled NCOM packet.
+        /// The length of a marshalled Ncom packet.
         /// </summary>
         public const int PACKET_LENGTH = 72;
 
@@ -80,10 +80,10 @@ namespace NCOM
         /* ---------- Constructors ------------------------------------------------------------/**/
         
         /// <summary>
-        /// Copy constructor. Deeply copies the specified NCOM packet and returns a new instance.
-        /// If a null reference is passed, a default NCOM packet is returned.
+        /// Copy constructor. Deeply copies the specified Ncom packet and returns a new instance.
+        /// If a null reference is passed, a default Ncom packet is returned.
         /// </summary>
-        /// <param name="pkt">The original NCOM packet object to copy.</param>
+        /// <param name="pkt">The original Ncom packet object to copy.</param>
         public NcomPacket(NcomPacket pkt)
         {
             if (pkt != null)
@@ -108,29 +108,29 @@ namespace NCOM
         public bool Checksum3 { get; protected set; } = false;
 
         /// <summary>
-        /// Gets the number of bytes of the marshalled NCOM packet, see 
+        /// Gets the number of bytes of the marshalled Ncom packet, see 
         /// <see cref="PACKET_LENGTH"/>.
         /// </summary>
         public int MarshalLength { get { return PACKET_LENGTH; } }
 
         /// <summary>
         /// <para>
-        /// Byte 21 of the NCOM packet is called the navigation status. The value of the navigation 
-        /// status byte is initially used to test the structure of the NCOM packet. If the value of the 
+        /// Byte 21 of the Ncom packet is called the navigation status. The value of the navigation 
+        /// status byte is initially used to test the structure of the Ncom packet. If the value of the 
         /// navigation status byte is 0, 1, 2, 3, 4, 5, 6, 7, 10, 20, 21 or 22 the packet format is 
-        /// NCOM structure-A, and can be decoded. Any other value indicates the packet should be 
+        /// Ncom structure-A, and can be decoded. Any other value indicates the packet should be 
         /// ignored.
         /// </para>
         /// <para>
         /// As well as revealing the packet structure, the navigation status byte also describes the 
         /// state of inertial navigation system (INS) and when the packet was created. In the case of 
-        /// asynchronous NCOM packets, the value of the navigation status byte can be used to identify 
+        /// asynchronous Ncom packets, the value of the navigation status byte can be used to identify 
         /// what triggered the packet.
         /// </para>
         /// <para>
         /// For structure-A packets checksum 1 (byte 22), which immediately follows the navigation 
         /// status byte, allows the measurements in Batch A, and the value of the navigation status 
-        /// byte, to be verified and used without waiting to receive the entire NCOM packet. This is 
+        /// byte, to be verified and used without waiting to receive the entire Ncom packet. This is 
         /// useful in time-critical applications receiving data over RS323 as the inertial measurements 
         /// can be used to updated other solutions with minimal latency.
         /// </para>
@@ -203,19 +203,19 @@ namespace NCOM
         }
 
         /// <summary>
-        /// Unmarshals the data stored in <paramref name="buffer"/> into this instance of an NCOM 
-        /// packet. If no marshalled NCOM packet can be found, false is returned.
+        /// Unmarshals the data stored in <paramref name="buffer"/> into this instance of an Ncom 
+        /// packet. If no marshalled Ncom packet can be found, false is returned.
         /// <para>
         /// If the first byte of the buffer is not <see cref="SYNC_BYTE"/> then the method will 
         /// look for the first occurance of the sync byte.
         /// </para>
         /// </summary>
-        /// <param name="buffer">The byte array containing the marshalled NCOM packet.</param>
+        /// <param name="buffer">The byte array containing the marshalled Ncom packet.</param>
         /// <param name="offset">
         /// The zero-based index indicating the location in the buffer to start looking for a sync 
         /// byte from.
         /// </param>
-        /// <returns>False if no marshalled NCOM packet can be found, otherwise true.</returns>
+        /// <returns>False if no marshalled Ncom packet can be found, otherwise true.</returns>
         public virtual bool Unmarshal(byte[] buffer, int offset)
         {
             // Seek the sync byte
@@ -246,7 +246,7 @@ namespace NCOM
         /* ---------- Protected methods -------------------------------------------------------/**/
 
         /// <summary>
-        /// Calculates the NCOM packet checksums. Note that the Sync byte is not included in any 
+        /// Calculates the Ncom packet checksums. Note that the Sync byte is not included in any 
         /// checksum calculations.
         /// </summary>
         /// <param name="buffer"></param>
@@ -254,7 +254,7 @@ namespace NCOM
         /// <param name="length"></param>
         /// <returns></returns>
         /// <remarks>
-        /// Checksums allow the integrity of the NCOM packet to be checked and intermediate 
+        /// Checksums allow the integrity of the Ncom packet to be checked and intermediate 
         /// checksums also allow check validity of data upto that point without having to wait for 
         /// the whole packet.
         /// </remarks>
@@ -279,11 +279,11 @@ namespace NCOM
         /// <see cref="Equals(object)"/>. When overriding the default equals method, override this 
         /// method instead.
         /// </summary>
-        /// <param name="pkt">The NCOM packet to check to</param>
+        /// <param name="pkt">The Ncom packet to check to</param>
         /// <returns></returns>
         /// <remarks>
         /// Note that this method does not implement any non-nullity checks. If there is the 
-        /// possiblity that NCOM packet argument could be null, then use the default 
+        /// possiblity that Ncom packet argument could be null, then use the default 
         /// <see cref="Equals(object)"/> method.
         /// </remarks>
         protected virtual bool IsEqual(NcomPacket pkt)

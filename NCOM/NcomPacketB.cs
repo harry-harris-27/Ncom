@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM
+namespace Ncom
 {
     /// <summary>
-    /// NCOM structure-B packets are not intended to be used by customers; they are used internally 
+    /// Ncom structure-B packets are not intended to be used by customers; they are used internally 
     /// by OxTS. They can be disabled over Ethernet by entering the following advanced command: 
-    /// <i>-udp_ncomx_0</i>.
+    /// <i>-udp_Ncomx_0</i>.
     /// </summary>
     public class NcomPacketB : NcomPacket
     {
@@ -57,11 +57,11 @@ namespace NCOM
         /// <see cref="Equals(object)" />. When overriding the default equals method, override this
         /// method instead.
         /// </summary>
-        /// <param name="pkt">The NCOM packet to check to</param>
+        /// <param name="pkt">The Ncom packet to check to</param>
         /// <returns></returns>
         /// <remarks>
         /// Note that this method does not implement any non-nullity checks. If there is the
-        /// possiblity that NCOM packet argument could be null, then use the default
+        /// possiblity that Ncom packet argument could be null, then use the default
         /// <see cref="Equals(object)" /> method.
         /// </remarks>
         protected override bool IsEqual(NcomPacket pkt)

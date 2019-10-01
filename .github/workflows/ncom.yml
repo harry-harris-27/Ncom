@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    name: Ncom
+    name: Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -15,7 +15,7 @@ jobs:
     - run: dotnet build src/
     
   unit_test:
-    name: Ncom Unit Test
+    name: Unit Tests
     needs: build
     runs-on: ubuntu-latest
     steps:

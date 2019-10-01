@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    
+    # Job name
+    name: Ncom
+  
+    # Runs on linux
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+          dotnet-version: '2.2.103'
+    - run: dotnet build src/Ncom.sln

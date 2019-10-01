@@ -39,7 +39,6 @@ namespace Ncom.Test
             0x00                                                // Checksum 3
         };
 
-
         [TestMethod()]
         public void TestEquals()
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Ncom.Test
 
         private static readonly Random random = new Random();
         private static readonly NcomPacketFactory factory = new NcomPacketFactory();
-        private static readonly byte[] sampleNcom = Properties.Resources.sample;
+        private static readonly byte[] sampleNcom = GetSampleNcom();
         private static readonly byte[] sampleNcomSingle = sampleNcom.Take(NcomPacket.PACKET_LENGTH).ToArray();
 
 
@@ -56,5 +57,18 @@ namespace Ncom.Test
             Assert.AreEqual(1, pkt.Count);
         }
 
+
+        private static byte[] GetSampleNcom()
+        {
+            var assembly = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Assembly;
+            Stream resource = assembly.GetManifestResourceStream("Ncom.Test.Resources.sample.ncom");
+            
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                resource.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+        
     }
 }

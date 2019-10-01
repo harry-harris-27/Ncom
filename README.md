@@ -1,4 +1,4 @@
-# NCOM.NET
+# Ncom
 
 [![Build Status](https://travis-ci.com/harry-harris-27/NCOM.NET.svg?branch=master)](https://travis-ci.com/harry-harris-27/NCOM.NET)
 
@@ -12,7 +12,7 @@ Note that this library is not complete:
 ## Code Example
 ### Decoding
 ```C#
-// Get NCOM data from somewhere. E.g. an UDP packet.
+// Get Ncom data from somewhere. E.g. an UDP packet.
 byte[] data;
 
 List<NcomPacket> pkts = new NcomPacketFactory().ProcessNcom(data, 0);

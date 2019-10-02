@@ -9,7 +9,7 @@ Note that this library is not currently complete.
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. Since this project is not complete and still under development, it should not be used as part of any deployment.
 
-To include this project as part of an existing solution, [download](/archive/master.zip) the repository and unzip. Now add the unzipped Ncom and Ncom.Test projects to your solution and add references as required.
+To include this project as part of an existing solution, [download](https://github.com/harry-harris-27/Ncom/master/archive/master.zip) the repository and unzip. Now add the unzipped Ncom and Ncom.Test projects to your solution and add references as required.
 
 Once a initial release of the library has been created, it is planned that a nuget package will be created.
 

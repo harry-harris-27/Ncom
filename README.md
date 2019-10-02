@@ -2,12 +2,16 @@
 
 [![Actions Status](https://github.com/harry-harris-27/Ncom/workflows/Ncom%20CI/badge.svg)](https://github.com/harry-harris-27/Ncom/actions)
 
-A small portable .NET library built for the encoding and decoding the [OxTS](https://www.oxts.com/) NCOM binary data packet. 
+A small portable .NET library built for encoding and decoding [OxTS](https://www.oxts.com/) NCOM binary data packets. 
 
-Note that this library is not complete:
-- [ ] Finish adding Status Channel Enumerations.
-- [ ] Finish implementing Status Channels.
-- [ ] Test thoroughly. :)
+Note that this library is not currently complete.
+
+## Getting Started
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. Since this project is not complete and still under development, it should not be used as part of any deployment.
+
+To include this project as part of an existing solution, [download](/harry-harris-27/Ncom/archive/master.zip) the repository and unzip. Now add the unzipped Ncom and Ncom.Test projects to your solution and add references as required.
+
+Once a initial release of the library has been created, it is planned that a nuget package will be created.
 
 ## Code Example
 ### Decoding
@@ -49,3 +53,11 @@ byte[] encoded = ncom.Marshal();
 // Now do want you want with marshalled NCOM data. E.g. send out in UDP packet.
 // ...
 ```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what changes you would like to make.
+
+Please make sure to update tests as appropriate.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

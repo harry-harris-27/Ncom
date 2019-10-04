@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Harry Harris</Authors>
+    <Company />
+    <PackageId>Ncom_harry_harris</PackageId>
+    <Product>NCOM</Product>
+    <Description>A small portable .NET library built for encoding and decoding OxTS NCOM binary data packets.</Description>
+    <PackageProjectUrl>https://github.com/harry-harris-27/Ncom</PackageProjectUrl>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\harry\source\repos\Ncom\src\Ncom\Ncom.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

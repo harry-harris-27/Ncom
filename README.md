@@ -2,9 +2,11 @@
 
 [![Actions Status](https://github.com/harry-harris-27/Ncom/workflows/Ncom%20CI/badge.svg)](https://github.com/harry-harris-27/Ncom/actions)
 
-A small portable .NET library built for encoding and decoding [OxTS](https://www.oxts.com/) NCOM binary data packets. 
+A small portable .NET library built for encoding and decoding [OxTS](https://www.oxts.com/) NCOM binary data packets. Note that this library is not currently complete.
 
-Note that this library is not currently complete.
+NCOM is a data format designed by OxTS for the efficient communication of navigation measurements and other data. It is a very compact format and only includes core measurements, which makes it particularly suitable for inertial navigation systems. For more information about the NCOM data packet, users should read OxTS's NCOM [manual](https://oxts.app.box.com/s/jovnqyj3lkcht2b2159jefzbt950j1n1).
+
+This library is designed to allow developers to create their own custom .NET applications for their specified needs. OxTS already provides a [NCOM library](https://github.com/OxfordTechnicalSolutions/NCOMdecoder), written in C.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. Since this project is not complete and still under development, it should not be used as part of any deployment.

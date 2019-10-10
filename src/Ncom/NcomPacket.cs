@@ -10,48 +10,32 @@ using System.Threading.Tasks;
 namespace Ncom
 {
     /// <summary>
-    /// <para>
-    /// Ncom is a data format designed by OxTS for the efficient communication of navigation 
-    /// measurements and other data. It is a very compact format and only includes core 
-    /// measurements, which makes it particularly suitable for inertial navigation systems.
-    /// </para>
-    /// <para>
-    /// The Ncom packet comprises 72 bytes that can be transmitted over Ethernet (port number 3000) 
-    /// or RS232 serial links. To increase efficiency, many of the data packets are sent as 24-bit 
-    /// sign integer words because 16-bit do not provide the range/precision required for many of 
-    /// the quantities, whereas 32-bit precision makes the packet much longer than required.
-    /// </para>
-    /// <para>
-    /// Two versions of the Ncom packet exist, referred to as Ncom structure-A and Ncom 
-    /// structure-B. Byte 21 of an Ncom packet - the navigation status byte, identifies which 
-    /// structure a packet employees. For implementations of each see <see cref="NcomPacketA"/> and 
-    /// <see cref="NcomPacketB"/> respectively.
-    /// </para>
+    /// Class that represents a single OxTS NCOM data packet.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// All words are sent in little-endian format (meaning "little-end first" or "least significant byte first" [LSB]), 
-    /// which is compatible with Intel microprocessors. A definition of word lengths is shown below:
+    /// Ncom is a data format designed by OxTS for the efficient communication of navigation
+    /// measurements and other data. It is a very compact format and only includes core
+    /// measurements, which makes it particularly suitable for inertial navigation systems.
     /// </para>
     /// <para>
-    ///     Byte (UByte)    =>      8-bit integer (unsigned)
-    ///     Short (UShort)  =>      16-bit integer (unsigned)
-    ///     Word (UWord)    =>      24-bit integer (unsigned)
-    ///     Long (ULong)    =>      32-bit integer (unsigned)
-    ///     Float           =>      32-bit IEEE 752 floating-point
-    ///     Double          =>      64-bit IEEE 754 floating-point
+    /// Two versions of the Ncom packet exist, referred to as Ncom structure-A and Ncom
+    /// structure-B. Byte 21 of an Ncom packet, the <see cref="NavigationStatus"/> byte, identifies 
+    /// which structure a packet employs. See <see cref="NcomPacketA" /> and 
+    /// <see cref="NcomPacketB" /> respectively.
     /// </para>
     /// </remarks>
-    /// <seealso cref="NcomPacketA"/>
-    /// <seealso cref="NcomPacketB"/>
+    /// <seealso cref="NcomPacketA" />
+    /// <seealso cref="NcomPacketB" />
     public abstract class NcomPacket
     {
 
-        /* ---------- Constants ---------------------------------------------------------------/**/
+        #region Constants
 
         /// <summary>
         /// <para>
-        /// The first-byte of an Ncom packet is the sync byte, which always has a value of 0xE7.
+        /// The first-byte of an Ncom packet is the sync byte, which always has a value of 
+        /// <c>0xE7</c>.
         /// </para>
         /// <para>
         /// Note the in order to reduce latency with RS232 serial transmissions, the sync character 
@@ -61,7 +45,7 @@ namespace Ncom
         /// guarantee the transmission timing of the packet.
         /// </para>
         /// <para>
-        /// Over Ethernet the sync character is transmitted as the first character of the UDP 
+        /// Over Ethernet the sync byte is transmitted as the first character of the UDP 
         /// packet.
         /// </para>
         /// </summary>
@@ -72,69 +56,73 @@ namespace Ncom
         /// </summary>
         public const int PACKET_LENGTH = 72;
 
+        #endregion
 
-        /* ---------- Private variables -------------------------------------------------------/**/
+        #region Private fields
 
 
+        #endregion
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
-        
+        #region Constructors
+
         /// <summary>
-        /// Copy constructor. Deeply copies the specified Ncom packet and returns a new instance.
-        /// If a null reference is passed, a default Ncom packet is returned.
+        /// Initializes a new instance of the <see cref="NcomPacket"/> class.
         /// </summary>
-        /// <param name="pkt">The original Ncom packet object to copy.</param>
-        public NcomPacket(NcomPacket pkt)
+        public NcomPacket() : this(null)
         {
-            if (pkt != null)
+
+        }
+
+        /// <summary>
+        /// Copy constructor. Initializes a new instance of the <see cref="NcomPacket"/> class,
+        /// logically equivalent to to the specified <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">
+        /// The source <see cref="NcomPacket"/> with which to initialise this instance.
+        /// </param>
+        public NcomPacket(NcomPacket source)
+        {
+            if (source != null)
             {
-                this.Checksum3 = pkt.Checksum3;
-                this.NavigationStatus = pkt.NavigationStatus;
+                this.Checksum3 = source.Checksum3;
+                this.NavigationStatus = source.NavigationStatus;
             }
         }
+
+        #endregion
 
 
         /* ---------- Properties --------------------------------------------------------------/**/
 
         /// <summary>
-        /// The final checksum that verifies the entire packet (bytes 1-70).
-        /// <para>
-        /// Note that this is set to <code>false</code> by default. Whenever
-        /// <see cref="Unmarshal(byte[], int)"/> is called, then this value is set to the validity 
-        /// of the packet. If set to false, then the packet's members should assume to be 
-        /// incorrect.
-        /// </para>
+        /// The final checksum that verifies the entire encoded Ncom packet (bytes 1-70). 
         /// </summary>
+        /// <remarks>
+        /// Note that this value is only set when an Ncom packet has been decoded using 
+        /// <see cref="Unmarshal(byte[], int)"/>. When <c>false</c>, one should assume that all the 
+        /// members of this instance are incorrect/unreliable.
+        /// </remarks>
         public bool Checksum3 { get; protected set; } = false;
 
         /// <summary>
-        /// Gets the number of bytes of the marshalled Ncom packet, see 
-        /// <see cref="PACKET_LENGTH"/>.
+        /// Gets the number of bytes of the marshalled Ncom packet, see <see cref="PACKET_LENGTH"/>.
         /// </summary>
         public int MarshalLength { get { return PACKET_LENGTH; } }
 
         /// <summary>
+        /// Gets or sets the value Navigation Status byte.
+        /// </summary>
+        /// <remarks>
         /// <para>
-        /// Byte 21 of the Ncom packet is called the navigation status. The value of the navigation 
-        /// status byte is initially used to test the structure of the Ncom packet. If the value of the 
-        /// navigation status byte is 0, 1, 2, 3, 4, 5, 6, 7, 10, 20, 21 or 22 the packet format is 
-        /// Ncom structure-A, and can be decoded. Any other value indicates the packet should be 
-        /// ignored.
-        /// </para>
-        /// <para>
+        /// The value of this status byte is initially used to the structure of the encoded packet 
+        /// (see <see cref="NcomPacketA"/> and <see cref="NcomPacketB"/>).
+        /// </para><para>
         /// As well as revealing the packet structure, the navigation status byte also describes the 
         /// state of inertial navigation system (INS) and when the packet was created. In the case of 
         /// asynchronous Ncom packets, the value of the navigation status byte can be used to identify 
         /// what triggered the packet.
         /// </para>
-        /// <para>
-        /// For structure-A packets checksum 1 (byte 22), which immediately follows the navigation 
-        /// status byte, allows the measurements in Batch A, and the value of the navigation status 
-        /// byte, to be verified and used without waiting to receive the entire Ncom packet. This is 
-        /// useful in time-critical applications receiving data over RS323 as the inertial measurements 
-        /// can be used to updated other solutions with minimal latency.
-        /// </para>
-        /// </summary>
+        /// </remarks>
         public NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
 
 
@@ -148,6 +136,11 @@ namespace Ncom
         /// <c>true</c> if the specified object is equal to the current object; otherwise 
         /// <c>false</c>.
         /// </returns>
+        /// <remarks>
+        /// This method tests object nullity, type and reference before testing equivalence. For a 
+        /// pure equivalence test, use <see cref="IsEqual(NcomPacket)"/>.
+        /// </remarks>
+        /// <seealso cref="IsEqual(NcomPacket)"/>
         public override bool Equals(object value)
         {
             // Is it null?
@@ -184,9 +177,12 @@ namespace Ncom
         }
 
         /// <summary>
-        /// Marshals the data into a byte array of length <see cref="PACKET_LENGTH"/>.
+        /// Marshals this <see cref="NcomPacket"/> into a byte array of length 
+        /// <see cref="MarshalLength"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="byte"/> array of length equal to <see cref="MarshalLength"/>.
+        /// </returns>
         public virtual byte[] Marshal()
         {
             // Create an array of required length
@@ -203,21 +199,45 @@ namespace Ncom
         }
 
         /// <summary>
-        /// Unmarshals the data stored in <paramref name="buffer"/> into this instance of an Ncom 
-        /// packet. If no marshalled Ncom packet can be found, false is returned.
-        /// <para>
-        /// If the first byte of the buffer is not <see cref="SYNC_BYTE"/> then the method will 
-        /// look for the first occurance of the sync byte.
-        /// </para>
+        /// Unmarshals the data stored in the specified <paramref name="buffer"/> into this 
+        /// <see cref="NcomPacket"/>. If no marshalled Ncom packet can be found, 
+        /// <see langword="false"/> is returned.
         /// </summary>
         /// <param name="buffer">The byte array containing the marshalled Ncom packet.</param>
         /// <param name="offset">
         /// The zero-based index indicating the location in the buffer to start looking for a sync 
         /// byte from.
         /// </param>
-        /// <returns>False if no marshalled Ncom packet can be found, otherwise true.</returns>
+        /// <returns>
+        /// <see langword="false"/> if no marshalled Ncom packet can be found, otherwise 
+        /// <see langword="true"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// When the <paramref name="buffer"/> is null.
+        /// </exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// When the <paramref name="offset"/> is less than <c>0</c>.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// If the first byte of the buffer is not <see cref="SYNC_BYTE"/> then the method will look
+        /// for the first occurance of the sync byte.
+        /// </para>
+        /// <para>
+        /// The <paramref name="offset"/> can be greater than the length of the 
+        /// <paramref name="buffer"/> without throwing an exception, returning 
+        /// <see langword="false"/>. This allows for easy unmarshalling of multiple consecutive 
+        /// packets, e.g. <see langword="while" /> loops.
+        /// </para>
+        /// </remarks>
         public virtual bool Unmarshal(byte[] buffer, int offset)
         {
+            // Check that the buffer is not null
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+
+            // Check that the offset is in the expected range
+            if (offset < 0) throw new IndexOutOfRangeException("Offset in buffer can not be less than zero");
+
             // Seek the sync byte
             while (offset <= buffer.Length - PACKET_LENGTH)
             {

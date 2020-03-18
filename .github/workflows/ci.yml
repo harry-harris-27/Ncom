@@ -23,4 +23,4 @@ jobs:
       run: dotnet build src/Ncom/ --configuration Release 
     
     - name: Unit Tests
-      run: dotnet test src/NCOM.Tests/
+      run: dotnet test src/Ncom.Tests/

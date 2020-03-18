@@ -44,27 +44,16 @@ namespace Ncom
         /// structures like a hash table. 
         /// </returns>
         /// <remarks>
-        /// The hash code generation process ignores the <see cref="Checksum3" /> property, since it
-        /// is not used when testing for equality.
+        /// The hash code generation process ignores the <see cref="NcomPacket.Checksum3" /> property, 
+        /// since it is not used when testing for equality.
         /// </remarks>
         public override int GetHashCode() => base.GetHashCode();
 
 
         /* ---------- Protected Methods -------------------------------------------------------/**/
 
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine type and null checks in
-        /// <see cref="Equals(object)" />. When overriding the default equals method, override this
-        /// method instead.
-        /// </summary>
-        /// <param name="pkt">The Ncom packet to check to</param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Note that this method does not implement any non-nullity checks. If there is the
-        /// possiblity that Ncom packet argument could be null, then use the default
-        /// <see cref="Equals(object)" /> method.
-        /// </remarks>
-        protected override bool IsEqual(NcomPacket pkt)
+        /// <inheritdoc />
+        protected internal bool IsEqual(NcomPacket pkt)
         {
             return base.IsEqual(pkt);
         }

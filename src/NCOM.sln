@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ncom", "Ncom\Ncom.csproj", "{8495A62F-94CA-40D8-8209-92D07834C9F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ncom", "Ncom\Ncom.csproj", "{8495A62F-94CA-40D8-8209-92D07834C9F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ncom.Test", "Ncom.Test\Ncom.Test.csproj", "{062D243E-F80F-4F82-8154-3258AFA421FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ncom.Tests", "Ncom.Tests\Ncom.Tests.csproj", "{062D243E-F80F-4F82-8154-3258AFA421FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

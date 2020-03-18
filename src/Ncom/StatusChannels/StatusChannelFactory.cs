@@ -29,7 +29,7 @@ namespace Ncom.StatusChannels
         public static StatusChannel ProcessStatusChannel(byte[] buffer, int offset = 0)
         {
             // Check the length of the available part of the buffer
-            if (buffer.Length - offset < StatusChannel.STATUS_CHANNEL_LENGTH)
+            if (buffer.Length - offset < StatusChannel.StatusChannelLength)
             {
                 throw new ArgumentException("Buffer is smaller than required");
             }

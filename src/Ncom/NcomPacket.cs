@@ -2,6 +2,7 @@
 using Ncom.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Ncom
 {
     /// <summary>
-    /// Class that represents a single OxTS NCOM data packet.
+    /// Represents a single OxTS NCOM data packet.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -19,7 +20,7 @@ namespace Ncom
     /// measurements, which makes it particularly suitable for inertial navigation systems.
     /// </para>
     /// <para>
-    /// Two versions of the Ncom packet exist, referred to as Ncom structure-A and Ncom
+    /// Two versions of the NCOM packet exist, referred to as NCOM structure-A and NCOM
     /// structure-B. Byte 21 of an Ncom packet, the <see cref="NavigationStatus"/> byte, identifies 
     /// which structure a packet employs. See <see cref="NcomPacketA" /> and 
     /// <see cref="NcomPacketB" /> respectively.
@@ -34,7 +35,7 @@ namespace Ncom
 
         /// <summary>
         /// <para>
-        /// The first-byte of an Ncom packet is the sync byte, which always has a value of 
+        /// The first-byte of an NCOM packet is the sync byte, which always has a value of 
         /// <c>0xE7</c>.
         /// </para>
         /// <para>
@@ -49,12 +50,12 @@ namespace Ncom
         /// packet.
         /// </para>
         /// </summary>
-        public const byte SYNC_BYTE = 0xE7;
+        public const byte SyncByte = 0xE7;
 
         /// <summary>
-        /// The length of a marshalled Ncom packet.
+        /// The length of a marshalled NCOM packet.
         /// </summary>
-        public const int PACKET_LENGTH = 72;
+        public const int PacketLength = 72;
 
         #endregion
 
@@ -95,19 +96,14 @@ namespace Ncom
         /* ---------- Properties --------------------------------------------------------------/**/
 
         /// <summary>
-        /// The final checksum that verifies the entire encoded Ncom packet (bytes 1-70). 
+        /// The final checksum that verifies the entire encoded NCOM packet (bytes 1-70). 
         /// </summary>
         /// <remarks>
-        /// Note that this value is only set when an Ncom packet has been decoded using 
+        /// Note that this value is only set when an NCOM packet has been decoded using 
         /// <see cref="Unmarshal(byte[], int)"/>. When <c>false</c>, one should assume that all the 
         /// members of this instance are incorrect/unreliable.
         /// </remarks>
         public bool Checksum3 { get; protected set; } = false;
-
-        /// <summary>
-        /// Gets the number of bytes of the marshalled Ncom packet, see <see cref="PACKET_LENGTH"/>.
-        /// </summary>
-        public int MarshalLength { get { return PACKET_LENGTH; } }
 
         /// <summary>
         /// Gets or sets the value Navigation Status byte.
@@ -119,7 +115,7 @@ namespace Ncom
         /// </para><para>
         /// As well as revealing the packet structure, the navigation status byte also describes the 
         /// state of inertial navigation system (INS) and when the packet was created. In the case of 
-        /// asynchronous Ncom packets, the value of the navigation status byte can be used to identify 
+        /// asynchronous NCOM packets, the value of the navigation status byte can be used to identify 
         /// what triggered the packet.
         /// </para>
         /// </remarks>
@@ -178,18 +174,18 @@ namespace Ncom
 
         /// <summary>
         /// Marshals this <see cref="NcomPacket"/> into a byte array of length 
-        /// <see cref="MarshalLength"/>.
+        /// <see cref="PacketLength"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="byte"/> array of length equal to <see cref="MarshalLength"/>.
+        /// A <see cref="byte"/> array of length equal to <see cref="PacketLength"/>.
         /// </returns>
         public virtual byte[] Marshal()
         {
             // Create an array of required length
-            byte[] buffer = new byte[PACKET_LENGTH];
+            byte[] buffer = new byte[PacketLength];
 
             // Add the Sync byte
-            buffer[0] = SYNC_BYTE;
+            buffer[0] = SyncByte;
 
             // Add the Navigation status byte to the buffer
             buffer[21] = (byte)NavigationStatus;
@@ -200,16 +196,16 @@ namespace Ncom
 
         /// <summary>
         /// Unmarshals the data stored in the specified <paramref name="buffer"/> into this 
-        /// <see cref="NcomPacket"/>. If no marshalled Ncom packet can be found, 
+        /// <see cref="NcomPacket"/>. If no marshalled NCOM packet can be found, 
         /// <see langword="false"/> is returned.
         /// </summary>
-        /// <param name="buffer">The byte array containing the marshalled Ncom packet.</param>
+        /// <param name="buffer">The byte array containing the marshalled NCOM packet.</param>
         /// <param name="offset">
         /// The zero-based index indicating the location in the buffer to start looking for a sync 
         /// byte from.
         /// </param>
         /// <returns>
-        /// <see langword="false"/> if no marshalled Ncom packet can be found, otherwise 
+        /// <see langword="false"/> if no marshalled NCOM packet can be found, otherwise 
         /// <see langword="true"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -220,7 +216,7 @@ namespace Ncom
         /// </exception>
         /// <remarks>
         /// <para>
-        /// If the first byte of the buffer is not <see cref="SYNC_BYTE"/> then the method will look
+        /// If the first byte of the buffer is not <see cref="SyncByte"/> then the method will look
         /// for the first occurance of the sync byte.
         /// </para>
         /// <para>
@@ -239,10 +235,10 @@ namespace Ncom
             if (offset < 0) throw new IndexOutOfRangeException("Offset in buffer can not be less than zero");
 
             // Seek the sync byte
-            while (offset <= buffer.Length - PACKET_LENGTH)
+            while (offset <= buffer.Length - PacketLength)
             {
                 // Have we found the sync byte?
-                if (buffer[offset++] == SYNC_BYTE)
+                if (buffer[offset++] == SyncByte)
                 {
                     // packet found. offset now points to [1]
 
@@ -251,7 +247,7 @@ namespace Ncom
                     NavigationStatus = (NavigationStatus)buffer[offset + 20];
 
                     // Calculate Checksum 3
-                    Checksum3 = CalculateChecksum(buffer, offset, 70) == buffer[offset + PACKET_LENGTH - 2];
+                    Checksum3 = CalculateChecksum(buffer, offset, 70) == buffer[offset + PacketLength - 2];
 
                     // Unmarshalled OK, return true
                     return true;
@@ -263,10 +259,10 @@ namespace Ncom
         }
 
 
-        /* ---------- Protected methods -------------------------------------------------------/**/
+        /* ---------- Internal methods ---------------------------------------------------------/**/
 
         /// <summary>
-        /// Calculates the Ncom packet checksums. Note that the Sync byte is not included in any 
+        /// Calculates the NCOM packet checksums. Note that the Sync byte is not included in any 
         /// checksum calculations.
         /// </summary>
         /// <param name="buffer"></param>
@@ -274,11 +270,11 @@ namespace Ncom
         /// <param name="length"></param>
         /// <returns></returns>
         /// <remarks>
-        /// Checksums allow the integrity of the Ncom packet to be checked and intermediate 
+        /// Checksums allow the integrity of the NCOM packet to be checked and intermediate 
         /// checksums also allow check validity of data upto that point without having to wait for 
         /// the whole packet.
         /// </remarks>
-        protected static byte CalculateChecksum(byte[] buffer, int offset, int length)
+        internal static byte CalculateChecksum(byte[] buffer, int offset, int length)
         {
             byte cs = 0;
 
@@ -293,20 +289,20 @@ namespace Ncom
 
             return cs;
         }
-        
+
         /// <summary>
         /// A pure implementation of value equality that avoids the routine type and null checks in 
         /// <see cref="Equals(object)"/>. When overriding the default equals method, override this 
         /// method instead.
         /// </summary>
-        /// <param name="pkt">The Ncom packet to check to</param>
+        /// <param name="pkt">The NCOM packet to check to</param>
         /// <returns></returns>
         /// <remarks>
         /// Note that this method does not implement any non-nullity checks. If there is the 
         /// possiblity that Ncom packet argument could be null, then use the default 
         /// <see cref="Equals(object)"/> method.
         /// </remarks>
-        protected virtual bool IsEqual(NcomPacket pkt)
+        internal virtual bool IsEqual(NcomPacket pkt)
         {
             return this.NavigationStatus == pkt.NavigationStatus;
         }

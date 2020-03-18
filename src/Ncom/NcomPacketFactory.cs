@@ -21,10 +21,10 @@ namespace Ncom
 
             // Iterate over the buffer to find sync bytes
             int p = 0;
-            while (p <= buffer.Length - NcomPacket.PACKET_LENGTH)
+            while (p <= buffer.Length - NcomPacket.PacketLength)
             {
                 // Have we found a sync byte?
-                if (buffer[p++] == NcomPacket.SYNC_BYTE)
+                if (buffer[p++] == NcomPacket.SyncByte)
                 { 
                     // Test the navigation status byte (byte 21). If it is 11, parse as structure B, else 
                     // structure A.
@@ -41,7 +41,7 @@ namespace Ncom
                     if (pkt.Unmarshal(buffer, p - 1))
                     {
                         pkts.Add(pkt);
-                        p += NcomPacket.PACKET_LENGTH - 1;
+                        p += NcomPacket.PacketLength - 1;
                     }
                 }
             }

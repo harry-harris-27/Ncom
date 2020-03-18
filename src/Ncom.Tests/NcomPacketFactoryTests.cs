@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom.Test
+namespace Ncom.Tests
 {
     [TestClass()]
     public class NcomPacketFactoryTests
@@ -15,7 +15,7 @@ namespace Ncom.Test
         private static readonly Random random = new Random();
         private static readonly NcomPacketFactory factory = new NcomPacketFactory();
         private static readonly byte[] sampleNcom = GetSampleNcom();
-        private static readonly byte[] sampleNcomSingle = sampleNcom.Take(NcomPacket.PACKET_LENGTH).ToArray();
+        private static readonly byte[] sampleNcomSingle = sampleNcom.Take(NcomPacket.PacketLength).ToArray();
 
 
         [TestMethod()]
@@ -24,7 +24,7 @@ namespace Ncom.Test
             // Parse the sample ncom
             List<NcomPacket> ncomPackets = factory.ProcessNcom(sampleNcom);
 
-            Assert.AreEqual(sampleNcom.Length / NcomPacket.PACKET_LENGTH, ncomPackets.Count);
+            Assert.AreEqual(sampleNcom.Length / NcomPacket.PacketLength, ncomPackets.Count);
         }
 
         [TestMethod()]
@@ -38,12 +38,12 @@ namespace Ncom.Test
             for (int i = 0; i < preamble.Length; i++)
             {
                 preamble[i] = (byte)random.Next(0, 0xFF);
-                if (preamble[i] == NcomPacket.SYNC_BYTE) i--;
+                if (preamble[i] == NcomPacket.SyncByte) i--;
             }
             for (int i = 0; i < postamble.Length; i++)
             {
                 postamble[i] = (byte)random.Next(0, 0xFF);
-                if (postamble[i] == NcomPacket.SYNC_BYTE) i--;
+                if (postamble[i] == NcomPacket.SyncByte) i--;
             }
 
             // Create array with a hidden NCOM packet
@@ -61,7 +61,7 @@ namespace Ncom.Test
         private static byte[] GetSampleNcom()
         {
             var assembly = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Assembly;
-            Stream resource = assembly.GetManifestResourceStream("Ncom.Test.Resources.sample.ncom");
+            Stream resource = assembly.GetManifestResourceStream("Ncom.Tests.Resources.sample.ncom");
             
             using (MemoryStream memoryStream = new MemoryStream())
             {

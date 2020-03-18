@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom.Test
+namespace Ncom.Tests
 {
     [TestClass()]
     public class NcomPacketATests

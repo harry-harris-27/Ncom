@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '3.1.100'
         
     - name: Build with dotnet
-    - run: dotnet build --configuration Release src/NCOM
+      run: dotnet build --configuration Release src/NCOM
     
     - name: Unit Tests
-    - run: dotnet test src/NCOM.Tests/
+      run: dotnet test src/NCOM.Tests/

@@ -20,7 +20,19 @@ jobs:
         dotnet-version: '2.0'
         
     - name: Build with dotnet
-      run: dotnet build src/Ncom/ --configuration Release 
+      run: dotnet build ./src/Ncom/ --configuration Release 
     
-    - name: Unit Tests
-      run: dotnet test src/Ncom.Tests/
+    - name: Generate coverage report
+      run: dotnet test ./src/ /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      
+    - name: Publish coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./src/Ncom.Tests/TestResults/coverage.info
+        
+    - name: Publish package
+      run: |
+        cd ./src/
+        dotnet publish -c=Release
+        # deploy...

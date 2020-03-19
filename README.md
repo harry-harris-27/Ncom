@@ -1,6 +1,7 @@
 # Ncom
 
 [![Actions Status](https://github.com/harry-harris-27/Ncom/workflows/Ncom%20CI/badge.svg)](https://github.com/harry-harris-27/Ncom/actions)
+[![Coverage Status](https://coveralls.io/repos/github/harry-harris-27/Ncom/badge.svg?branch=master)](https://coveralls.io/github/harry-harris-27/Ncom?branch=master)
 
 A small portable .NET library built for encoding and decoding [OxTS](https://www.oxts.com/) NCOM binary data packets. Note that this library is not currently complete.
 

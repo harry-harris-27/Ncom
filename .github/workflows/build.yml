@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
         
 jobs:
   build:
-    name: CI
+    name: Build
     runs-on: ubuntu-latest
     
     steps:
@@ -21,12 +21,3 @@ jobs:
         
     - name: Build with dotnet
       run: dotnet build ./src/Ncom/ --configuration Release 
-    
-    - name: Run tests
-      run: dotnet test ./src/ 
-      
-    - name: Publish package
-      run: |
-        cd ./src/
-        dotnet publish -c=Release
-        # deploy...

@@ -21,3 +21,12 @@ jobs:
         
     - name: Build with dotnet
       run: dotnet build ./src/Ncom/ --configuration Release 
+      
+    - name: Run tests and generate reports
+      run: dotnet test ./src/ /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      
+    - name: Publish coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./src/Ncom.Tests/TestResults/coverage.info

@@ -1,4 +1,4 @@
-﻿namespace Ncom.Enumerations
+﻿namespace NCOM.Enumerations
 {
     /// <summary>
     /// 

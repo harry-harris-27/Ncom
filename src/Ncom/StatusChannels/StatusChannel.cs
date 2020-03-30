@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom.StatusChannels
+namespace NCOM.StatusChannels
 {
     /// <summary>
     /// Bytes 63 to 70 of an Ncom structure-A packet are collectively call Batch S. Batch S 

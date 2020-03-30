@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom
+namespace NCOM
 {
     /// <summary>
     /// Ncom structure-B packets are not intended to be used by customers; they are used internally 

@@ -1,13 +1,13 @@
-﻿using Ncom.Enumerations;
-using Ncom.StatusChannels;
-using Ncom.Utilities;
+﻿using NCOM.Enumerations;
+using NCOM.StatusChannels;
+using NCOM.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom
+namespace NCOM
 {
     /// <summary>
     /// Represents a single OxTS NCOM structure-A packet.

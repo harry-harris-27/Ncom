@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Ncom.StatusChannels;
+using NCOM.StatusChannels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom.Tests
+namespace NCOM.Tests
 {
     [TestClass()]
     public class NcomPacketATests

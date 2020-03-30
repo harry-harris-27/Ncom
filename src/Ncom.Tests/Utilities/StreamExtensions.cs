@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Ncom.Tests.Utilities
+namespace NCOM.Tests.Utilities
 {
     internal static class StreamExtensions
     {

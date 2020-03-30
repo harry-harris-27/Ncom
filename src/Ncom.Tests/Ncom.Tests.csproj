@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ncom\Ncom.csproj" />
+    <ProjectReference Include="..\NCOM\NCOM.csproj" />
   </ItemGroup>
 
   <ItemGroup>

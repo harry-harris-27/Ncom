@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ncom.StatusChannels
+namespace NCOM.StatusChannels
 {
     /// <summary>
     /// Position accuracy.

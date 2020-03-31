@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.StatusChannels
+namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Internal information about primary GNSS receiver. 

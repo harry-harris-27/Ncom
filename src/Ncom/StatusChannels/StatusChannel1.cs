@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.StatusChannels
+namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Kalman filter innovations set 1 (position, velocity, attitude). 

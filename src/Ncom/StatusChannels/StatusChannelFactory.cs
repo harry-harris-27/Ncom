@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.StatusChannels
+namespace Ncom.StatusChannels
 {
     public static class StatusChannelFactory
     { 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.Utilities
+namespace Ncom.Utilities
 {
     internal static class EnumParser
     {

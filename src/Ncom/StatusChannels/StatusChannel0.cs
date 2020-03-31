@@ -1,12 +1,12 @@
-﻿using NCOM.Enumerations;
-using NCOM.Utilities;
+﻿using Ncom.Enumerations;
+using Ncom.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM.StatusChannels
+namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Full time, number of satellites, position mode, velocity mode, dual antenna mode. 

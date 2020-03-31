@@ -1,5 +1,5 @@
-﻿using NCOM.Enumerations;
-using NCOM.Utilities;
+﻿using Ncom.Enumerations;
+using Ncom.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCOM
+namespace Ncom
 {
     /// <summary>
     /// Represents a single OxTS NCOM data packet.

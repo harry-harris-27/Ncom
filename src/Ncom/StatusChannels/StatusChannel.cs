@@ -87,6 +87,11 @@ namespace Ncom.StatusChannels
 
         public virtual bool Unmarshal(byte[] buffer, int offset)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
             if (offset + StatusChannelLength > buffer.Length) return false;
 
             // Status byte
@@ -100,11 +105,12 @@ namespace Ncom.StatusChannels
 
         /// <summary>
         /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="Equals(object)"/>.
+        /// <see cref="object.Equals(object)"/>.
         /// To override the default equals method, override this method instead.
         /// </summary>
         /// <param name="pkt"></param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
         protected virtual bool IsEqual(StatusChannel pkt)
         {
             return this.StatusChannelByte == pkt.StatusChannelByte;

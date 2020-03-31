@@ -28,6 +28,11 @@ namespace Ncom.StatusChannels
 
         public static StatusChannel ProcessStatusChannel(byte[] buffer, int offset = 0)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
             // Check the length of the available part of the buffer
             if (buffer.Length - offset < StatusChannel.StatusChannelLength)
             {

@@ -15,6 +15,11 @@ namespace Ncom
 
         public virtual List<NcomPacket> ProcessNcom(byte[] buffer)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
             // Create a list to store packets in
             List<NcomPacket> pkts = new List<NcomPacket>();
             NcomPacket pkt;

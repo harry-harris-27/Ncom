@@ -31,8 +31,6 @@ namespace Ncom
     public abstract class NcomPacket
     {
 
-        #region Constants
-
         /// <summary>
         /// <para>
         /// The first-byte of an NCOM packet is the sync byte, which always has a value of 
@@ -57,14 +55,6 @@ namespace Ncom
         /// </summary>
         public const int PacketLength = 72;
 
-        #endregion
-
-        #region Private fields
-
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacket"/> class.
@@ -90,10 +80,6 @@ namespace Ncom
             }
         }
 
-        #endregion
-
-
-        /* ---------- Properties --------------------------------------------------------------/**/
 
         /// <summary>
         /// The final checksum that verifies the entire encoded NCOM packet (bytes 1-70). 
@@ -121,8 +107,6 @@ namespace Ncom
         /// </remarks>
         public NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
 
-
-        /* ---------- Public methods ----------------------------------------------------------/**/
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -259,8 +243,6 @@ namespace Ncom
         }
 
 
-        /* ---------- Internal methods ---------------------------------------------------------/**/
-
         /// <summary>
         /// Calculates the NCOM packet checksums. Note that the Sync byte is not included in any 
         /// checksum calculations.
@@ -274,8 +256,13 @@ namespace Ncom
         /// checksums also allow check validity of data upto that point without having to wait for 
         /// the whole packet.
         /// </remarks>
-        internal static byte CalculateChecksum(byte[] buffer, int offset, int length)
+        protected static byte CalculateChecksum(byte[] buffer, int offset, int length)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
             byte cs = 0;
 
             unchecked
@@ -292,7 +279,7 @@ namespace Ncom
 
         /// <summary>
         /// A pure implementation of value equality that avoids the routine type and null checks in 
-        /// <see cref="Equals(object)"/>. When overriding the default equals method, override this 
+        /// <see cref="object.Equals(object)"/>. When overriding the default equals method, override this 
         /// method instead.
         /// </summary>
         /// <param name="pkt">The NCOM packet to check to</param>
@@ -300,9 +287,10 @@ namespace Ncom
         /// <remarks>
         /// Note that this method does not implement any non-nullity checks. If there is the 
         /// possiblity that Ncom packet argument could be null, then use the default 
-        /// <see cref="Equals(object)"/> method.
+        /// <see cref="object.Equals(object)"/> method.
         /// </remarks>
-        internal virtual bool IsEqual(NcomPacket pkt)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
+        protected virtual bool IsEqual(NcomPacket pkt)
         {
             return this.NavigationStatus == pkt.NavigationStatus;
         }

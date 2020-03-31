@@ -552,8 +552,8 @@ namespace Ncom
 
         /* ---------- Internal methods ---------------------------------------------------------/**/
 
-        /// <inheritdoc />
-        internal override bool IsEqual(NcomPacket _pkt)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
+        protected override bool IsEqual(NcomPacket _pkt)
         {
             NcomPacketA pkt = _pkt as NcomPacketA;
 

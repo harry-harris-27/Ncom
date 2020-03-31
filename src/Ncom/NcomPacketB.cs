@@ -14,8 +14,6 @@ namespace Ncom
     public class NcomPacketB : NcomPacket
     {
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacketB"/> class.
         /// </summary>
@@ -34,8 +32,6 @@ namespace Ncom
         }
 
 
-        /* ---------- Public Methods ----------------------------------------------------------/**/
-
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -50,10 +46,8 @@ namespace Ncom
         public override int GetHashCode() => base.GetHashCode();
 
 
-        /* ---------- Protected Methods -------------------------------------------------------/**/
-
-        /// <inheritdoc />
-        protected internal bool IsEqual(NcomPacket pkt)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
+        protected override bool IsEqual(NcomPacket pkt)
         {
             return base.IsEqual(pkt);
         }

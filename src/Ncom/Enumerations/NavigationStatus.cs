@@ -67,7 +67,6 @@
 
         /// <summary>
         /// Expired firmware: this is output if the firmware is time limited and the expiry time has passed. 
-        /// </para>
         /// </summary>
         ExpiredFirmware = 6,
 
@@ -108,7 +107,9 @@
         TriggerPacketWhileInitialising = 20,
 
         /// <summary>
-        /// Trigger packet while “locking” (see <see cref="NavigationStatus.Locking"/ >for more details). 
+        /// Trigger packet while "locking" (see <see cref="NavigationStatus.Locking"/> for more details). 
+        /// </summary>
+        /// <remarks>
         /// <para>
         /// The Status channel (byte 62) will have a value of 24 (falling trigger), 43 (rising trigger), 65 (output 
         /// trigger), 79 (falling trigger 2), 80 (rising trigger 2) or 81 (output trigger 2), depending on what 
@@ -118,11 +119,13 @@
         /// This packet is generated following a short variable delay (less than 0.02 s) after the corresponding 
         /// navigation data output. The Time output is that of the trigger event. 
         /// </para>
-        /// </summary>
+        /// </remarks>
         TriggerPacketWhileLocking = 21,
 
         /// <summary>
-        /// Trigger packet while “locked” (see <see cref="NavigationStatus.Locked"/> for more details). 
+        /// Trigger packet while "locked" (see <see cref="NavigationStatus.Locked"/> for more details). 
+        /// </summary>
+        /// <remarks>
         /// <para>
         /// The Status channel (byte 62) will have a value of 24 (falling trigger), 43 (rising trigger), 65 (output 
         /// trigger), 79 (falling trigger 2), 80 (rising trigger 2) or 81 (output trigger 2), depending on what
@@ -133,11 +136,9 @@
         /// navigation data output. The Time output is that of the trigger event. The latency of the trigger output 
         /// is variable (by up to 0.02 s) due to the short variable delay. 
         /// </para>
-        /// </summary>
+        /// </remarks>
         TriggerPacketWhileLocked = 22,
 
-
         Unknown = 255
-
     }
 }

@@ -25,8 +25,8 @@ byte[] data;
 List<NcomPacket> pkts = new NcomPacketFactory().ProcessNcom(data, 0);
 foreach (NcomPacket pkt in pkts)
 {
-    NcomPacketA ncomData = pkt as NcomPacketA;  // Check that decoded packet was of type Structure-A.
-    if (ncomData != null)
+    // Check that decoded packet was of type Structure-A.
+    if (pkt is NcomPacketA ncomData)
     {
         // Here we have our decoded NCOM data.
         // ...
@@ -38,7 +38,7 @@ or
 // Decoding a single NCOM packet
 NcomPacketA pkt = new NcomPacketA();
 
-// Get NCOM data from somewhere
+// Get NCOM data from somewhere...
 byte[] data;
 
 // Decode

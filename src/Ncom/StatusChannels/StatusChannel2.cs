@@ -1,55 +1,79 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Internal information about primary GNSS receiver. 
     /// </summary>
+    /// <remarks>
+    /// These counters are cyclic and will wrap when they exceed the limit of the format used.
+    /// </remarks>
     public class StatusChannel2 : StatusChannel
     {
 
-        /* ---------- Constants ---------------------------------------------------------------/**/
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel2"/> instance.
+        /// </summary>
+        public StatusChannel2() { }
 
-
-        /* ---------- Constructors ------------------------------------------------------------/**/
-
-        public StatusChannel2() : base(2)
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel2"/> instance that is logically equal to 
+        /// specifed <paramref name="source"/> instance.
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel2"/> instance to copy.</param>
+        public StatusChannel2(StatusChannel2 source)
         {
-
+            Copy(source);
         }
 
 
-        /* ---------- Properties --------------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override byte StatusChannelByte { get; } = 2;
 
         /// <summary>
-        /// Characters received from the primary GNSS receiver by the navigation computer. 
+        /// Gets or sets the characters received from the primary GNSS receiver by the navigation 
+        /// computer. 
         /// </summary>
         public ushort PrimaryGNSSReceiverCharacters { get; set; }
 
         /// <summary>
-        /// Packets received from the primary GNSS receiver by the navigation computer.
+        /// Gets or sets the number of packets received from the primary GNSS receiver by the 
+        /// navigation computer.
         /// </summary>
         public ushort PrimaryGNSSReceiverPackets { get; set; }
 
         /// <summary>
-        /// Characters received from the primary GNSS receiver by the navigation computer, but not 
-        /// understood by the decoder.
+        /// Gets or sets the characters received from the primary GNSS receiver by the navigation 
+        /// computer, but not understood by the decoder.
         /// </summary>
         public ushort PrimaryGNSSReceiverCharactersNotUnderstood { get; set; }
 
         /// <summary>
-        /// Packets received from the primary GNSS receiver by the navigation computer that could 
-        /// not be used to update the Kalman filter (e.g. too old).
+        /// Gets or sets the number of packets received from the primary GNSS receiver by the 
+        /// navigation computer that could not be used to update the Kalman filter (e.g. too old).
         /// </summary>
         public ushort PrimaryGNSSReceiverPacketsNotUsed { get; set; }
 
 
-        /* ---------- Public Methods ----------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override IStatusChannel Clone() => new StatusChannel2(this);
 
+        /// <summary>
+        /// Sets this <see cref="StatusChannel2"/> instance logically equal to the specified 
+        /// <paramref name="source"/> instance
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel2"/> instance to copy.</param>
+        public void Copy(StatusChannel2 source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            this.PrimaryGNSSReceiverCharacters = source.PrimaryGNSSReceiverCharacters;
+            this.PrimaryGNSSReceiverPackets = source.PrimaryGNSSReceiverPackets;
+            this.PrimaryGNSSReceiverCharactersNotUnderstood = source.PrimaryGNSSReceiverCharactersNotUnderstood;
+            this.PrimaryGNSSReceiverPacketsNotUsed = source.PrimaryGNSSReceiverPacketsNotUsed;
+        }
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -65,35 +89,40 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
-        public override byte[] Marshal()
+
+        /// <inheritdoc/>
+        protected override bool EqualsIntl(IStatusChannel data)
         {
-            byte[] buffer = base.Marshal();
-            int p = 1;
-
-            // Characters received
-            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverCharacters), 0, buffer, p, 2);
-            p += 2;
-
-            // Packets received
-            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverPackets), 0, buffer, p, 2);
-            p += 2;
-
-            // Characters received, not used
-            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverCharactersNotUnderstood), 0, buffer, p, 2);
-            p += 2;
-
-            // Packets received, not understood
-            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverPacketsNotUsed), 0, buffer, p, 2);
-            p += 2;
-
-            return buffer;
+            return data is StatusChannel2 other
+                && this.PrimaryGNSSReceiverCharacters == other.PrimaryGNSSReceiverCharacters
+                && this.PrimaryGNSSReceiverPackets == other.PrimaryGNSSReceiverPackets
+                && this.PrimaryGNSSReceiverCharactersNotUnderstood == other.PrimaryGNSSReceiverCharactersNotUnderstood
+                && this.PrimaryGNSSReceiverPacketsNotUsed == other.PrimaryGNSSReceiverPacketsNotUsed;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        public override bool Unmarshal(byte[] buffer, int offset)
+        /// <inheritdoc/>
+        protected override void MarshalIntl(byte[] buffer, int offset)
         {
-            if (!base.Unmarshal(buffer, offset)) return false;
+            // Characters received
+            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverCharacters), 0, buffer, offset, 2);
+            offset += 2;
 
+            // Packets received
+            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverPackets), 0, buffer, offset, 2);
+            offset += 2;
+
+            // Characters received, not used
+            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverCharactersNotUnderstood), 0, buffer, offset, 2);
+            offset += 2;
+
+            // Packets received, not understood
+            Array.Copy(BitConverter.GetBytes(PrimaryGNSSReceiverPacketsNotUsed), 0, buffer, offset, 2);
+            offset += 2;
+        }
+
+        /// <inheritdoc/>
+        protected override void UnmarshalIntl(byte[] buffer, int offset)
+        {
             // Characters received
             PrimaryGNSSReceiverCharacters = BitConverter.ToUInt16(buffer, offset);
             offset += 2;
@@ -109,30 +138,6 @@ namespace Ncom.StatusChannels
             // Packets received, not used
             PrimaryGNSSReceiverPacketsNotUsed = BitConverter.ToUInt16(buffer, offset);
             offset += 2;
-            
-            return true;
-        }
-
-
-        /* ---------- Protected methods -------------------------------------------------------/**/
-
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="object.Equals(object)"/>.
-        /// To override the default equals method, override this method instead.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
-        protected override bool IsEqual(StatusChannel data)
-        {
-            StatusChannel2 chan = data as StatusChannel2;
-
-            return base.IsEqual(chan)
-                && this.PrimaryGNSSReceiverCharacters == chan.PrimaryGNSSReceiverCharacters
-                && this.PrimaryGNSSReceiverPackets == chan.PrimaryGNSSReceiverPackets
-                && this.PrimaryGNSSReceiverCharactersNotUnderstood == chan.PrimaryGNSSReceiverCharactersNotUnderstood
-                && this.PrimaryGNSSReceiverPacketsNotUsed == chan.PrimaryGNSSReceiverPacketsNotUsed;
         }
 
     }

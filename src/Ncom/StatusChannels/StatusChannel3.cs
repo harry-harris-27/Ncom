@@ -1,60 +1,106 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
     /// <summary>
-    /// Position accuracy.
+    /// Position accuracies.
     /// </summary>
     public class StatusChannel3 : StatusChannel
     {
 
-        /* ---------- Constants ---------------------------------------------------------------/**/
+        /// <summary>
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// </summary>
+        public const byte AgeValidThreshold = 150;
 
-        public const byte MaxValidAge = 150;
+        private const byte InvalidABDRobotUMACInterfaceStatus = 0xFF;
 
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
+        private ushort _northPositionAccuracy = ushort.MaxValue;
+        private ushort _eastPositionAccuracy = ushort.MaxValue;
+        private ushort _downPositionAccuracy = ushort.MaxValue;
 
-        public StatusChannel3() : base(3)
+
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel3"/> instance.
+        /// </summary>
+        public StatusChannel3() { }
+
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel3"/> instance that is logically equal to 
+        /// specifed <paramref name="source"/> instance.
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel3"/> instance to copy.</param>
+        public StatusChannel3(StatusChannel3 source)
         {
-
+            Copy(source);
         }
 
 
-        /* ---------- Properties --------------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override byte StatusChannelByte { get; } = 3;
 
         /// <summary>
-        /// North position accuracy. Valid when <see cref="Age"/> &lt; <see cref="MaxValidAge"/>.
+        /// Gets or sets the north position accuracy, expressed in mm.
         /// </summary>
-        public ushort NorthPositionAccuracy { get; set; }
+        /// <seealso cref="IsAccuracyValid"/>
+        public ushort NorthPositionAccuracy { get => _northPositionAccuracy; set => _northPositionAccuracy = value; }
 
         /// <summary>
-        /// East position accuracy. Valid when <see cref="Age"/> &lt; <see cref="MaxValidAge"/>.
+        /// Gets or sets the east position accuracy, expressed in mm.
         /// </summary>
-        public ushort EastPositionAccuracy { get; set; }
+        /// <seealso cref="IsAccuracyValid"/>
+        public ushort EastPositionAccuracy { get => _eastPositionAccuracy; set => _eastPositionAccuracy = value; }
 
         /// <summary>
-        /// Down position accuracy. Valid when <see cref="Age"/> &lt; <see cref="MaxValidAge"/>.
+        /// Gets or sets the down position accuracy, expressed in mm.
         /// </summary>
-        public ushort DownPositionAccuracy { get; set; }
+        /// <seealso cref="IsAccuracyValid"/>
+        public ushort DownPositionAccuracy { get => _downPositionAccuracy; set => _downPositionAccuracy = value; }
 
         /// <summary>
-        /// Age.
+        /// Gets or sets the Age.
         /// </summary>
         public byte Age { get; set; }
 
         /// <summary>
-        /// ABD robot UMAC interface status byte.
+        /// Gets or sets the ABD robot UMAC interface status byte.
         /// </summary>
         public byte ABDRobotUMACStatus { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the  <see cref="NorthPositionAccuracy"/>, 
+        /// <see cref="EastPositionAccuracy"/> and <see cref="DownPositionAccuracy"/> values are 
+        /// valid.
+        /// </summary>
+        public bool IsAccuracyValid => Age < AgeValidThreshold;
 
-        /* ---------- Public Methods ----------------------------------------------------------/**/
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="ABDRobotUMACStatus"/> value is valid.
+        /// </summary>
+        public bool IsABDRobotUMACStatusValid => ABDRobotUMACStatus != InvalidABDRobotUMACInterfaceStatus;
 
+
+        /// <inheritdoc/>
+        public override IStatusChannel Clone() => new StatusChannel3(this);
+
+        /// <summary>
+        /// Sets this <see cref="StatusChannel3"/> instance logically equal to the specified 
+        /// <paramref name="source"/> instance
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel3"/> instance to copy.</param>
+        public void Copy(StatusChannel3 source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            this.NorthPositionAccuracy = source.NorthPositionAccuracy;
+            this.EastPositionAccuracy = source.EastPositionAccuracy;
+            this.DownPositionAccuracy = source.DownPositionAccuracy;
+            this.Age = source.Age;
+            this.ABDRobotUMACStatus = source.ABDRobotUMACStatus;
+        }
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -71,80 +117,40 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
-        public override byte[] Marshal()
+
+        /// <inheritdoc/>
+        protected override bool EqualsIntl(IStatusChannel data)
         {
-            byte[] buffer = base.Marshal();
-            int p = 1;
-
-            // North position accuracy
-            Array.Copy(BitConverter.GetBytes(NorthPositionAccuracy), 0, buffer, p, 2);
-            p += 2;
-
-            // East position accuracy
-            Array.Copy(BitConverter.GetBytes(EastPositionAccuracy), 0, buffer, p, 2);
-            p += 2;
-
-            // Down position accuracy
-            Array.Copy(BitConverter.GetBytes(DownPositionAccuracy), 0, buffer, p, 2);
-            p += 2;
-
-            // Age
-            buffer[p++] = Age;
-
-            // ABD robot UMAC insterface status byte
-            buffer[p++] = ABDRobotUMACStatus;
-
-            return buffer;
+            return data is StatusChannel3 other
+                && this.NorthPositionAccuracy == other.NorthPositionAccuracy
+                && this.EastPositionAccuracy == other.EastPositionAccuracy
+                && this.DownPositionAccuracy == other.DownPositionAccuracy
+                && this.Age == other.Age
+                && this.ABDRobotUMACStatus == other.ABDRobotUMACStatus;
         }
 
+        /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        public override bool Unmarshal(byte[] buffer, int offset)
+        protected override void MarshalIntl(byte[] buffer, int offset)
         {
-            if (!base.Unmarshal(buffer, offset)) return false;
+            ByteHandling.Marshal(buffer, ref offset, NorthPositionAccuracy);
+            ByteHandling.Marshal(buffer, ref offset, EastPositionAccuracy);
+            ByteHandling.Marshal(buffer, ref offset, DownPositionAccuracy);
 
-            // North position accuracy
-            NorthPositionAccuracy = BitConverter.ToUInt16(buffer, offset);
-            offset += 2;
-
-            // East position accuracy
-            EastPositionAccuracy = BitConverter.ToUInt16(buffer, offset);
-            offset += 2;
-
-            // Down position accuracy
-            DownPositionAccuracy = BitConverter.ToUInt16(buffer, offset);
-            offset += 2;
-
-            // Age
-            Age = buffer[offset++];
-
-            // ABD robot UMAX interface status byte
-            ABDRobotUMACStatus = buffer[offset++];
-
-            return true;
+            buffer[offset++] = Age;
+            buffer[offset++] = ABDRobotUMACStatus;
         }
 
-
-
-        /* ---------- Protected methods -------------------------------------------------------/**/
-
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="object.Equals(object)"/>.
-        /// To override the default equals method, override this method instead.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
-        protected override bool IsEqual(StatusChannel data)
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
+        protected override void UnmarshalIntl(byte[] buffer, int offset)
         {
-            StatusChannel3 chan = data as StatusChannel3;
+            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _northPositionAccuracy);
+            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _eastPositionAccuracy);
+            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _downPositionAccuracy);
 
-            return base.IsEqual(chan)
-                && this.NorthPositionAccuracy == chan.NorthPositionAccuracy
-                && this.EastPositionAccuracy == chan.EastPositionAccuracy
-                && this.DownPositionAccuracy == chan.DownPositionAccuracy
-                && this.Age == chan.Age
-                && this.ABDRobotUMACStatus == chan.ABDRobotUMACStatus;
+            Age = buffer[offset++];
+            ABDRobotUMACStatus = buffer[offset++];
         }
 
     }

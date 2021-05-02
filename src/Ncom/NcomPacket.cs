@@ -1,12 +1,5 @@
 ﻿using Ncom.Enumerations;
-using Ncom.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom
 {
@@ -227,8 +220,7 @@ namespace Ncom
                     // packet found. offset now points to [1]
 
                     // Get navigation status byte
-                    //NavigationStatus = EnumParser.ParseByte(buffer[offset + 20], NavigationStatus.Unknown);
-                    NavigationStatus = (NavigationStatus)buffer[offset + 20];
+                    NavigationStatus = ByteHandling.ParseEnum(buffer[offset + 20], NavigationStatus.Unknown);
 
                     // Calculate Checksum 3
                     Checksum3 = CalculateChecksum(buffer, offset, 70) == buffer[offset + PacketLength - 2];

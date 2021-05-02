@@ -1,87 +1,186 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Kalman filter innovations set 1 (position, velocity, attitude). 
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The innovations are always expressed as a proportion of the current accuracy; units 0.1. As 
+    /// a general rule, innovations below 1.0 are good; innovations above 1.0 are poor. Usually it 
+    /// is best to filter the square of the innovations and display the square root of the filtered 
+    /// value.
+    /// </para>
+    /// <para>
+    /// If the <see cref="OrientationPitchInnovation"/> and/or the <see cref="OrientationHeadingInnovation"/>
+    /// are always much higher than 1.0 then it is likely that the system or the antennas have 
+    /// changed orientation in the vehicle (Or the enironment is too poor to use dual antenna 
+    /// systems).
+    /// </para>
+    /// </remarks>
     public class StatusChannel1 : StatusChannel
     {
 
-        /* ---------- Constants ---------------------------------------------------------------/**/
+        private const byte INNOVATION_VALIDITY_MASK = 0x01;
 
-        private const byte INNOVATION_MASK = 0xFE;
-        private const byte INNOVATION_VALID_MASK = 0xFF - INNOVATION_MASK;
+        private byte _positionXInnovation = 0;
+        private byte _positionYInnovation = 0;
+        private byte _positionZInnovation = 0;
+        private byte _velocityXInnovation = 0;
+        private byte _velocityYInnovation = 0;
+        private byte _velocityZInnovation = 0;
+        private byte _orientationPitchInnovation = 0;
+        private byte _orientationHeadingInnovation = 0;
+        private bool _isPositionXInnovationValid = false;
+        private bool _isPositionYInnovationValid = false;
+        private bool _isPositionZInnovationValid = false;
+        private bool _isVelocityXInnovationValid = false;
+        private bool _isVelocityYInnovationValid = false;
+        private bool _isVelocityZInnovationValid = false;
+        private bool _isOrientationPitchInnovationValid = false;
+        private bool _isOrientationHeadingInnovationValid = false;
 
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel1"/> instance.
+        /// </summary>
+        public StatusChannel1() { }
 
-        public StatusChannel1() : this(null) { }
-
-        public StatusChannel1(StatusChannel1 source) : base(1)
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel1"/> instance that is logically equal to 
+        /// specifed <paramref name="source"/> instance.
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel1"/> instance to copy.</param>
+        public StatusChannel1(StatusChannel1 source)
         {
-            if (source != null)
-            {
-                PositionXInnovation = source.PositionXInnovation;
-                PositionXInnovationValid = source.PositionXInnovationValid;
-
-                PositionYInnovation = source.PositionYInnovation;
-                PositionYInnovationValid = source.PositionYInnovationValid;
-
-                PositionZInnovation = source.PositionZInnovation;
-                PositionZInnovationValid = source.PositionZInnovationValid;
-
-                VelocityXInnovation = source.VelocityXInnovation;
-                VelocityXInnovationValid = source.VelocityXInnovationValid;
-
-                VelocityYInnovation = source.VelocityYInnovation;
-                VelocityYInnovationValid = source.VelocityYInnovationValid;
-
-                VelocityZInnovation = source.VelocityZInnovation;
-                VelocityZInnovationValid = source.VelocityZInnovationValid;
-
-                OrientationPitchInnovation = source.OrientationPitchInnovation;
-                OrientationPitchInnovationValid = source.OrientationPitchInnovationValid;
-
-                OrientationHeadingInnovation = source.OrientationHeadingInnovation;
-                OrientationHeadingInnovationValid = source.OrientationHeadingInnovationValid;
-            }
+            Copy(source);
         }
 
 
-        /* ---------- Properties --------------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override byte StatusChannelByte { get; } = 1;
 
-        public byte PositionXInnovation { get; set; } = 0;
-        public bool PositionXInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Position X innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte PositionXInnovation { get => _positionXInnovation; set => _positionXInnovation = value; }
 
-        public byte PositionYInnovation { get; set; } = 0;
-        public bool PositionYInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Position Y innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte PositionYInnovation { get => _positionYInnovation; set => _positionYInnovation = value; }
 
-        public byte PositionZInnovation { get; set; } = 0;
-        public bool PositionZInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Position Z innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte PositionZInnovation { get => _positionZInnovation; set => _positionZInnovation = value; }
 
-        public byte VelocityXInnovation { get; set; } = 0;
-        public bool VelocityXInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Velocity X innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte VelocityXInnovation { get => _velocityXInnovation; set => _velocityXInnovation = value; }
 
-        public byte VelocityYInnovation { get; set; } = 0;
-        public bool VelocityYInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Velocity Y innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte VelocityYInnovation { get => _velocityYInnovation; set => _velocityYInnovation = value; }
 
-        public byte VelocityZInnovation { get; set; } = 0;
-        public bool VelocityZInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the Velocity Z innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte VelocityZInnovation { get => _velocityZInnovation; set => _velocityZInnovation = value; }
 
-        public byte OrientationPitchInnovation { get; set; } = 0;
-        public bool OrientationPitchInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the orientation pitch innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte OrientationPitchInnovation { get => _orientationPitchInnovation; set => _orientationPitchInnovation = value; }
 
-        public byte OrientationHeadingInnovation { get; set; } = 0;
-        public bool OrientationHeadingInnovationValid { get; set; } = false;
+        /// <summary>
+        /// Gets or sets the orientation heading innovation.
+        /// </summary>
+        /// <seealso cref="StatusChannel1"/>
+        public byte OrientationHeadingInnovation { get => _orientationHeadingInnovation; set => _orientationHeadingInnovation = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="PositionXInnovation"/> is valid.
+        /// </summary>
+        public bool IsPositionXInnovationValid { get => _isPositionXInnovationValid; set => _isPositionXInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="PositionYInnovation"/> is valid.
+        /// </summary>
+        public bool IsPositionYInnovationValid { get => _isPositionYInnovationValid; set => _isPositionYInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="PositionZInnovation"/> is valid.
+        /// </summary>
+        public bool IsPositionZInnovationValid { get => _isPositionZInnovationValid; set => _isPositionZInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="VelocityXInnovation"/> is valid.
+        /// </summary>
+        public bool IsVelocityXInnovationValid { get => _isVelocityXInnovationValid; set => _isVelocityXInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="VelocityYInnovation"/> is valid.
+        /// </summary>
+        public bool IsVelocityYInnovationValid { get => _isVelocityYInnovationValid; set => _isVelocityYInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="VelocityZInnovation"/> is valid.
+        /// </summary>
+        public bool IsVelocityZInnovationValid { get => _isVelocityZInnovationValid; set => _isVelocityZInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="OrientationPitchInnovation"/> is valid.
+        /// </summary>
+        public bool IsOrientationPitchInnovationValid { get => _isOrientationPitchInnovationValid; set => _isOrientationPitchInnovationValid = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="OrientationHeadingInnovation"/> is valid.
+        /// </summary>
+        public bool IsOrientationHeadingInnovationValid { get => _isOrientationHeadingInnovationValid; set => _isOrientationHeadingInnovationValid = value; }
 
 
-        /* ---------- Public Methods ----------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override IStatusChannel Clone() => new StatusChannel1(this);
 
+        /// <summary>
+        /// Sets this <see cref="StatusChannel1"/> instance logically equal to the specified 
+        /// <paramref name="source"/> instance
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel1"/> instance to copy.</param>
+        public void Copy(StatusChannel1 source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            PositionXInnovation = source.PositionXInnovation;
+            PositionYInnovation = source.PositionYInnovation;
+            PositionZInnovation = source.PositionZInnovation;
+            VelocityXInnovation = source.VelocityXInnovation;
+            VelocityYInnovation = source.VelocityYInnovation;
+            VelocityZInnovation = source.VelocityZInnovation;
+            OrientationPitchInnovation = source.OrientationPitchInnovation;
+            OrientationHeadingInnovation = source.OrientationHeadingInnovation;
+            IsPositionXInnovationValid = source.IsPositionXInnovationValid;
+            IsPositionYInnovationValid = source.IsPositionYInnovationValid;
+            IsPositionZInnovationValid = source.IsPositionZInnovationValid;
+            IsVelocityXInnovationValid = source.IsVelocityXInnovationValid;
+            IsVelocityYInnovationValid = source.IsVelocityYInnovationValid;
+            IsVelocityZInnovationValid = source.IsVelocityZInnovationValid;
+            IsOrientationPitchInnovationValid = source.IsOrientationPitchInnovationValid;
+            IsOrientationHeadingInnovationValid = source.IsOrientationHeadingInnovationValid;
+        }
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -92,137 +191,85 @@ namespace Ncom.StatusChannels
             hash = (hash * mul) + PositionXInnovation;
             hash = (hash * mul) + PositionYInnovation;
             hash = (hash * mul) + PositionZInnovation;
-            hash = (hash * mul) + (PositionXInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (PositionYInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (PositionZInnovationValid ? 1 : 0);
             hash = (hash * mul) + VelocityXInnovation;
             hash = (hash * mul) + VelocityYInnovation;
             hash = (hash * mul) + VelocityZInnovation;
-            hash = (hash * mul) + (VelocityXInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (VelocityYInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (VelocityZInnovationValid ? 1 : 0);
             hash = (hash * mul) + OrientationHeadingInnovation;
             hash = (hash * mul) + OrientationPitchInnovation;
-            hash = (hash * mul) + (OrientationHeadingInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (OrientationPitchInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsPositionXInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsPositionYInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsPositionZInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsVelocityXInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsVelocityYInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsVelocityZInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsOrientationHeadingInnovationValid ? 1 : 0);
+            hash = (hash * mul) + (IsOrientationPitchInnovationValid ? 1 : 0);
 
             return hash;
         }
 
-        public override byte[] Marshal()
+
+        /// <inheritdoc/>
+        protected override bool EqualsIntl(IStatusChannel data)
         {
-            byte[] buffer = base.Marshal();
-            int p = 1;
-
-            // Position X Innovation
-            buffer[p] = (byte)((PositionXInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(PositionXInnovationValid ? 0x01 : 0x00);
-
-            // Position Y Innovation
-            buffer[p] = (byte)((PositionYInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(PositionYInnovationValid ? 0x01 : 0x00);
-
-            // Position Z Innovation
-            buffer[p] = (byte)((PositionZInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(PositionZInnovationValid ? 0x01 : 0x00);
-
-            // Velocity X Innovation
-            buffer[p] = (byte)((VelocityXInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(VelocityXInnovationValid ? 0x01 : 0x00);
-
-            // Velocity Y Innovation
-            buffer[p] = (byte)((VelocityYInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(VelocityYInnovationValid ? 0x01 : 0x00);
-
-            // Velocity Z Innovation
-            buffer[p] = (byte)((VelocityZInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(VelocityZInnovationValid ? 0x01 : 0x00);
-
-            // Orientation Pitch Innovation
-            buffer[p] = (byte)((OrientationPitchInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(OrientationPitchInnovationValid ? 0x01 : 0x00);
-
-            // Orientation Heading Innovation
-            buffer[p] = (byte)((OrientationHeadingInnovation << 1) & INNOVATION_MASK);
-            buffer[p++] |= (byte)(OrientationHeadingInnovationValid ? 0x01 : 0x00);
-
-
-            return buffer;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        public override bool Unmarshal(byte[] buffer, int offset)
-        {
-            if (!base.Unmarshal(buffer, offset)) return false;
-
-            // Position X innovation
-            PositionXInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            PositionXInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Position Y innovation
-            PositionYInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            PositionYInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Position Z innovation
-            PositionZInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            PositionZInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Velocity X innovation
-            VelocityXInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            VelocityXInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Velocity Y innovation
-            VelocityYInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            VelocityYInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Velocity Z innovation
-            VelocityZInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            VelocityZInnovationValid = (buffer[offset++] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Orientation Pitch Innovation
-            OrientationPitchInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            OrientationPitchInnovationValid = (buffer[offset] & INNOVATION_VALID_MASK) == 0x01;
-
-            // Orientation Heading Innovation
-            OrientationHeadingInnovation = (byte)((buffer[offset] & INNOVATION_MASK) >> 1);
-            OrientationHeadingInnovationValid = (buffer[offset] & INNOVATION_VALID_MASK) == 0x01;
-
-            return true;
-        }
-
-        /* ---------- Protected methods -------------------------------------------------------/**/
-
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="object.Equals(object)"/>.
-        /// To override the default equals method, override this method instead.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
-        protected override bool IsEqual(StatusChannel data)
-        {
-            StatusChannel1 chan = data as StatusChannel1;
-
-            return base.IsEqual(chan)
-                && this.PositionXInnovation == chan.PositionXInnovation
-                && this.PositionYInnovation == chan.PositionYInnovation
-                && this.PositionZInnovation == chan.PositionZInnovation
-                && this.PositionXInnovationValid == chan.PositionXInnovationValid
-                && this.PositionYInnovationValid == chan.PositionYInnovationValid
-                && this.PositionZInnovationValid == chan.PositionZInnovationValid
-                && this.VelocityXInnovation == chan.VelocityXInnovation
-                && this.VelocityYInnovation == chan.VelocityYInnovation
-                && this.VelocityZInnovation == chan.VelocityZInnovation
-                && this.VelocityXInnovationValid == chan.VelocityXInnovationValid
-                && this.VelocityYInnovationValid == chan.VelocityYInnovationValid
-                && this.VelocityZInnovationValid == chan.VelocityZInnovationValid
-                && this.OrientationHeadingInnovation == chan.OrientationHeadingInnovation
-                && this.OrientationPitchInnovation == chan.OrientationPitchInnovation
-                && this.OrientationHeadingInnovationValid == chan.OrientationHeadingInnovationValid
-                && this.OrientationPitchInnovationValid == chan.OrientationPitchInnovationValid;
+            return data is StatusChannel1 other
+                && this.PositionXInnovation == other.PositionXInnovation
+                && this.PositionYInnovation == other.PositionYInnovation
+                && this.PositionZInnovation == other.PositionZInnovation
+                && this.VelocityXInnovation == other.VelocityXInnovation
+                && this.VelocityYInnovation == other.VelocityYInnovation
+                && this.VelocityZInnovation == other.VelocityZInnovation
+                && this.OrientationHeadingInnovation == other.OrientationHeadingInnovation
+                && this.OrientationPitchInnovation == other.OrientationPitchInnovation
+                && this.IsPositionXInnovationValid == other.IsPositionXInnovationValid
+                && this.IsPositionYInnovationValid == other.IsPositionYInnovationValid
+                && this.IsPositionZInnovationValid == other.IsPositionZInnovationValid
+                && this.IsVelocityXInnovationValid == other.IsVelocityXInnovationValid
+                && this.IsVelocityYInnovationValid == other.IsVelocityYInnovationValid
+                && this.IsVelocityZInnovationValid == other.IsVelocityZInnovationValid
+                && this.IsOrientationHeadingInnovationValid == other.IsOrientationHeadingInnovationValid
+                && this.IsOrientationPitchInnovationValid == other.IsOrientationPitchInnovationValid;
 
         }
 
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base class StatusChannel guarentees that method arguments are non-null")]
+        protected override void MarshalIntl(byte[] buffer, int offset)
+        {
+            buffer[offset++] = MarshalInnonvation(PositionXInnovation, IsPositionXInnovationValid);
+            buffer[offset++] = MarshalInnonvation(PositionYInnovation, IsPositionYInnovationValid);
+            buffer[offset++] = MarshalInnonvation(PositionZInnovation, IsPositionZInnovationValid);
+            buffer[offset++] = MarshalInnonvation(VelocityXInnovation, IsVelocityXInnovationValid);
+            buffer[offset++] = MarshalInnonvation(VelocityYInnovation, IsVelocityYInnovationValid);
+            buffer[offset++] = MarshalInnonvation(VelocityZInnovation, IsVelocityZInnovationValid);
+            buffer[offset++] = MarshalInnonvation(OrientationPitchInnovation, IsOrientationPitchInnovationValid);
+            buffer[offset++] = MarshalInnonvation(OrientationHeadingInnovation, IsOrientationHeadingInnovationValid);
+        }
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base class StatusChannel guarentees that method arguments are non-null")]
+        protected override void UnmarshalIntl(byte[] buffer, int offset)
+        {
+            UnmarshalInnovation(buffer[offset++], ref _positionXInnovation, ref _isPositionXInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _positionYInnovation, ref _isPositionYInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _positionZInnovation, ref _isPositionZInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _velocityXInnovation, ref _isVelocityXInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _velocityYInnovation, ref _isVelocityYInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _velocityZInnovation, ref _isVelocityZInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _orientationPitchInnovation, ref _isOrientationPitchInnovationValid);
+            UnmarshalInnovation(buffer[offset++], ref _orientationHeadingInnovation, ref _isOrientationHeadingInnovationValid);
+        }
+
+
+        private static byte MarshalInnonvation(byte innovation, bool isInnovationValid)
+        {
+            return (byte)((innovation << 1) | (isInnovationValid ? 0x01 : 0x00));
+        }
+
+        private static void UnmarshalInnovation(byte value, ref byte innovationStorage, ref bool validityStorage)
+        {
+            innovationStorage = (byte)((value & ~INNOVATION_VALIDITY_MASK) >> 1);
+            validityStorage = (value & INNOVATION_VALIDITY_MASK) == INNOVATION_VALIDITY_MASK;
+        }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using Ncom.Enumerations;
 using Ncom.StatusChannels;
-using Ncom.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom
 {
@@ -38,19 +34,22 @@ namespace Ncom
 
         /* ---------- Constants ---------------------------------------------------------------/**/
 
-        internal const float ACCELERATION_SCALING   = 1e-4f;
-        internal const float ANGULAR_RATE_SCALING   = 1e-5f;
-        internal const float VELOCITY_SCALING       = 1e-4f;
-        internal const float ORIENTATION_SCALING    = 1e-6f;
+        /// <summary>
+        /// The length, in bytes, of the marshalled Batch S (Status Channels).
+        /// </summary>
+        public const int StatusChannelLength = 8;
 
-        internal const int CHECKSUM_1_INDEX = 22;
-        internal const int CHECKSUM_2_INDEX = 61;
+        internal const float AccelerationScaling    = 1e-4f;
+        internal const float AngularRateScaling     = 1e-5f;
+        internal const float VeloityScaling         = 1e-4f;
+        internal const float OrientationScaling     = 1e-6f;
 
-        internal const int STATUS_CHANNEL_LENGTH = 8;
+        internal const int Checksum1Index           = 22;
+        internal const int Checksum2Index           = 61;
 
-        private const ushort MAX_TIME_VALUE = 59999;
+        private const ushort MaxTimeValue           = 59999;
         
-        private static readonly NavigationStatus[] ALLOWED_NAV_STATUSES = new NavigationStatus[]
+        private static readonly NavigationStatus[] AllowedNavigationStatus = new NavigationStatus[]
         {
             NavigationStatus.Invalid,                           // 0
             NavigationStatus.RawIMUMeasurements,                // 1
@@ -66,11 +65,6 @@ namespace Ncom
             NavigationStatus.TriggerPacketWhileLocked           // 22
         };
 
-
-        /* ---------- Private variables -------------------------------------------------------/**/
-
-
-        /* ---------- Constructors ------------------------------------------------------------/**/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacketA"/> class.
@@ -114,12 +108,10 @@ namespace Ncom
 
                 this.Checksum2 = source.Checksum2;
 
-                this.StatusChannel = StatusChannelFactory.Copy(source.StatusChannel);
+                this.StatusChannel = source.StatusChannel?.Clone();
             }
         }
 
-
-        /* ---------- Properties --------------------------------------------------------------/**/
 
         /// <summary>
         /// Acceleration <i>X</i> is the host object's acceleration in the <i>X</i>-direction (i.e. 
@@ -229,7 +221,7 @@ namespace Ncom
         /// S is defined by the value of the status channel byte, which defines the structure of 
         /// each status channel and the information it contains.
         /// </summary>
-        public StatusChannel StatusChannel { get; set; } = new StatusChannel0();
+        public IStatusChannel StatusChannel { get; set; } = null;
 
         /// <summary>
         /// Time is transmitted as milliseconds into the current GPS minute. Range = [0 - 59,999]. 
@@ -296,107 +288,73 @@ namespace Ncom
         {
             // Call base method to get byte array to marshal into
             byte[] buffer = base.Marshal();
-            int p = 1;
+            int offset = 1;
 
 
             // Batch A
             // --------
 
             // Insert Time
-            Array.Copy(BitConverter.GetBytes(Time % MAX_TIME_VALUE), 0, buffer, p, 2);
-            p += 2;
+            ByteHandling.Marshal(buffer, ref offset, (ushort)(Time % MaxTimeValue));
 
-            // Insert acceleration X
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AccelerationX / ACCELERATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
+            // Insert accelerations
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AccelerationX / AccelerationScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AccelerationY / AccelerationScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AccelerationZ / AccelerationScaling));
 
-            // Insert acceleration Y
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AccelerationY / ACCELERATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert acceleration Z
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AccelerationZ / ACCELERATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Angular Rate X
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AngularRateX / ANGULAR_RATE_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Angular Rate Y
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AngularRateY / ANGULAR_RATE_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Angular Rate Z
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(AngularRateZ / ANGULAR_RATE_SCALING)), 0, buffer, p, 3);
-            p += 3;
+            // Insert Angular Rates
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AngularRateX / AngularRateScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AngularRateY / AngularRateScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(AngularRateZ / AngularRateScaling));
 
             // Skip over nav. status
-            p++;
+            offset++;
 
             // Calculate and insert Checksum 1
-            buffer[p] = CalculateChecksum(buffer, 1, p - 2);
-            p++;
+            buffer[offset] = CalculateChecksum(buffer, 1, offset - 2);
+            offset++;
 
 
             // Batch B
             // --------
 
-            // Insert Latitude
-            Array.Copy(BitConverter.GetBytes(Latitude), 0, buffer, p, 8);
-            p += 8;
+            // Insert Latitude, Longitude and altitude
+            ByteHandling.Marshal(buffer, ref offset, Latitude);
+            ByteHandling.Marshal(buffer, ref offset, Longitude);
+            ByteHandling.Marshal(buffer, ref offset, Altitude);
 
-            // Insert Longitude
-            Array.Copy(BitConverter.GetBytes(Longitude), 0, buffer, p, 8);
-            p += 8;
+            // Insert Velocities
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(NorthVelocity / VeloityScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(EastVelocity / VeloityScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(DownVelocity / VeloityScaling));
 
-            // Insert Altitude
-            Array.Copy(BitConverter.GetBytes(Altitude), 0, buffer, p, 4);
-            p += 4;
-
-            // Insert North Velocity
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(NorthVelocity / VELOCITY_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert East Velocity
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(EastVelocity / VELOCITY_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Down Velocity
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(DownVelocity / VELOCITY_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Heading
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(Heading / ORIENTATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Pitch
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(Pitch / ORIENTATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
-
-            // Insert Roll
-            Array.Copy(ByteHandling.CastInt32To3Bytes((int)(Roll / ORIENTATION_SCALING)), 0, buffer, p, 3);
-            p += 3;
+            // Insert Heading, Pitch and Roll
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(Heading / OrientationScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(Pitch / OrientationScaling));
+            ByteHandling.MarshalInt24(buffer, ref offset, (int)(Roll / OrientationScaling));
 
             // Calculate and insert Checksum 2
-            buffer[p] = CalculateChecksum(buffer, 1, p - 2);
-            p++;
+            buffer[offset] = CalculateChecksum(buffer, 1, offset - 2);
+            offset++;
 
 
             // Batch S
             // --------
 
             // Insert Status Channel
-            Array.Copy(
-                StatusChannel != null ? StatusChannel.Marshal() : new byte[StatusChannel.StatusChannelLength], 
-                0, 
-                buffer, 
-                p, 
-                StatusChannel.StatusChannelLength
-            );
-            p += StatusChannel.StatusChannelLength;
+            if (StatusChannel != null)
+            {
+                buffer[offset++] = StatusChannel.StatusChannelByte;
+                StatusChannel.Marshal(buffer, ref offset);
+            }
+            else
+            {
+                buffer[offset++] = 0xFF;
+                offset += StatusChannelLength;
+            }
 
             // Calculate and insert Checksum 3
-            buffer[p] = CalculateChecksum(buffer, 1, p - 2);
+            buffer[offset] = CalculateChecksum(buffer, 1, offset - 2);
 
             // Return the marshalled NCOM packet
             return buffer;
@@ -448,39 +406,23 @@ namespace Ncom
                     if (!base.Unmarshal(buffer, offset - 1)) return false;
 
                     // Check the navigation status byte
-                    if (!ALLOWED_NAV_STATUSES.Contains(NavigationStatus)) return false;
-
+                    if (!AllowedNavigationStatus.Contains(NavigationStatus)) return false;
 
                     // Batch A
                     // --------
 
                     // Extract the time
-                    Time = BitConverter.ToUInt16(buffer, offset);
-                    offset += 2;
+                    Time = ByteHandling.UnmarshalUInt16(buffer, ref offset);
 
-                    // Extract the Acceleration X
-                    AccelerationX = ByteHandling.Cast3BytesToInt32(buffer, offset) * ACCELERATION_SCALING;
-                    offset += 3;
+                    // Extract the Accelerations
+                    AccelerationX = ByteHandling.UnmarshalInt24(buffer, ref offset) * AccelerationScaling;
+                    AccelerationY = ByteHandling.UnmarshalInt24(buffer, ref offset) * AccelerationScaling;
+                    AccelerationZ = ByteHandling.UnmarshalInt24(buffer, ref offset) * AccelerationScaling;
 
-                    // Extract the Acceleration Y
-                    AccelerationY = ByteHandling.Cast3BytesToInt32(buffer, offset) * ACCELERATION_SCALING;
-                    offset += 3;
-
-                    // Extract the Acceleration Z
-                    AccelerationZ = ByteHandling.Cast3BytesToInt32(buffer, offset) * ACCELERATION_SCALING;
-                    offset += 3;
-
-                    // Extract the Angular Rate X
-                    AngularRateX = ByteHandling.Cast3BytesToInt32(buffer, offset) * ANGULAR_RATE_SCALING;
-                    offset += 3;
-
-                    // Extract the Angular Rate Y
-                    AngularRateY = ByteHandling.Cast3BytesToInt32(buffer, offset) * ANGULAR_RATE_SCALING;
-                    offset += 3;
-
-                    // Extract the Angular Rate Z
-                    AngularRateZ = ByteHandling.Cast3BytesToInt32(buffer, offset) * ANGULAR_RATE_SCALING;
-                    offset += 3;
+                    // Extract the Angular Rates
+                    AngularRateX = ByteHandling.UnmarshalInt24(buffer, ref offset) * AngularRateScaling;
+                    AngularRateY = ByteHandling.UnmarshalInt24(buffer, ref offset) * AngularRateScaling;
+                    AngularRateZ = ByteHandling.UnmarshalInt24(buffer, ref offset) * AngularRateScaling;
 
                     // Skip a bit for the nav status byte
                     offset++;
@@ -493,52 +435,31 @@ namespace Ncom
                     // Batch B
                     // --------
 
-                    // Extract Latitude
-                    Latitude = BitConverter.ToDouble(buffer, offset);
-                    offset += 8;
+                    // Extract Latitude, Longitude and altitude
+                    Latitude = ByteHandling.UnmarshalDouble(buffer, ref offset);
+                    Longitude = ByteHandling.UnmarshalDouble(buffer, ref offset);
+                    Altitude = ByteHandling.UnmarshalSingle(buffer, ref offset);
 
-                    // Extract Longitude
-                    Longitude = BitConverter.ToDouble(buffer, offset);
-                    offset += 8;
+                    // Extract velocities
+                    NorthVelocity = ByteHandling.UnmarshalInt24(buffer, ref offset) * VeloityScaling;
+                    EastVelocity = ByteHandling.UnmarshalInt24(buffer, ref offset) * VeloityScaling;
+                    DownVelocity = ByteHandling.UnmarshalInt24(buffer, ref offset) * VeloityScaling;
 
-                    // Extract altitude
-                    Altitude = BitConverter.ToSingle(buffer, offset);
-                    offset += 4;
-
-                    // Extract North velocity
-                    NorthVelocity = ByteHandling.Cast3BytesToInt32(buffer, offset) * VELOCITY_SCALING;
-                    offset += 3;
-
-                    // Extract East velocity
-                    EastVelocity = ByteHandling.Cast3BytesToInt32(buffer, offset) * VELOCITY_SCALING;
-                    offset += 3;
-
-                    // Extract Down velocity
-                    DownVelocity = ByteHandling.Cast3BytesToInt32(buffer, offset) * VELOCITY_SCALING;
-                    offset += 3;
-
-                    // Extract Heading
-                    Heading = ByteHandling.Cast3BytesToInt32(buffer, offset) * ORIENTATION_SCALING;
-                    offset += 3;
-
-                    // Extract Pitch
-                    Pitch = ByteHandling.Cast3BytesToInt32(buffer, offset) * ORIENTATION_SCALING;
-                    offset += 3;
-
-                    // Extract Roll
-                    Roll = ByteHandling.Cast3BytesToInt32(buffer, offset) * ORIENTATION_SCALING;
-                    offset += 3;
+                    // Extract Heading, Pitch and Roll
+                    Heading = ByteHandling.UnmarshalInt24(buffer, ref offset) * OrientationScaling;
+                    Pitch = ByteHandling.UnmarshalInt24(buffer, ref offset) * OrientationScaling;
+                    Roll = ByteHandling.UnmarshalInt24(buffer, ref offset) * OrientationScaling;
 
                     // Extract checksum 2
                     Checksum2 = CalculateChecksum(buffer, pkt_start + 1, 60) == buffer[offset];
                     offset++;
 
-
                     // Batch S
                     // --------
 
                     // Extract status channel (and status channel byte)
-                    StatusChannel = StatusChannelFactory.ProcessStatusChannel(buffer, offset);
+                    byte statusChannelByte = buffer[offset++];
+                    StatusChannel = StatusChannelFactory.Unmarshal(statusChannelByte, buffer, ref offset);
                     
                     // Unmarshalled OK, return true
                     return true;
@@ -549,9 +470,7 @@ namespace Ncom
             return false;
         }
 
-
-        /* ---------- Internal methods ---------------------------------------------------------/**/
-
+        /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
         protected override bool IsEqual(NcomPacket _pkt)
         {

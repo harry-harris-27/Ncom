@@ -1,70 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
     /// <summary>
-    /// Bytes 63 to 70 of an Ncom structure-A packet are collectively call Batch S. Batch S 
-    /// contains status channel information from the INS. The information transmitted in Batch S 
-    /// is defined by the value of the status byte, which defines the structure of each status 
-    /// channel and the information it contains.
-    /// <para>
-    /// There are so many status messages it is impossible to transmit them all in a single Ncom 
-    /// packet. So instead, the status messages are split into a number of groups called channels,
-    /// made up of 8 bytes each - and one channel is inserted into each Ncom packet.
-    /// </para>
-    /// <para>
-    /// It is important to note that the value of the status channel byte does not increase 
-    /// incrementally, This is because some status channels are more important than others, and 
-    /// need to be transmitted more often. It is also important to note that the channel 
-    /// transmission order may change between software versions. However, the channel transmission 
-    /// list will repeat approximately once every 200 Ncom structure-A packets.
-    /// </para>
+    /// Abstract base class for <see cref="IStatusChannel"/> implementations.
     /// </summary>
-    public abstract class StatusChannel
+    public abstract class StatusChannel : IStatusChannel
     {
 
-        /* ---------- Constants ---------------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public abstract byte StatusChannelByte { get; }
 
-        internal const int StatusChannelLength = 9;
 
+        /// <inheritdoc/>
+        public abstract IStatusChannel Clone();
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StatusChannel"/> class.
-        /// </summary>
-        /// <param name="statusChannelByte">The status channel byte.</param>
-        public StatusChannel(byte statusChannelByte)
+        /// <inheritdoc/>
+        public bool Equals(IStatusChannel rhs)
         {
-            StatusChannelByte = statusChannelByte;
+            return rhs != null
+                && this.StatusChannelByte == rhs.StatusChannelByte
+                && EqualsIntl(rhs);
         }
 
-
-        /* ---------- Properties --------------------------------------------------------------/**/
-        
-        public byte StatusChannelByte { get; private set; }
-
-
-        /* ---------- Public Methods ----------------------------------------------------------/**/
-
+        /// <inheritdoc/>
         public override bool Equals(object value)
         {
-            // Is it null?
-            if (value is null) return false;
-
-            // Is the same object
-            if (ReferenceEquals(this, value)) return true;
-
-            // Is same type?
-            if (value.GetType() != this.GetType()) return false;
-
-            return IsEqual((StatusChannel)value);
+            return value is IStatusChannel rhs && Equals(rhs);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -75,46 +40,62 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
-        public virtual byte[] Marshal()
+        /// <inheritdoc/>
+        public void Marshal(byte[] buffer, int offset)
         {
-            byte[] buf = new byte[StatusChannelLength];
-
-            // Status byte
-            buf[0] = StatusChannelByte;
-
-            return buf;
-        }
-
-        public virtual bool Unmarshal(byte[] buffer, int offset)
-        {
+            // Perform routine argument validation checks
             if (buffer == null)
-            {
                 throw new ArgumentNullException(nameof(buffer));
-            }
 
-            if (offset + StatusChannelLength > buffer.Length) return false;
+            if (offset + NcomPacketA.StatusChannelLength > buffer.Length)
+                throw new IndexOutOfRangeException();
 
-            // Status byte
-            StatusChannelByte = buffer[offset];
-
-            return true;
+            // Marshal this status channel into the buffer
+            MarshalIntl(buffer, offset);
         }
 
+        /// <inheritdoc/>
+        public void Unmarshal(byte[] buffer, int offset)
+        {
+            // Perform routine argument validation checks
+            if (buffer == null) 
+                throw new ArgumentNullException(nameof(buffer));
 
-        /* ---------- Protected methods -------------------------------------------------------/**/
+            if (offset + NcomPacketA.StatusChannelLength > buffer.Length)
+                throw new IndexOutOfRangeException();
+
+            UnmarshalIntl(buffer, offset);
+        }
+
 
         /// <summary>
         /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="object.Equals(object)"/>.
+        /// <see cref="Equals(object)"/> and <see cref="Equals(IStatusChannel)"/>.
         /// To override the default equals method, override this method instead.
         /// </summary>
         /// <param name="pkt"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
-        protected virtual bool IsEqual(StatusChannel pkt)
-        {
-            return this.StatusChannelByte == pkt.StatusChannelByte;
-        }
+        /// <returns>
+        /// <see langword="true"/> if the specified object is equal to this current object; otherwise 
+        /// <see langword="false"/>.
+        /// </returns>
+        protected abstract bool EqualsIntl(IStatusChannel pkt);
 
+        /// <summary>
+        /// Performs the actually marshalling of this Status Channel message.
+        /// </summary>
+        /// <param name="buffer">The byte array to marshall this StatusChannel into.</param>
+        /// <param name="offset">The zero-based index indicating the location in the buffer start writing from.</param>
+        protected abstract void MarshalIntl(byte[] buffer, int offset);
+
+        /// <summary>
+        /// Performs the actual unmarshalling of this Status Channel message.
+        /// </summary>
+        /// <param name="buffer">The byte array containing the marshalled StatusChannel data.</param>
+        /// <param name="offset">The zero-based index indicating the location in the buffer read from.</param>
+        /// <remarks>
+        /// This method is only called from <see cref="Unmarshal(byte[], int)"/>, which performs 
+        /// argument validation checks, removing the need for any further checks.
+        /// </remarks>
+        protected abstract void UnmarshalIntl(byte[] buffer, int offset);
     }
 }

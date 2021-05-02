@@ -1,156 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
     public static class StatusChannelFactory
-    { 
+    {
 
-        public static StatusChannel Copy<T>(T source) where T : StatusChannel
+        private static readonly IDictionary<byte, IStatusChannel> statusChannelLookup = new IStatusChannel[]
         {
-            // If source is null, return null
-            if (source == null) return null;
+            new StatusChannel0(),
+            new StatusChannel1(),
+            new StatusChannel2(),
+            new StatusChannel3(),
+            new StatusChannel4(),
+            new StatusChannel5(),
+            new StatusChannel6(),
+            new StatusChannel7(),
+            new StatusChannel8(),
+        }.ToDictionary(x => x.StatusChannelByte);
 
-            // Pass the source status channel to the correct constructor
-            switch (source.StatusChannelByte)
-            {
-                case 0: return new StatusChannel0(source as StatusChannel0);
-                case 1: return new StatusChannel1(source as StatusChannel1);
-            }
 
-            // Status channel has not been implemented yet
-            throw new NotImplementedException("Status channel not implemented yet");
-        }
-
-        public static StatusChannel ProcessStatusChannel(byte[] buffer, int offset = 0)
+        public static IStatusChannel Unmarshal(byte statusChannelByte, byte[] buffer, int offset = 0)
         {
             if (buffer == null)
-            {
                 throw new ArgumentNullException(nameof(buffer));
-            }
 
             // Check the length of the available part of the buffer
-            if (buffer.Length - offset < StatusChannel.StatusChannelLength)
-            {
+            if (buffer.Length - offset < NcomPacketA.StatusChannelLength)
                 throw new ArgumentException("Buffer is smaller than required");
-            }
-
-            // Create a variable to store the status channel in
-            StatusChannel channel;
 
             // Create the status channel
-            switch (buffer[offset])
+            if (statusChannelLookup.TryGetValue(statusChannelByte, out IStatusChannel statusChannel))
             {
-                case 0:
-                    channel = new StatusChannel0();
-                    break;
-                case 1:
-                    channel = new StatusChannel1();
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                case 20:
-                case 21:
-                case 22:
-                case 23:
-                case 24:
-                case 25:
-                case 26:
-                case 27:
-                case 28:
-                case 29:
-                case 30:
-                case 31:
-                case 32:
-                case 33:
-                case 34:
-                case 35:
-                case 36:
-                case 37:
-                case 38:
-                case 39:
-                case 40:
-                case 41:
-                case 42:
-                case 43:
-                case 44:
-                case 45:
-                case 46:
-                case 47:
-                case 48:
-                case 49:
-                case 50:
-                case 51:
-                case 52:
-                case 53:
-                case 54:
-                case 55:
-                case 56:
-                case 57:
-                case 58:
-                case 59:
-                case 60:
-                case 61:
-                case 62:
-                case 63:
-                case 64:
-                case 65:
-                case 66:
-                case 67:
-                case 68:
-                case 69:
-                case 70:
-                case 71:
-                case 72:
-                case 73:
-                case 74:
-                case 75:
-                case 76:
-                case 77:
-                case 78:
-                case 79:
-                case 81:
-                case 82:
-                case 83:
-                case 84:
-                case 85:
-                case 86:
-                case 87:
-                case 88:
-                case 89:
-                case 90:
-                case 91:
-                case 92:
-                default:
-                    channel = null;
-                    break;
+                statusChannel.Unmarshal(buffer, offset);
             }
 
-            // If not null, marshal the bytes into the status channel obj
-            channel?.Unmarshal(buffer, offset);
-
             // Return the status channel object
-            return channel;
+            return statusChannel?.Clone();
+        }
+
+        public static IStatusChannel Unmarshal(byte statusChannelByte, byte[] buffer, ref int offset)
+        {
+            var statusChannel = Unmarshal(statusChannelByte, buffer, offset);
+            offset += NcomPacketA.StatusChannelLength;
+            return statusChannel;
         }
         
     }

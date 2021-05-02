@@ -69,9 +69,9 @@ namespace Ncom.Tests
                     {
                         FullTime = 17,
                         NumberOfSatellites = 18,
-                        MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
-                        MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
-                        DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
+                        PositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
+                        VelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
+                        OrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
                     }
                 };
             }
@@ -120,9 +120,9 @@ namespace Ncom.Tests
                 {
                     FullTime = 0,
                     NumberOfSatellites = 0,
-                    MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.None,
-                    MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.None,
-                    DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.None
+                    PositionMode = Enumerations.PositionVelocityOrientationMode.None,
+                    VelocityMode = Enumerations.PositionVelocityOrientationMode.None,
+                    OrientationMode = Enumerations.PositionVelocityOrientationMode.None
                 }
             };
 
@@ -166,9 +166,9 @@ namespace Ncom.Tests
             StatusChannel0 chan = pkt.StatusChannel as StatusChannel0;
             Assert.AreEqual(0, chan.FullTime);
             Assert.AreEqual(0, chan.NumberOfSatellites);
-            Assert.AreEqual(0, (byte)chan.MainGNSSPositionMode);
-            Assert.AreEqual(0, (byte)chan.MainGNSSVelocityMode);
-            Assert.AreEqual(0, (byte)chan.DualAntennaSystemsOrientationMode);
+            Assert.AreEqual(0, (byte)chan.PositionMode);
+            Assert.AreEqual(0, (byte)chan.VelocityMode);
+            Assert.AreEqual(0, (byte)chan.OrientationMode);
         }
 
         [TestMethod()]
@@ -198,9 +198,9 @@ namespace Ncom.Tests
                 {
                     FullTime = 17,
                     NumberOfSatellites = 18,
-                    MainGNSSPositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
-                    MainGNSSVelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
-                    DualAntennaSystemsOrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
+                    PositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
+                    VelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
+                    OrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
                 }
             };
 

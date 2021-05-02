@@ -1,9 +1,6 @@
 ﻿namespace Ncom.Enumerations
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public enum NavigationStatus
+    public enum NavigationStatus : byte
     {
 
         /// <summary>

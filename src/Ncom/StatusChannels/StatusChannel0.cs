@@ -1,10 +1,5 @@
 ﻿using Ncom.Enumerations;
-using Ncom.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncom.StatusChannels
 {
@@ -14,24 +9,24 @@ namespace Ncom.StatusChannels
     public class StatusChannel0 : StatusChannel
     {
 
-        /* ---------- Constructors ------------------------------------------------------------/**/
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel0"/> instance.
+        /// </summary>
+        public StatusChannel0() { }
 
-        public StatusChannel0() : this(null) { }
-
-        public StatusChannel0(StatusChannel0 source) : base(0)
+        /// <summary>
+        /// Initializes a new <see cref="StatusChannel0"/> instance that is logically equal to 
+        /// specifed <paramref name="source"/> instance.
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel0"/> instance to copy.</param>
+        public StatusChannel0(StatusChannel0 source)
         {
-            if (source != null)
-            {
-                FullTime = source.FullTime;
-                NumberOfSatellites = source.NumberOfSatellites;
-                MainGNSSPositionMode = source.MainGNSSPositionMode;
-                MainGNSSVelocityMode = source.MainGNSSVelocityMode;
-                DualAntennaSystemsOrientationMode = source.DualAntennaSystemsOrientationMode;
-            }
+            Copy(source);
         }
 
 
-        /* ---------- Properties --------------------------------------------------------------/**/
+        /// <inheritdoc/>
+        public override byte StatusChannelByte { get; } = 0;
 
         /// <summary>
         /// Gets or sets the time in minutes since GPS began (midnight, 6th January 1980)
@@ -43,16 +38,42 @@ namespace Ncom.StatusChannels
         /// </summary>
         public byte NumberOfSatellites { get; set; } = 0;
 
+        /// <summary>
+        /// Gets or sets the Position mode of the main GNSS.
+        /// </summary>
+        public PositionVelocityOrientationMode PositionMode { get; set; } = PositionVelocityOrientationMode.None;
 
-        public PositionVelocityOrientationMode MainGNSSPositionMode { get; set; } = PositionVelocityOrientationMode.None;
+        /// <summary>
+        /// Gets or sets the Velocity mode of the main GNSS.
+        /// </summary>
+        public PositionVelocityOrientationMode VelocityMode { get; set; } = PositionVelocityOrientationMode.None;
 
-        public PositionVelocityOrientationMode MainGNSSVelocityMode { get; set; } = PositionVelocityOrientationMode.None;
+        /// <summary>
+        /// Gets or sets the Orientation mode of dual antenna systems.
+        /// </summary>
+        public PositionVelocityOrientationMode OrientationMode { get; set; } = PositionVelocityOrientationMode.None;
 
-        public PositionVelocityOrientationMode DualAntennaSystemsOrientationMode { get; set; } = PositionVelocityOrientationMode.None;
 
+        /// <inheritdoc/>
+        public override IStatusChannel Clone() => new StatusChannel0(this);
 
-        /* ---------- Public Methods ----------------------------------------------------------/**/
+        /// <summary>
+        /// Sets this <see cref="StatusChannel0"/> instance logically equal to the specified 
+        /// <paramref name="source"/> instance
+        /// </summary>
+        /// <param name="source">The source <see cref="StatusChannel0"/> instance to copy.</param>
+        public void Copy(StatusChannel0 source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
+            FullTime = source.FullTime;
+            NumberOfSatellites = source.NumberOfSatellites;
+            PositionMode = source.PositionMode;
+            VelocityMode = source.VelocityMode;
+            OrientationMode = source.OrientationMode;
+        }
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -62,71 +83,49 @@ namespace Ncom.StatusChannels
 
             hash = (hash * mul) + FullTime.GetHashCode();
             hash = (hash * mul) + NumberOfSatellites;
-            hash = (hash * mul) + (byte)MainGNSSPositionMode;
-            hash = (hash * mul) + (byte)MainGNSSVelocityMode;
-            hash = (hash * mul) + (byte)DualAntennaSystemsOrientationMode;
+            hash = (hash * mul) + (byte)PositionMode;
+            hash = (hash * mul) + (byte)VelocityMode;
+            hash = (hash * mul) + (byte)OrientationMode;
 
             return hash;
         }
 
-        public override byte[] Marshal()
+
+        /// <inheritdoc/>
+        protected override bool EqualsIntl(IStatusChannel data)
         {
-            byte[] buffer = base.Marshal();
-            int p = 1;
-
-            Array.Copy(BitConverter.GetBytes(FullTime), 0, buffer, p, 4);
-            p += 4;
-
-            buffer[p++] = NumberOfSatellites;
-
-            buffer[p++] = (byte)MainGNSSPositionMode;
-            buffer[p++] = (byte)MainGNSSVelocityMode;
-            buffer[p++] = (byte)DualAntennaSystemsOrientationMode;
-
-            return buffer;
+            return data is StatusChannel0 other
+                && this.FullTime == other.FullTime
+                && this.NumberOfSatellites == other.NumberOfSatellites
+                && this.PositionMode == other.PositionMode
+                && this.VelocityMode == other.VelocityMode
+                && this.OrientationMode == other.OrientationMode;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        public override bool Unmarshal(byte[] buffer, int offset)
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base class StatusChannel guarentees that method arguments are non-null")]
+        protected override void MarshalIntl(byte[] buffer, int offset)
         {
-            if (!base.Unmarshal(buffer, offset)) return false;
+            Array.Copy(BitConverter.GetBytes(FullTime), 0, buffer, offset, 4);
+            offset += 4;
 
-            // Time
+            buffer[offset++] = NumberOfSatellites;
+            buffer[offset++] = (byte)PositionMode;
+            buffer[offset++] = (byte)VelocityMode;
+            buffer[offset++] = (byte)OrientationMode;
+        }
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base class StatusChannel guarentees that method arguments are non-null")]
+        protected override void UnmarshalIntl(byte[] buffer, int offset)
+        {
             FullTime = BitConverter.ToInt32(buffer, offset);
             offset += 4;
 
-            // Satellites
-            NumberOfSatellites = buffer[offset];
-            offset += 1;
-
-            MainGNSSPositionMode = (PositionVelocityOrientationMode)buffer[offset++];
-            MainGNSSVelocityMode = (PositionVelocityOrientationMode)buffer[offset++];
-            DualAntennaSystemsOrientationMode = (PositionVelocityOrientationMode)buffer[offset++];
-
-            return true;
-        }
-
-
-        /* ---------- Protected methods -------------------------------------------------------/**/
-
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine checks in 
-        /// <see cref="object.Equals(object)"/>.
-        /// To override the default equals method, override this method instead.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Method is meant for pure value equality and should only be called internally with non-null values")]
-        protected override bool IsEqual(StatusChannel data)
-        {
-            StatusChannel0 chan = data as StatusChannel0;
-
-            return base.IsEqual(chan)
-                && this.FullTime == chan.FullTime
-                && this.NumberOfSatellites == chan.NumberOfSatellites
-                && this.MainGNSSPositionMode == chan.MainGNSSPositionMode
-                && this.MainGNSSVelocityMode == chan.MainGNSSVelocityMode
-                && this.DualAntennaSystemsOrientationMode == chan.DualAntennaSystemsOrientationMode;
+            NumberOfSatellites = buffer[offset++];
+            PositionMode = ByteHandling.ParseEnum(buffer[offset++], PositionVelocityOrientationMode.Unknown);
+            VelocityMode = ByteHandling.ParseEnum(buffer[offset++], PositionVelocityOrientationMode.Unknown);
+            OrientationMode = ByteHandling.ParseEnum(buffer[offset++], PositionVelocityOrientationMode.Unknown);
         }
 
     }

@@ -1,14 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Ncom.Enumerations;
 using Ncom.StatusChannels;
+using Shouldly;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace Ncom.Tests
 {
-    [TestClass()]
     public class NcomPacketATests
     {
 
@@ -39,11 +37,13 @@ namespace Ncom.Tests
             0x00                                                // Checksum 3
         };
 
-        [TestMethod()]
-        public void TestEquals()
+        [Fact]
+        public void Test_Equals()
         {
-            // Create ncom packets
-            NcomPacketA[] pkts = new NcomPacketA[2];
+            NcomPacketA packet1 = new NcomPacketA();
+            NcomPacketA packet2 = new NcomPacketA();
+
+            NcomPacketA[] pkts = new [] { packet1, packet2 };
             for (int i = 0; i < pkts.Length; i++)
             {
                 pkts[i] = new NcomPacketA()
@@ -76,24 +76,19 @@ namespace Ncom.Tests
                 };
             }
 
-            // Test not equal to null reference
-            Assert.AreNotEqual(pkts[0], null);
-
-            // Test same object
-            Assert.AreEqual(pkts[0], pkts[0]);
+            packet1.ShouldBeEquivalentTo(packet2);
 
             // Test 2 different objects
-            Assert.AreEqual(pkts[0], pkts[1]);
-            Assert.AreEqual(pkts[1], pkts[0]);     // Transitive
+            packet1.ShouldNotBeSameAs(packet2);
+            packet2.ShouldNotBeSameAs(packet1);     // Transitive
 
             // Change one packet
             pkts[1].Time = 0;
-            Assert.AreNotEqual(pkts[0], pkts[1]);
-            Assert.AreNotEqual(pkts[1], pkts[0]);     // Transitive
+            packet1.ShouldBeEquivalentTo(packet2);
+            packet2.ShouldBeEquivalentTo(packet1);  // Transitive
         }
 
-
-        [TestMethod()]
+        [Fact]
         public void BlankMarshalTest()
         {
             // Create a blank NCOM structure A packet
@@ -129,14 +124,11 @@ namespace Ncom.Tests
             // Marshal
             byte[] marshalled = ncom.Marshal();
 
-            // Check 2 arrays are equal
-            for (int i = 0; i < marshalled.Length; i++)
-            {
-                Assert.AreEqual(blankNcomBytes[i], marshalled[i]);
-            }
+            // Assert
+            Enumerable.SequenceEqual(blankNcomBytes, marshalled);
         }
 
-        [TestMethod()]
+        [Fact]
         public void BlankUnmarshalTest()
         {
             // Unmarshal NCOM data
@@ -144,38 +136,38 @@ namespace Ncom.Tests
             pkt.Unmarshal(blankNcomBytes, 0);
 
             // Everything should be zero
-            Assert.AreEqual(0, pkt.Time);
-            Assert.AreEqual(0, pkt.AccelerationX);
-            Assert.AreEqual(0, pkt.AccelerationY);
-            Assert.AreEqual(0, pkt.AccelerationZ);
-            Assert.AreEqual(0, pkt.AngularRateX);
-            Assert.AreEqual(0, pkt.AngularRateY);
-            Assert.AreEqual(0, pkt.AngularRateZ);
-            Assert.AreEqual(0, (byte)pkt.NavigationStatus);
-            Assert.AreEqual(0, pkt.Latitude);
-            Assert.AreEqual(0, pkt.Longitude);
-            Assert.AreEqual(0, pkt.Altitude);
-            Assert.AreEqual(0, pkt.NorthVelocity);
-            Assert.AreEqual(0, pkt.EastVelocity);
-            Assert.AreEqual(0, pkt.DownVelocity);
-            Assert.AreEqual(0, pkt.Heading);
-            Assert.AreEqual(0, pkt.Pitch);
-            Assert.AreEqual(0, pkt.Roll);
-            Assert.AreEqual(0, pkt.StatusChannel.StatusChannelByte);
+            pkt.Time.ShouldBe((ushort)0);
+            pkt.AccelerationX.ShouldBe(0);
+            pkt.AccelerationY.ShouldBe(0);
+            pkt.AccelerationZ.ShouldBe(0);
+            pkt.AngularRateX.ShouldBe(0);
+            pkt.AngularRateY.ShouldBe(0);
+            pkt.AngularRateZ.ShouldBe(0);
+            pkt.NavigationStatus.ShouldBe((NavigationStatus)0);
+            pkt.Latitude.ShouldBe(0);
+            pkt.Longitude.ShouldBe(0);
+            pkt.Altitude.ShouldBe(0);
+            pkt.NorthVelocity.ShouldBe(0);
+            pkt.EastVelocity.ShouldBe(0);
+            pkt.DownVelocity.ShouldBe(0);
+            pkt.Heading.ShouldBe(0);
+            pkt.Pitch.ShouldBe(0);
+            pkt.Roll.ShouldBe(0);
+            pkt.StatusChannel.StatusChannelByte.ShouldBe((byte)0);
 
             StatusChannel0 chan = pkt.StatusChannel as StatusChannel0;
-            Assert.AreEqual(0, chan.FullTime);
-            Assert.AreEqual(0, chan.NumberOfSatellites);
-            Assert.AreEqual(0, (byte)chan.PositionMode);
-            Assert.AreEqual(0, (byte)chan.VelocityMode);
-            Assert.AreEqual(0, (byte)chan.OrientationMode);
+            chan.FullTime.ShouldBe(0);
+            chan.NumberOfSatellites.ShouldBe((byte)0);
+            chan.PositionMode.ShouldBe((PositionVelocityOrientationMode)0);
+            chan.VelocityMode.ShouldBe((PositionVelocityOrientationMode)0);
+            chan.OrientationMode.ShouldBe((PositionVelocityOrientationMode)0);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CopyConstructorTest()
         {
             // Create an NCOM structure A packet
-            NcomPacketA pkt1 = new NcomPacketA()
+            NcomPacketA packet1 = new NcomPacketA()
             {
                 Time = 1,
                 AccelerationX = 2,
@@ -205,10 +197,10 @@ namespace Ncom.Tests
             };
 
             // Copy it
-            NcomPacketA pkt2 = new NcomPacketA(pkt1);
+            NcomPacketA packet2 = new NcomPacketA(packet1);
 
             // Are they equal?
-            Assert.AreEqual(pkt1, pkt2);
+            packet1.ShouldBeEquivalentTo(packet2);
         }
 
     }

@@ -1,33 +1,32 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace Ncom.Tests
 {
-    [TestClass()]
     public class NcomPacketFactoryTests
     {
 
-        private static readonly Random random = new Random();
-        private static readonly NcomPacketFactory factory = new NcomPacketFactory();
         private static readonly byte[] sampleNcom = GetSampleNcom();
         private static readonly byte[] sampleNcomSingle = sampleNcom.Take(NcomPacket.PacketLength).ToArray();
 
+        private readonly Random random = new Random();
+        private readonly NcomPacketFactory factory = new NcomPacketFactory();
 
-        [TestMethod()]
+
+        [Fact]
         public void TestProcessNcomLength()
         {
             // Parse the sample ncom
             List<NcomPacket> ncomPackets = factory.ProcessNcom(sampleNcom);
 
-            Assert.AreEqual(sampleNcom.Length / NcomPacket.PacketLength, ncomPackets.Count);
+            ncomPackets.Count.ShouldBe(sampleNcom.Length / NcomPacket.PacketLength);
         }
 
-        [TestMethod()]
+        [Fact]
         public void TestProcessNcomSeek()
         {
             // Hide the NCOM byte data in some random data
@@ -53,8 +52,8 @@ namespace Ncom.Tests
             Array.Copy(postamble, 0, data, preamble.Length + sampleNcomSingle.Length, postamble.Length);
 
             // Parse data as NCOM
-            List<NcomPacket> pkt = factory.ProcessNcom(data);
-            Assert.AreEqual(1, pkt.Count);
+            List<NcomPacket> packets = factory.ProcessNcom(data);
+            packets.Count.ShouldBe(1);
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using Ncom.Enumerations;
+using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,7 +7,8 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Velocity accuracies.
     /// </summary>
-    public class StatusChannel4 : StatusChannel
+    [StatusChannel(4)]
+    public partial class StatusChannel4 : StatusChannel
     {
 
         /// <summary>
@@ -19,25 +21,6 @@ namespace Ncom.StatusChannels
         private ushort _eastVelocityAccuracy = ushort.MaxValue;
         private ushort _downVelocityAccuracy = ushort.MaxValue;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel4"/> instance.
-        /// </summary>
-        public StatusChannel4() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel4"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel4"/> instance to copy.</param>
-        public StatusChannel4(StatusChannel4 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 4;
 
         /// <summary>
         /// Gets or sets the north velocity accuracy, expressed in mm.
@@ -74,9 +57,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsAccuracyValid => Age < AgeValidThreshold;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel4(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel4"/> instance logically equal to the specified 

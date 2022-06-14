@@ -1,4 +1,5 @@
 ﻿using Ncom.Enumerations;
+using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,7 +7,8 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Gyro Biases
     /// </summary>
-    public class StatusChannel6 : StatusChannel
+    [StatusChannel(6)]
+    public partial class StatusChannel6 : StatusChannel
     {
 
         /// <summary>
@@ -21,25 +23,6 @@ namespace Ncom.StatusChannels
         private short _gyroBiasY = 0;
         private short _gyroBiasZ = 0;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel6"/> instance.
-        /// </summary>
-        public StatusChannel6() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel6"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel6"/> instance to copy.</param>
-        public StatusChannel6(StatusChannel6 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 6;
 
         /// <summary>
         /// Gets or sets the gyro X bias, expressed in 1e-6 radians.
@@ -80,9 +63,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel6(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel6"/> instance logically equal to the specified 

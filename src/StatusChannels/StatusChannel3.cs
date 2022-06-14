@@ -1,11 +1,13 @@
 ﻿using System;
+using Ncom.Generators;
 
 namespace Ncom.StatusChannels
 {
     /// <summary>
     /// Position accuracies.
     /// </summary>
-    public class StatusChannel3 : StatusChannel
+    [StatusChannel(3)]
+    public partial class StatusChannel3 : StatusChannel
     {
 
         /// <summary>
@@ -15,30 +17,10 @@ namespace Ncom.StatusChannels
 
         private const byte InvalidABDRobotUMACInterfaceStatus = 0xFF;
 
-
         private ushort _northPositionAccuracy = ushort.MaxValue;
         private ushort _eastPositionAccuracy = ushort.MaxValue;
         private ushort _downPositionAccuracy = ushort.MaxValue;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel3"/> instance.
-        /// </summary>
-        public StatusChannel3() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel3"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel3"/> instance to copy.</param>
-        public StatusChannel3(StatusChannel3 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 3;
 
         /// <summary>
         /// Gets or sets the north position accuracy, expressed in mm.
@@ -80,9 +62,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsABDRobotUMACStatusValid => ABDRobotUMACStatus != InvalidABDRobotUMACInterfaceStatus;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel3(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel3"/> instance logically equal to the specified 

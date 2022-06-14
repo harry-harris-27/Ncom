@@ -1,4 +1,5 @@
 ﻿using Ncom.Enumerations;
+using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,7 +7,8 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Accelerometer Biases
     /// </summary>
-    public class StatusChannel7 : StatusChannel
+    [StatusChannel(7)]
+    public partial class StatusChannel7 : StatusChannel
     {
 
         /// <summary>
@@ -21,25 +23,6 @@ namespace Ncom.StatusChannels
         private short _accelerometerBiasY = 0;
         private short _accelerometerBiasZ = 0;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel7"/> instance.
-        /// </summary>
-        public StatusChannel7() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel7"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel7"/> instance to copy.</param>
-        public StatusChannel7(StatusChannel7 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 7;
 
         /// <summary>
         /// Gets or sets the accelerometer X bias, units 0.1 mm^-2.
@@ -80,9 +63,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel7(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel7"/> instance logically equal to the specified 

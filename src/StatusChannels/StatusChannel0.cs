@@ -1,4 +1,5 @@
 ﻿using Ncom.Enumerations;
+using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,28 +7,9 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Full time, number of satellites, position mode, velocity mode, dual antenna mode. 
     /// </summary>
-    public class StatusChannel0 : StatusChannel
+    [StatusChannel(0)]
+    public partial class StatusChannel0 : StatusChannel
     {
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel0"/> instance.
-        /// </summary>
-        public StatusChannel0() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel0"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel0"/> instance to copy.</param>
-        public StatusChannel0(StatusChannel0 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 0;
-
         /// <summary>
         /// Gets or sets the time in minutes since GPS began (midnight, 6th January 1980)
         /// </summary>
@@ -53,9 +35,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public PositionVelocityOrientationMode OrientationMode { get; set; } = PositionVelocityOrientationMode.None;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel0(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel0"/> instance logically equal to the specified 

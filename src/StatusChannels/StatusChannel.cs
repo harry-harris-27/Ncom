@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Ncom.StatusChannels
 {
@@ -7,6 +9,20 @@ namespace Ncom.StatusChannels
     /// </summary>
     public abstract class StatusChannel : IStatusChannel
     {
+
+        private static readonly IDictionary<byte, Type> statusChannelTypeLookup = new Dictionary<byte, Type>();
+
+
+        protected static void RegisterStatusChannel(byte statusChannel, Type type)
+        {
+            statusChannelTypeLookup[statusChannel] = type;
+        }
+
+        internal static bool TryGetStatusChannelType(byte statusChannelByte, out Type statusChannelType)
+        {
+            return statusChannelTypeLookup.TryGetValue(statusChannelByte, out statusChannelType);
+        }
+
 
         /// <inheritdoc/>
         public abstract byte StatusChannelByte { get; }

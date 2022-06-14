@@ -1,4 +1,5 @@
 ﻿using System;
+using Ncom.Generators;
 
 namespace Ncom.StatusChannels
 {
@@ -8,28 +9,9 @@ namespace Ncom.StatusChannels
     /// <remarks>
     /// These counters are cyclic and will wrap when they exceed the limit of the format used.
     /// </remarks>
-    public class StatusChannel2 : StatusChannel
+    [StatusChannel(2)]
+    public partial class StatusChannel2 : StatusChannel
     {
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel2"/> instance.
-        /// </summary>
-        public StatusChannel2() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel2"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel2"/> instance to copy.</param>
-        public StatusChannel2(StatusChannel2 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 2;
-
         /// <summary>
         /// Gets or sets the characters received from the primary GNSS receiver by the navigation 
         /// computer. 
@@ -54,9 +36,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public ushort PrimaryGNSSReceiverPacketsNotUsed { get; set; }
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel2(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel2"/> instance logically equal to the specified 

@@ -22,6 +22,7 @@ namespace Ncom.StatusChannels
     /// transmission order may change between software versions. However, the channel transmission 
     /// list will repeat approximately once every 200 Ncom structure-A packets.
     /// </para>
+    /// </summary>
     public interface IStatusChannel : IEquatable<IStatusChannel>
     {
 

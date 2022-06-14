@@ -1,4 +1,5 @@
 ﻿using System;
+using Ncom.Generators;
 
 namespace Ncom.StatusChannels
 {
@@ -19,7 +20,8 @@ namespace Ncom.StatusChannels
     /// systems).
     /// </para>
     /// </remarks>
-    public class StatusChannel1 : StatusChannel
+    [StatusChannel(1)]
+    public partial class StatusChannel1 : StatusChannel
     {
 
         private const byte INNOVATION_VALIDITY_MASK = 0x01;
@@ -41,25 +43,6 @@ namespace Ncom.StatusChannels
         private bool _isOrientationPitchInnovationValid = false;
         private bool _isOrientationHeadingInnovationValid = false;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel1"/> instance.
-        /// </summary>
-        public StatusChannel1() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel1"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel1"/> instance to copy.</param>
-        public StatusChannel1(StatusChannel1 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 1;
 
         /// <summary>
         /// Gets or sets the Position X innovation.
@@ -149,9 +132,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsOrientationHeadingInnovationValid { get => _isOrientationHeadingInnovationValid; set => _isOrientationHeadingInnovationValid = value; }
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel1(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel1"/> instance logically equal to the specified 

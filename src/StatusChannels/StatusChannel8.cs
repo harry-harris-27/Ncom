@@ -1,4 +1,4 @@
-﻿using Ncom.Enumerations;
+﻿using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,7 +6,8 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Gyro scale factors
     /// </summary>
-    public class StatusChannel8 : StatusChannel
+    [StatusChannel(8)]
+    public partial class StatusChannel8 : StatusChannel
     {
 
         /// <summary>
@@ -21,25 +22,6 @@ namespace Ncom.StatusChannels
         private short _gyroScaleFactorY = 0;
         private short _gyroScaleFactorZ = 0;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel8"/> instance.
-        /// </summary>
-        public StatusChannel8() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel8"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel8"/> instance to copy.</param>
-        public StatusChannel8(StatusChannel8 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 8;
 
         /// <summary>
         /// Gets or sets the X Gyro scale factor, units 1 ppm (0.0001%).
@@ -80,9 +62,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel8(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel8"/> instance logically equal to the specified 

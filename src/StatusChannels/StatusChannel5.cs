@@ -1,4 +1,5 @@
 ﻿using Ncom.Enumerations;
+using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -6,7 +7,8 @@ namespace Ncom.StatusChannels
     /// <summary>
     /// Orientation accuracies.
     /// </summary>
-    public class StatusChannel5 : StatusChannel
+    [StatusChannel(5)]
+    public partial class StatusChannel5 : StatusChannel
     {
 
         /// <summary>
@@ -19,25 +21,6 @@ namespace Ncom.StatusChannels
         private ushort _pitchAccuracy = ushort.MaxValue;
         private ushort _rollAccuracy = ushort.MaxValue;
 
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel5"/> instance.
-        /// </summary>
-        public StatusChannel5() { }
-
-        /// <summary>
-        /// Initializes a new <see cref="StatusChannel5"/> instance that is logically equal to 
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel5"/> instance to copy.</param>
-        public StatusChannel5(StatusChannel5 source)
-        {
-            Copy(source);
-        }
-
-
-        /// <inheritdoc/>
-        public override byte StatusChannelByte { get; } = 5;
 
         /// <summary>
         /// Gets or sets the north velocity accuracy, expressed in 1e-5 radians.
@@ -68,9 +51,6 @@ namespace Ncom.StatusChannels
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new StatusChannel5(this);
 
         /// <summary>
         /// Sets this <see cref="StatusChannel5"/> instance logically equal to the specified 

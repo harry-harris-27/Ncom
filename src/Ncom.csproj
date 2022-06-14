@@ -7,7 +7,7 @@
         <LangVersion>preview</LangVersion>
         
         <Deterministic>true</Deterministic>
-        <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\.generated</CompilerGeneratedFilesOutputPath>
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 
@@ -43,6 +43,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference
+            Include="..\Ncom.Generators\Ncom.Generators.csproj"
+            OutputItemType="Analyzer" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -50,7 +56,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        </PackageReference>        
     </ItemGroup>
 
 </Project>

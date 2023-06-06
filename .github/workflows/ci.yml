@@ -17,7 +17,10 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: |
+          5.0.x
+          6.0.x
+          7.0.x
         
     - name: Build
       run: dotnet build ./Ncom/ --configuration Release 

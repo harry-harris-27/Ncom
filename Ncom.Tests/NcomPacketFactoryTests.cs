@@ -61,13 +61,13 @@ namespace Ncom.Tests
         {
             var assembly = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Assembly;
             Stream resource = assembly.GetManifestResourceStream("Ncom.Tests.Resources.sample.ncom");
-            
+
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 resource.CopyTo(memoryStream);
                 return memoryStream.ToArray();
             }
         }
-        
+
     }
 }

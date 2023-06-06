@@ -11,34 +11,34 @@ namespace Ncom.StatusChannels
     {
 
         /// <summary>
-        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid.
         /// </summary>
         public const byte AgeValidThreshold = 150;
 
         private const byte InvalidABDRobotUMACInterfaceStatus = 0xFF;
 
-        private ushort _northPositionAccuracy = ushort.MaxValue;
-        private ushort _eastPositionAccuracy = ushort.MaxValue;
-        private ushort _downPositionAccuracy = ushort.MaxValue;
+        private ushort m_NorthPositionAccuracy = ushort.MaxValue;
+        private ushort m_EastPositionAccuracy = ushort.MaxValue;
+        private ushort m_DownPositionAccuracy = ushort.MaxValue;
 
 
         /// <summary>
         /// Gets or sets the north position accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort NorthPositionAccuracy { get => _northPositionAccuracy; set => _northPositionAccuracy = value; }
+        public ushort NorthPositionAccuracy { get => m_NorthPositionAccuracy; set => m_NorthPositionAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the east position accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort EastPositionAccuracy { get => _eastPositionAccuracy; set => _eastPositionAccuracy = value; }
+        public ushort EastPositionAccuracy { get => m_EastPositionAccuracy; set => m_EastPositionAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the down position accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort DownPositionAccuracy { get => _downPositionAccuracy; set => _downPositionAccuracy = value; }
+        public ushort DownPositionAccuracy { get => m_DownPositionAccuracy; set => m_DownPositionAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -51,8 +51,8 @@ namespace Ncom.StatusChannels
         public byte ABDRobotUMACStatus { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="NorthPositionAccuracy"/>, 
-        /// <see cref="EastPositionAccuracy"/> and <see cref="DownPositionAccuracy"/> values are 
+        /// Gets a value indicating whether the  <see cref="NorthPositionAccuracy"/>,
+        /// <see cref="EastPositionAccuracy"/> and <see cref="DownPositionAccuracy"/> values are
         /// valid.
         /// </summary>
         public bool IsAccuracyValid => Age < AgeValidThreshold;
@@ -64,7 +64,7 @@ namespace Ncom.StatusChannels
 
 
         /// <summary>
-        /// Sets this <see cref="StatusChannel3"/> instance logically equal to the specified 
+        /// Sets this <see cref="StatusChannel3"/> instance logically equal to the specified
         /// <paramref name="source"/> instance
         /// </summary>
         /// <param name="source">The source <see cref="StatusChannel3"/> instance to copy.</param>
@@ -96,6 +96,32 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
+        /// <inheritdoc/>
+        public override void Marshal(Span<byte> buffer)
+        {
+            base.Marshal(buffer);
+
+            ByteHandling.Marshal(buffer.Slice(0), m_NorthPositionAccuracy);
+            ByteHandling.Marshal(buffer.Slice(2), m_EastPositionAccuracy);
+            ByteHandling.Marshal(buffer.Slice(4), m_DownPositionAccuracy);
+
+            buffer[6] = Age;
+            buffer[7] = ABDRobotUMACStatus;
+        }
+
+        /// <inheritdoc/>
+        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        {
+            base.Unmarshal(buffer);
+
+            ByteHandling.Unmarshal(buffer.Slice(0), out m_NorthPositionAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(2), out m_EastPositionAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(4), out m_DownPositionAccuracy);
+
+            Age = buffer[6];
+            ABDRobotUMACStatus = buffer[7];
+        }
+
 
         /// <inheritdoc/>
         protected override bool EqualsIntl(IStatusChannel data)
@@ -106,30 +132,6 @@ namespace Ncom.StatusChannels
                 && this.DownPositionAccuracy == other.DownPositionAccuracy
                 && this.Age == other.Age
                 && this.ABDRobotUMACStatus == other.ABDRobotUMACStatus;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void MarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.Marshal(buffer, ref offset, NorthPositionAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, EastPositionAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, DownPositionAccuracy);
-
-            buffer[offset++] = Age;
-            buffer[offset++] = ABDRobotUMACStatus;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void UnmarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _northPositionAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _eastPositionAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _downPositionAccuracy);
-
-            Age = buffer[offset++];
-            ABDRobotUMACStatus = buffer[offset++];
         }
 
     }

@@ -12,33 +12,33 @@ namespace Ncom.StatusChannels
     {
 
         /// <summary>
-        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid.
         /// </summary>
         public const byte AgeValidThreshold = 150;
 
 
-        private ushort _northVelocityAccuracy = ushort.MaxValue;
-        private ushort _eastVelocityAccuracy = ushort.MaxValue;
-        private ushort _downVelocityAccuracy = ushort.MaxValue;
+        private ushort m_NorthVelocityAccuracy = ushort.MaxValue;
+        private ushort m_EastVelocityAccuracy = ushort.MaxValue;
+        private ushort m_DownVelocityAccuracy = ushort.MaxValue;
 
 
         /// <summary>
         /// Gets or sets the north velocity accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort NorthVelocityAccuracy { get => _northVelocityAccuracy; set => _northVelocityAccuracy = value; }
+        public ushort NorthVelocityAccuracy { get => m_NorthVelocityAccuracy; set => m_NorthVelocityAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the east velocity accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort EastVelocityAccuracy { get => _eastVelocityAccuracy; set => _eastVelocityAccuracy = value; }
+        public ushort EastVelocityAccuracy { get => m_EastVelocityAccuracy; set => m_EastVelocityAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the down velocity accuracy, expressed in mm.
         /// </summary>
         /// <seealso cref="IsAccuracyValid"/>
-        public ushort DownVelocityAccuracy { get => _downVelocityAccuracy; set => _downVelocityAccuracy = value; }
+        public ushort DownVelocityAccuracy { get => m_DownVelocityAccuracy; set => m_DownVelocityAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -51,15 +51,15 @@ namespace Ncom.StatusChannels
         public BlendedProcessingMethod ProcessingMethod { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="NorthVelocityAccuracy"/>, 
-        /// <see cref="EastVelocityAccuracy"/> and <see cref="DownVelocityAccuracy"/> values are 
+        /// Gets a value indicating whether the  <see cref="NorthVelocityAccuracy"/>,
+        /// <see cref="EastVelocityAccuracy"/> and <see cref="DownVelocityAccuracy"/> values are
         /// valid.
         /// </summary>
         public bool IsAccuracyValid => Age < AgeValidThreshold;
 
 
         /// <summary>
-        /// Sets this <see cref="StatusChannel4"/> instance logically equal to the specified 
+        /// Sets this <see cref="StatusChannel4"/> instance logically equal to the specified
         /// <paramref name="source"/> instance
         /// </summary>
         /// <param name="source">The source <see cref="StatusChannel4"/> instance to copy.</param>
@@ -91,6 +91,32 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
+        /// <inheritdoc/>
+        public override void Marshal(Span<byte> buffer)
+        {
+            base.Marshal(buffer);
+
+            ByteHandling.Marshal(buffer.Slice(0), NorthVelocityAccuracy);
+            ByteHandling.Marshal(buffer.Slice(2), EastVelocityAccuracy);
+            ByteHandling.Marshal(buffer.Slice(4), DownVelocityAccuracy);
+
+            buffer[6] = Age;
+            buffer[7] = (byte)ProcessingMethod;
+        }
+
+        /// <inheritdoc/>
+        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        {
+            base.Unmarshal(buffer);
+
+            ByteHandling.Unmarshal(buffer.Slice(0), out m_NorthVelocityAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(2), out m_EastVelocityAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(4), out m_DownVelocityAccuracy);
+
+            Age = buffer[6];
+            ProcessingMethod = ByteHandling.ParseEnum(buffer[7], BlendedProcessingMethod.Unknown);
+        }
+
 
         /// <inheritdoc/>
         protected override bool EqualsIntl(IStatusChannel data)
@@ -101,30 +127,6 @@ namespace Ncom.StatusChannels
                 && this.DownVelocityAccuracy == other.DownVelocityAccuracy
                 && this.Age == other.Age
                 && this.ProcessingMethod == other.ProcessingMethod;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void MarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.Marshal(buffer, ref offset, NorthVelocityAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, EastVelocityAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, DownVelocityAccuracy);
-
-            buffer[offset++] = Age;
-            buffer[offset++] = (byte)ProcessingMethod;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void UnmarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _northVelocityAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _eastVelocityAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _downVelocityAccuracy);
-
-            Age = buffer[offset++];
-            ProcessingMethod = ByteHandling.ParseEnum(buffer[offset++], BlendedProcessingMethod.Unknown);
         }
 
     }

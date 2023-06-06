@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\src\Ncom.csproj" />
+        <ProjectReference Include="..\Ncom\Ncom.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
         <PackageReference Include="Shouldly" Version="4.0.3" />

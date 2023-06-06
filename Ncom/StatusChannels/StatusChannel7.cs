@@ -1,5 +1,4 @@
-﻿using Ncom.Enumerations;
-using Ncom.Generators;
+﻿using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -12,35 +11,35 @@ namespace Ncom.StatusChannels
     {
 
         /// <summary>
-        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid.
         /// </summary>
         public const byte AgeValidThreshold = 150;
 
-        private const byte MEASUREMENTS_MASK = 0b00001111;
+        private const byte MeasurementsMask = 0b00001111;
 
 
-        private short _accelerometerBiasX = 0;
-        private short _accelerometerBiasY = 0;
-        private short _accelerometerBiasZ = 0;
+        private short m_AccelerometerBiasX = 0;
+        private short m_AccelerometerBiasY = 0;
+        private short m_AccelerometerBiasZ = 0;
 
 
         /// <summary>
         /// Gets or sets the accelerometer X bias, units 0.1 mm^-2.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short AccelerometerBiasX { get => _accelerometerBiasX; set => _accelerometerBiasX = value; }
+        public short AccelerometerBiasX { get => m_AccelerometerBiasX; set => m_AccelerometerBiasX = value; }
 
         /// <summary>
         /// Gets or sets the accelerometer Y bias, units 0.1 mm^-2.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short AccelerometerBiasY { get => _accelerometerBiasY; set => _accelerometerBiasY = value; }
+        public short AccelerometerBiasY { get => m_AccelerometerBiasY; set => m_AccelerometerBiasY = value; }
 
         /// <summary>
         /// Gets or sets the accelerometer Z bias, units 0.1 mm^-2.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short AccelerometerBiasZ { get => _accelerometerBiasZ; set => _accelerometerBiasZ = value; }
+        public short AccelerometerBiasZ { get => m_AccelerometerBiasZ; set => m_AccelerometerBiasZ = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -58,14 +57,14 @@ namespace Ncom.StatusChannels
         public byte L2Measurements { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="AccelerometerBiasX"/>, <see cref="AccelerometerBiasY"/> 
+        /// Gets a value indicating whether the  <see cref="AccelerometerBiasX"/>, <see cref="AccelerometerBiasY"/>
         /// and <see cref="AccelerometerBiasZ"/> values are valid.
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
 
         /// <summary>
-        /// Sets this <see cref="StatusChannel7"/> instance logically equal to the specified 
+        /// Sets this <see cref="StatusChannel7"/> instance logically equal to the specified
         /// <paramref name="source"/> instance
         /// </summary>
         /// <param name="source">The source <see cref="StatusChannel7"/> instance to copy.</param>
@@ -99,6 +98,34 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
+        /// <inheritdoc/>
+        public override void Marshal(Span<byte> buffer)
+        {
+            base.Marshal(buffer);
+
+            ByteHandling.Marshal(buffer, AccelerometerBiasX);
+            ByteHandling.Marshal(buffer, AccelerometerBiasY);
+            ByteHandling.Marshal(buffer, AccelerometerBiasZ);
+
+            buffer[6] = Age;
+            buffer[7] = (byte)(L1Measurements & MeasurementsMask);
+            buffer[7] |= (byte)((L2Measurements & MeasurementsMask) << 4);
+        }
+
+        /// <inheritdoc/>
+        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        {
+            base.Unmarshal(buffer);
+
+            ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasX);
+            ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasY);
+            ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasZ);
+
+            Age = buffer[6];
+            L1Measurements = (byte)(buffer[7] & MeasurementsMask);
+            L2Measurements = (byte)((buffer[7] >> 4) & MeasurementsMask);
+        }
+
 
         /// <inheritdoc/>
         protected override bool EqualsIntl(IStatusChannel data)
@@ -110,32 +137,6 @@ namespace Ncom.StatusChannels
                 && this.Age == other.Age
                 && this.L1Measurements == other.L1Measurements
                 && this.L2Measurements == other.L2Measurements;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void MarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.Marshal(buffer, ref offset, AccelerometerBiasX);
-            ByteHandling.Marshal(buffer, ref offset, AccelerometerBiasY);
-            ByteHandling.Marshal(buffer, ref offset, AccelerometerBiasZ);
-
-            buffer[offset++] = Age;
-            buffer[offset] = (byte)(L1Measurements & MEASUREMENTS_MASK);
-            buffer[offset++] |= (byte)((L2Measurements & MEASUREMENTS_MASK) << 4);
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void UnmarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _accelerometerBiasX);
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _accelerometerBiasY);
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _accelerometerBiasZ);
-
-            Age = buffer[offset++];
-            L1Measurements = (byte)(buffer[offset] & MEASUREMENTS_MASK);
-            L2Measurements = (byte)((buffer[offset] >> 4) & MEASUREMENTS_MASK);
         }
 
     }

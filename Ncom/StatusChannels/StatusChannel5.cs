@@ -1,5 +1,4 @@
-﻿using Ncom.Enumerations;
-using Ncom.Generators;
+﻿using Ncom.Generators;
 using System;
 
 namespace Ncom.StatusChannels
@@ -12,33 +11,33 @@ namespace Ncom.StatusChannels
     {
 
         /// <summary>
-        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid.
         /// </summary>
         public const byte AgeValidThreshold = 150;
 
 
-        private ushort _headingAccuracy = ushort.MaxValue;
-        private ushort _pitchAccuracy = ushort.MaxValue;
-        private ushort _rollAccuracy = ushort.MaxValue;
+        private ushort m_HeadingAccuracy = ushort.MaxValue;
+        private ushort m_PitchAccuracy = ushort.MaxValue;
+        private ushort m_RollAccuracy = ushort.MaxValue;
 
 
         /// <summary>
         /// Gets or sets the north velocity accuracy, expressed in 1e-5 radians.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public ushort HeadingAccuracy { get => _headingAccuracy; set => _headingAccuracy = value; }
+        public ushort HeadingAccuracy { get => m_HeadingAccuracy; set => m_HeadingAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the east velocity accuracy, expressed in 1e-5 radians.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public ushort PitchAccuracy { get => _pitchAccuracy; set => _pitchAccuracy = value; }
+        public ushort PitchAccuracy { get => m_PitchAccuracy; set => m_PitchAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the down velocity accuracy, expressed in 1e-5 radians.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public ushort RollAccuracy { get => _rollAccuracy; set => _rollAccuracy = value; }
+        public ushort RollAccuracy { get => m_RollAccuracy; set => m_RollAccuracy = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -46,14 +45,14 @@ namespace Ncom.StatusChannels
         public byte Age { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="HeadingAccuracy"/>, 
+        /// Gets a value indicating whether the  <see cref="HeadingAccuracy"/>,
         /// <see cref="PitchAccuracy"/> and <see cref="RollAccuracy"/> values are valid.
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
 
         /// <summary>
-        /// Sets this <see cref="StatusChannel5"/> instance logically equal to the specified 
+        /// Sets this <see cref="StatusChannel5"/> instance logically equal to the specified
         /// <paramref name="source"/> instance
         /// </summary>
         /// <param name="source">The source <see cref="StatusChannel5"/> instance to copy.</param>
@@ -83,6 +82,32 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
+        /// <inheritdoc/>
+        public override void Marshal(Span<byte> buffer)
+        {
+            base.Marshal(buffer);
+
+            ByteHandling.Marshal(buffer.Slice(0), HeadingAccuracy);
+            ByteHandling.Marshal(buffer.Slice(2), PitchAccuracy);
+            ByteHandling.Marshal(buffer.Slice(3), RollAccuracy);
+
+            buffer[6] = Age;
+            buffer[7] = 0;       // Reserved
+        }
+
+        /// <inheritdoc/>
+        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        {
+            base.Unmarshal(buffer);
+
+            ByteHandling.Unmarshal(buffer.Slice(0), out m_HeadingAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(2), out m_PitchAccuracy);
+            ByteHandling.Unmarshal(buffer.Slice(3), out m_RollAccuracy);
+
+            Age = buffer[6];
+            // buffer[7] is reserved
+        }
+
 
         /// <inheritdoc/>
         protected override bool EqualsIntl(IStatusChannel data)
@@ -92,30 +117,6 @@ namespace Ncom.StatusChannels
                 && this.PitchAccuracy == other.PitchAccuracy
                 && this.RollAccuracy == other.RollAccuracy
                 && this.Age == other.Age;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void MarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.Marshal(buffer, ref offset, HeadingAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, PitchAccuracy);
-            ByteHandling.Marshal(buffer, ref offset, RollAccuracy);
-
-            buffer[offset++] = Age;
-            buffer[offset++] = 0;       // Reserved
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void UnmarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _headingAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _pitchAccuracy);
-            ByteHandling.UnmarshalUInt16(buffer, ref offset, ref _rollAccuracy);
-
-            Age = buffer[offset++];
-            offset++;               // Reserved
         }
 
     }

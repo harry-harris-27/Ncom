@@ -11,35 +11,35 @@ namespace Ncom.StatusChannels
     {
 
         /// <summary>
-        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid. 
+        /// The value where if <see cref="Age"/> exceeds, the accuracies become invalid.
         /// </summary>
         public const byte AgeValidThreshold = 150;
 
-        private const byte MEASUREMENTS_MASK = 0b00001111;
+        private const byte MeasurementsMask = 0b00001111;
 
 
-        private short _gyroScaleFactorX = 0;
-        private short _gyroScaleFactorY = 0;
-        private short _gyroScaleFactorZ = 0;
+        private short m_GyroScaleFactorX = 0;
+        private short m_GyroScaleFactorY = 0;
+        private short m_GyroScaleFactorZ = 0;
 
 
         /// <summary>
         /// Gets or sets the X Gyro scale factor, units 1 ppm (0.0001%).
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorX { get => _gyroScaleFactorX; set => _gyroScaleFactorX = value; }
+        public short GyroScaleFactorX { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the y Gyro scale factor, units 1 ppm (0.0001%).
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorY { get => _gyroScaleFactorY; set => _gyroScaleFactorY = value; }
+        public short GyroScaleFactorY { get => m_GyroScaleFactorY; set => m_GyroScaleFactorY = value; }
 
         /// <summary>
         /// Gets or sets the Z Gyro scale factor, units 1 ppm (0.0001%).
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorZ { get => _gyroScaleFactorZ; set => _gyroScaleFactorZ = value; }
+        public short GyroScaleFactorZ { get => m_GyroScaleFactorZ; set => m_GyroScaleFactorZ = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -57,14 +57,14 @@ namespace Ncom.StatusChannels
         public byte L2Measurements { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="GyroScaleFactorX"/>, <see cref="GyroScaleFactorY"/> 
+        /// Gets a value indicating whether the  <see cref="GyroScaleFactorX"/>, <see cref="GyroScaleFactorY"/>
         /// and <see cref="GyroScaleFactorZ"/> values are valid.
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
 
         /// <summary>
-        /// Sets this <see cref="StatusChannel8"/> instance logically equal to the specified 
+        /// Sets this <see cref="StatusChannel8"/> instance logically equal to the specified
         /// <paramref name="source"/> instance
         /// </summary>
         /// <param name="source">The source <see cref="StatusChannel8"/> instance to copy.</param>
@@ -98,6 +98,34 @@ namespace Ncom.StatusChannels
             return hash;
         }
 
+        /// <inheritdoc/>
+        public override void Marshal(Span<byte> buffer)
+        {
+            base.Marshal(buffer);
+
+            ByteHandling.Marshal(buffer, GyroScaleFactorX);
+            ByteHandling.Marshal(buffer, GyroScaleFactorY);
+            ByteHandling.Marshal(buffer, GyroScaleFactorZ);
+
+            buffer[6] = Age;
+            buffer[7] = (byte)(L1Measurements & MeasurementsMask);
+            buffer[7] |= (byte)((L2Measurements & MeasurementsMask) << 4);
+        }
+
+        /// <inheritdoc/>
+        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        {
+            base.Unmarshal(buffer);
+
+            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorX);
+            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorY);
+            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorZ);
+
+            Age = buffer[6];
+            L1Measurements = (byte)(buffer[7] & MeasurementsMask);
+            L2Measurements = (byte)((buffer[7] >> 4) & MeasurementsMask);
+        }
+
 
         /// <inheritdoc/>
         protected override bool EqualsIntl(IStatusChannel data)
@@ -109,32 +137,6 @@ namespace Ncom.StatusChannels
                 && this.Age == other.Age
                 && this.L1Measurements == other.L1Measurements
                 && this.L2Measurements == other.L2Measurements;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void MarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.Marshal(buffer, ref offset, GyroScaleFactorX);
-            ByteHandling.Marshal(buffer, ref offset, GyroScaleFactorY);
-            ByteHandling.Marshal(buffer, ref offset, GyroScaleFactorZ);
-
-            buffer[offset++] = Age;
-            buffer[offset] = (byte)(L1Measurements & MEASUREMENTS_MASK);
-            buffer[offset++] |= (byte)((L2Measurements & MEASUREMENTS_MASK) << 4);
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Base method implements non-null check")]
-        protected override void UnmarshalIntl(byte[] buffer, int offset)
-        {
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _gyroScaleFactorX);
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _gyroScaleFactorY);
-            ByteHandling.UnmarshalInt16(buffer, ref offset, ref _gyroScaleFactorZ);
-
-            Age = buffer[offset++];
-            L1Measurements = (byte)(buffer[offset] & MEASUREMENTS_MASK);
-            L2Measurements = (byte)((buffer[offset] >> 4) & MEASUREMENTS_MASK);
         }
 
     }

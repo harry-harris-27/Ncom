@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
         
 jobs:
   build:
@@ -12,18 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '3.0.100'
+        dotnet-version: '7.0.x'
         
-    - name: Build with dotnet
-      run: dotnet build ./src/Ncom/ --configuration Release 
+    - name: Build
+      run: dotnet build ./Ncom/ --configuration Release 
     
-    - name: Run tests
-      run: dotnet test ./src/ 
+    - name: Test
+      run: dotnet test ./Ncom.Tests/ 
       
     - name: Publish package
       run: |

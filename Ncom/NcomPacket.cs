@@ -54,26 +54,7 @@ namespace Ncom
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacket"/> class.
         /// </summary>
-        public NcomPacket() : this(null)
-        {
-
-        }
-
-        /// <summary>
-        /// Copy constructor. Initializes a new instance of the <see cref="NcomPacket"/> class,
-        /// logically equivalent to to the specified <paramref name="source"/>.
-        /// </summary>
-        /// <param name="source">
-        /// The source <see cref="NcomPacket"/> with which to initialise this instance.
-        /// </param>
-        public NcomPacket(NcomPacket source)
-        {
-            if (source != null)
-            {
-                this.Checksum3 = source.Checksum3;
-                this.NavigationStatus = source.NavigationStatus;
-            }
-        }
+        public NcomPacket() { }
 
 
         /// <inheritdoc/>
@@ -105,54 +86,6 @@ namespace Ncom
         /// </remarks>
         public virtual NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
 
-
-        /// <summary>
-        /// Determines whether the specified object is equal to the current object.
-        /// </summary>
-        /// <param name="value">The object to compare with the current object.</param>
-        /// <returns>
-        /// <c>true</c> if the specified object is equal to the current object; otherwise
-        /// <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// This method tests object nullity, type and reference before testing equivalence. For a
-        /// pure equivalence test, use <see cref="IsEqual(NcomPacket)"/>.
-        /// </remarks>
-        /// <seealso cref="IsEqual(NcomPacket)"/>
-        public override bool Equals(object value)
-        {
-            // Is it null?
-            if (value is null) return false;
-
-            // Is the same object
-            if (ReferenceEquals(this, value)) return true;
-
-            // Is same type?
-            if (value.GetType() != this.GetType()) return false;
-
-            return IsEqual((NcomPacket)value);
-        }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data
-        /// structures like a hash table.
-        /// </returns>
-        /// <remarks>
-        /// The hash code generation process ignores the <see cref="Checksum3"/> property, since it
-        /// is not used when testing for equality.
-        /// </remarks>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + (byte)NavigationStatus;
-
-            return hash;
-        }
 
         /// <inheritdoc/>
         public virtual void Marshal(Span<byte> buffer)
@@ -191,9 +124,7 @@ namespace Ncom
         /// Calculates the NCOM packet checksums. Note that the Sync byte is not included in any
         /// checksum calculations.
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
+        /// <param name="buffer">The buffer contain data to calculate the checksum from</param>
         /// <returns></returns>
         /// <remarks>
         /// Checksums allow the integrity of the NCOM packet to be checked and intermediate
@@ -212,23 +143,6 @@ namespace Ncom
             }
 
             return cs;
-        }
-
-        /// <summary>
-        /// A pure implementation of value equality that avoids the routine type and null checks in
-        /// <see cref="object.Equals(object)"/>. When overriding the default equals method, override this
-        /// method instead.
-        /// </summary>
-        /// <param name="pkt">The NCOM packet to check to</param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Note that this method does not implement any non-nullity checks. If there is the
-        /// possiblity that Ncom packet argument could be null, then use the default
-        /// <see cref="object.Equals(object)"/> method.
-        /// </remarks>
-        protected virtual bool IsEqual(NcomPacket pkt)
-        {
-            return this.NavigationStatus == pkt.NavigationStatus;
         }
 
     }

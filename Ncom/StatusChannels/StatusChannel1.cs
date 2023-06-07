@@ -24,7 +24,7 @@ namespace Ncom.StatusChannels
     public partial class StatusChannel1 : StatusChannel
     {
 
-        private const byte INNOVATION_VALIDITY_MASK = 0x01;
+        private const byte InnovationValidityMask = 0x01;
 
         private byte m_PositionXInnovation = 0;
         private byte m_PositionYInnovation = 0;
@@ -133,61 +133,6 @@ namespace Ncom.StatusChannels
         public bool IsOrientationHeadingInnovationValid { get => m_IsOrientationHeadingInnovationValid; set => m_IsOrientationHeadingInnovationValid = value; }
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel1"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel1"/> instance to copy.</param>
-        public void Copy(StatusChannel1 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            PositionXInnovation = source.PositionXInnovation;
-            PositionYInnovation = source.PositionYInnovation;
-            PositionZInnovation = source.PositionZInnovation;
-            VelocityXInnovation = source.VelocityXInnovation;
-            VelocityYInnovation = source.VelocityYInnovation;
-            VelocityZInnovation = source.VelocityZInnovation;
-            OrientationPitchInnovation = source.OrientationPitchInnovation;
-            OrientationHeadingInnovation = source.OrientationHeadingInnovation;
-            IsPositionXInnovationValid = source.IsPositionXInnovationValid;
-            IsPositionYInnovationValid = source.IsPositionYInnovationValid;
-            IsPositionZInnovationValid = source.IsPositionZInnovationValid;
-            IsVelocityXInnovationValid = source.IsVelocityXInnovationValid;
-            IsVelocityYInnovationValid = source.IsVelocityYInnovationValid;
-            IsVelocityZInnovationValid = source.IsVelocityZInnovationValid;
-            IsOrientationPitchInnovationValid = source.IsOrientationPitchInnovationValid;
-            IsOrientationHeadingInnovationValid = source.IsOrientationHeadingInnovationValid;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + PositionXInnovation;
-            hash = (hash * mul) + PositionYInnovation;
-            hash = (hash * mul) + PositionZInnovation;
-            hash = (hash * mul) + VelocityXInnovation;
-            hash = (hash * mul) + VelocityYInnovation;
-            hash = (hash * mul) + VelocityZInnovation;
-            hash = (hash * mul) + OrientationHeadingInnovation;
-            hash = (hash * mul) + OrientationPitchInnovation;
-            hash = (hash * mul) + (IsPositionXInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsPositionYInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsPositionZInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsVelocityXInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsVelocityYInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsVelocityZInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsOrientationHeadingInnovationValid ? 1 : 0);
-            hash = (hash * mul) + (IsOrientationPitchInnovationValid ? 1 : 0);
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -219,30 +164,6 @@ namespace Ncom.StatusChannels
         }
 
 
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel1 other
-                && this.PositionXInnovation == other.PositionXInnovation
-                && this.PositionYInnovation == other.PositionYInnovation
-                && this.PositionZInnovation == other.PositionZInnovation
-                && this.VelocityXInnovation == other.VelocityXInnovation
-                && this.VelocityYInnovation == other.VelocityYInnovation
-                && this.VelocityZInnovation == other.VelocityZInnovation
-                && this.OrientationHeadingInnovation == other.OrientationHeadingInnovation
-                && this.OrientationPitchInnovation == other.OrientationPitchInnovation
-                && this.IsPositionXInnovationValid == other.IsPositionXInnovationValid
-                && this.IsPositionYInnovationValid == other.IsPositionYInnovationValid
-                && this.IsPositionZInnovationValid == other.IsPositionZInnovationValid
-                && this.IsVelocityXInnovationValid == other.IsVelocityXInnovationValid
-                && this.IsVelocityYInnovationValid == other.IsVelocityYInnovationValid
-                && this.IsVelocityZInnovationValid == other.IsVelocityZInnovationValid
-                && this.IsOrientationHeadingInnovationValid == other.IsOrientationHeadingInnovationValid
-                && this.IsOrientationPitchInnovationValid == other.IsOrientationPitchInnovationValid;
-
-        }
-
-
         private static byte MarshalInnonvation(byte innovation, bool isInnovationValid)
         {
             return (byte)((innovation << 1) | (isInnovationValid ? 0x01 : 0x00));
@@ -250,8 +171,9 @@ namespace Ncom.StatusChannels
 
         private static void UnmarshalInnovation(byte value, ref byte innovationStorage, ref bool validityStorage)
         {
-            innovationStorage = (byte)((value & ~INNOVATION_VALIDITY_MASK) >> 1);
-            validityStorage = (value & INNOVATION_VALIDITY_MASK) == INNOVATION_VALIDITY_MASK;
+            innovationStorage = (byte)((value & ~InnovationValidityMask) >> 1);
+            validityStorage = (value & InnovationValidityMask) == InnovationValidityMask;
         }
+
     }
 }

@@ -40,39 +40,6 @@ namespace Ncom.StatusChannels
         public PositionVelocityOrientationMode OrientationMode { get; set; } = PositionVelocityOrientationMode.None;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel0"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel0"/> instance to copy.</param>
-        public void Copy(StatusChannel0 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            FullTime = source.FullTime;
-            NumberOfSatellites = source.NumberOfSatellites;
-            PositionMode = source.PositionMode;
-            VelocityMode = source.VelocityMode;
-            OrientationMode = source.OrientationMode;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + FullTime.GetHashCode();
-            hash = (hash * mul) + NumberOfSatellites;
-            hash = (hash * mul) + (byte)PositionMode;
-            hash = (hash * mul) + (byte)VelocityMode;
-            hash = (hash * mul) + (byte)OrientationMode;
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -95,18 +62,6 @@ namespace Ncom.StatusChannels
             PositionMode = ByteHandling.ParseEnum(buffer[5], PositionVelocityOrientationMode.Unknown);
             VelocityMode = ByteHandling.ParseEnum(buffer[6], PositionVelocityOrientationMode.Unknown);
             OrientationMode = ByteHandling.ParseEnum(buffer[7], PositionVelocityOrientationMode.Unknown);
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel0 other
-                && this.FullTime == other.FullTime
-                && this.NumberOfSatellites == other.NumberOfSatellites
-                && this.PositionMode == other.PositionMode
-                && this.VelocityMode == other.VelocityMode
-                && this.OrientationMode == other.OrientationMode;
         }
 
     }

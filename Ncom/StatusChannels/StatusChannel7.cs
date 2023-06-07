@@ -63,41 +63,6 @@ namespace Ncom.StatusChannels
         public bool IsValid => Age < AgeValidThreshold;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel7"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel7"/> instance to copy.</param>
-        public void Copy(StatusChannel7 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.AccelerometerBiasX = source.AccelerometerBiasX;
-            this.AccelerometerBiasY = source.AccelerometerBiasY;
-            this.AccelerometerBiasZ = source.AccelerometerBiasZ;
-            this.Age = source.Age;
-            this.L1Measurements = source.L1Measurements;
-            this.L2Measurements = source.L2Measurements;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + AccelerometerBiasX.GetHashCode();
-            hash = (hash * mul) + AccelerometerBiasY.GetHashCode();
-            hash = (hash * mul) + AccelerometerBiasZ.GetHashCode();
-            hash = (hash * mul) + Age;
-            hash = (hash * mul) + L1Measurements.GetHashCode();
-            hash = (hash * mul) + L2Measurements.GetHashCode();
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -124,19 +89,6 @@ namespace Ncom.StatusChannels
             Age = buffer[6];
             L1Measurements = (byte)(buffer[7] & MeasurementsMask);
             L2Measurements = (byte)((buffer[7] >> 4) & MeasurementsMask);
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel7 other
-                && this.AccelerometerBiasX == other.AccelerometerBiasX
-                && this.AccelerometerBiasY == other.AccelerometerBiasY
-                && this.AccelerometerBiasZ == other.AccelerometerBiasZ
-                && this.Age == other.Age
-                && this.L1Measurements == other.L1Measurements
-                && this.L2Measurements == other.L2Measurements;
         }
 
     }

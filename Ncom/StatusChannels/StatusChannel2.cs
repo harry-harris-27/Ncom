@@ -60,37 +60,6 @@ namespace Ncom.StatusChannels
         }
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel2"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel2"/> instance to copy.</param>
-        public void Copy(StatusChannel2 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.PrimaryGNSSReceiverCharacters = source.PrimaryGNSSReceiverCharacters;
-            this.PrimaryGNSSReceiverPackets = source.PrimaryGNSSReceiverPackets;
-            this.PrimaryGNSSReceiverCharactersNotUnderstood = source.PrimaryGNSSReceiverCharactersNotUnderstood;
-            this.PrimaryGNSSReceiverPacketsNotUsed = source.PrimaryGNSSReceiverPacketsNotUsed;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + PrimaryGNSSReceiverCharacters.GetHashCode();
-            hash = (hash * mul) + PrimaryGNSSReceiverPackets.GetHashCode();
-            hash = (hash * mul) + PrimaryGNSSReceiverCharactersNotUnderstood.GetHashCode();
-            hash = (hash * mul) + PrimaryGNSSReceiverPacketsNotUsed.GetHashCode();
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -111,17 +80,6 @@ namespace Ncom.StatusChannels
             ByteHandling.Unmarshal(buffer.Slice(2), out m_PrimaryGNSSReceiverPackets);
             ByteHandling.Unmarshal(buffer.Slice(4), out m_PrimaryGNSSReceiverCharactersNotUnderstood);
             ByteHandling.Unmarshal(buffer.Slice(6), out m_PrimaryGNSSReceiverPacketsNotUsed);
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel2 other
-                && this.PrimaryGNSSReceiverCharacters == other.PrimaryGNSSReceiverCharacters
-                && this.PrimaryGNSSReceiverPackets == other.PrimaryGNSSReceiverPackets
-                && this.PrimaryGNSSReceiverCharactersNotUnderstood == other.PrimaryGNSSReceiverCharactersNotUnderstood
-                && this.PrimaryGNSSReceiverPacketsNotUsed == other.PrimaryGNSSReceiverPacketsNotUsed;
         }
 
     }

@@ -23,7 +23,7 @@ namespace Ncom.StatusChannels
     /// list will repeat approximately once every 200 Ncom structure-A packets.
     /// </para>
     /// </summary>
-    public interface IStatusChannel : IMarshallable, IEquatable<IStatusChannel>
+    public interface IStatusChannel : IMarshallable
     {
         /// <summary>
         /// Gets the Status Channel bytes.
@@ -42,14 +42,5 @@ namespace Ncom.StatusChannels
         /// </para>
         /// </remarks>
         byte StatusChannelByte { get; }
-
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="IStatusChannel"/> logically equal to this
-        /// instance.
-        /// </summary>
-        /// <returns>A <see cref="IStatusChannel"/> instance</returns>
-        IStatusChannel Clone();
-
     }
 }

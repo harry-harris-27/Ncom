@@ -38,56 +38,6 @@ namespace Ncom.Tests
             0x57                                                // Checksum 3          = 87
         };
 
-        [Fact]
-        public void Test_Equals()
-        {
-            NcomPacketA packet1 = new NcomPacketA();
-            NcomPacketA packet2 = new NcomPacketA();
-
-            NcomPacketA[] pkts = new [] { packet1, packet2 };
-            for (int i = 0; i < pkts.Length; i++)
-            {
-                pkts[i] = new NcomPacketA()
-                {
-                    Time = 1,
-                    AccelerationX = 2,
-                    AccelerationY = 3,
-                    AccelerationZ = 4,
-                    AngularRateX = 5,
-                    AngularRateY = 6,
-                    AngularRateZ = 7,
-                    NavigationStatus = Enumerations.NavigationStatus.Locked,
-                    Latitude = 8,
-                    Longitude = 9,
-                    Altitude = 10,
-                    NorthVelocity = 11,
-                    EastVelocity = 12,
-                    DownVelocity = 13,
-                    Heading = 14,
-                    Pitch = 15,
-                    Roll = 16,
-                    StatusChannel = new StatusChannel0()
-                    {
-                        FullTime = 17,
-                        NumberOfSatellites = 18,
-                        PositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
-                        VelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
-                        OrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
-                    }
-                };
-            }
-
-            packet1.ShouldBeEquivalentTo(packet2);
-
-            // Test 2 different objects
-            packet1.ShouldNotBeSameAs(packet2);
-            packet2.ShouldNotBeSameAs(packet1);     // Transitive
-
-            // Change one packet
-            pkts[1].Time = 0;
-            packet1.ShouldBeEquivalentTo(packet2);
-            packet2.ShouldBeEquivalentTo(packet1);  // Transitive
-        }
 
         [Fact]
         public void Test_Unmarshal()
@@ -165,46 +115,6 @@ namespace Ncom.Tests
 
             // Assert
             Assert.AssertArraysAreEqual(buffer.AsSpan(), marshalled.AsSpan());
-        }
-
-        [Fact]
-        public void CopyConstructorTest()
-        {
-            // Create an NCOM structure A packet
-            NcomPacketA packet1 = new NcomPacketA()
-            {
-                Time = 1,
-                AccelerationX = 2,
-                AccelerationY = 3,
-                AccelerationZ = 4,
-                AngularRateX = 5,
-                AngularRateY = 6,
-                AngularRateZ = 7,
-                NavigationStatus = Enumerations.NavigationStatus.Locked,
-                Latitude = 8,
-                Longitude = 9,
-                Altitude = 10,
-                NorthVelocity = 11,
-                EastVelocity = 12,
-                DownVelocity = 13,
-                Heading = 14,
-                Pitch = 15,
-                Roll = 16,
-                StatusChannel = new StatusChannel0()
-                {
-                    FullTime = 17,
-                    NumberOfSatellites = 18,
-                    PositionMode = Enumerations.PositionVelocityOrientationMode.CDGPS,
-                    VelocityMode = Enumerations.PositionVelocityOrientationMode.Blanked,
-                    OrientationMode = Enumerations.PositionVelocityOrientationMode.Doppler
-                }
-            };
-
-            // Copy it
-            NcomPacketA packet2 = new NcomPacketA(packet1);
-
-            // Are they equal?
-            packet1.ShouldBeEquivalentTo(packet2);
         }
 
     }

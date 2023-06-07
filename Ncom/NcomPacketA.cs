@@ -1,6 +1,7 @@
 ﻿using Ncom.Enumerations;
 using Ncom.StatusChannels;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -30,7 +31,7 @@ namespace Ncom
     /// </remarks>
     /// <seealso cref="Ncom.NcomPacket" />
     /// <seealso cref="Ncom.NcomPacketB" />
-    public class NcomPacketA : NcomPacket, IEquatable<NcomPacketA>
+    public class NcomPacketA : NcomPacket
     {
 
         internal const float AccelerationScaling    = 1e-4f;
@@ -83,44 +84,6 @@ namespace Ncom
         /// </summary>
         public NcomPacketA() { }
 
-        /// <summary>
-        /// Copy constructor. Initializes a new instance of the <see cref="NcomPacketA"/> class,
-        /// logically equivalent to to the specified <paramref name="source"/>.
-        /// </summary>
-        /// <param name="source">
-        /// The source <see cref="NcomPacketA"/> with which to initialise this instance.
-        /// </param>
-        public NcomPacketA(NcomPacketA source) : base(source)
-        {
-            this.Time = source.Time;
-
-            this.AccelerationX = source.AccelerationX;
-            this.AccelerationY = source.AccelerationY;
-            this.AccelerationZ = source.AccelerationZ;
-
-            this.AngularRateX = source.AngularRateX;
-            this.AngularRateY = source.AngularRateY;
-            this.AngularRateZ = source.AngularRateZ;
-
-            this.Checksum1 = source.Checksum1;
-
-            this.Latitude = source.Latitude;
-            this.Longitude = source.Longitude;
-            this.Altitude = source.Altitude;
-
-            this.NorthVelocity = source.NorthVelocity;
-            this.EastVelocity = source.EastVelocity;
-            this.DownVelocity = source.DownVelocity;
-
-            this.Heading = source.Heading;
-            this.Pitch = source.Pitch;
-            this.Roll = source.Roll;
-
-            this.Checksum2 = source.Checksum2;
-
-            this.StatusChannel = source.StatusChannel?.Clone();
-        }
-
 
         /// <summary>
         /// Gets or sets the time transmitted, expressed as milliseconds into the current GPS minute [0 - 59,999].
@@ -159,7 +122,6 @@ namespace Ncom
         /// Gets or sets the component of the host object's angular rate about its <i>Y</i>-axis (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// radians per second
-        /// </summary>
         /// </summary>
         public float AngularRateY { get => m_AngularRateY; set => m_AngularRateY = value; }
 
@@ -296,46 +258,6 @@ namespace Ncom
         public IStatusChannel? StatusChannel { get; set; } = null;
 
 
-        /// <remarks>
-        /// The hash code generation process ignores properties <see cref="Checksum1" />,
-        /// <see cref="Checksum2" /> and <see cref="NcomPacket.Checksum3" />, since they are not
-        /// used when testing for equality.
-        /// </remarks>
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + Time.GetHashCode();
-
-            hash = (hash * mul) + AccelerationX.GetHashCode();
-            hash = (hash * mul) + AccelerationY.GetHashCode();
-            hash = (hash * mul) + AccelerationZ.GetHashCode();
-
-            hash = (hash * mul) + AngularRateX.GetHashCode();
-            hash = (hash * mul) + AngularRateY.GetHashCode();
-            hash = (hash * mul) + AngularRateZ.GetHashCode();
-
-            hash = (hash * mul) + Latitude.GetHashCode();
-            hash = (hash * mul) + Longitude.GetHashCode();
-            hash = (hash * mul) + Altitude.GetHashCode();
-
-            hash = (hash * mul) + NorthVelocity.GetHashCode();
-            hash = (hash * mul) + EastVelocity.GetHashCode();
-            hash = (hash * mul) + DownVelocity.GetHashCode();
-
-            hash = (hash * mul) + Heading.GetHashCode();
-            hash = (hash * mul) + Pitch.GetHashCode();
-            hash = (hash * mul) + Roll.GetHashCode();
-
-            hash = (hash * mul) + (StatusChannel != null ? StatusChannel.GetHashCode() : 0);
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -465,31 +387,6 @@ namespace Ncom
             byte statusChannelByte = buffer[offset++];
             StatusChannel = StatusChannelFactory.Create(statusChannelByte);
             StatusChannel?.Unmarshal(buffer.Slice(offset));
-        }
-
-        /// <inheritdoc/>
-        protected override bool IsEqual(NcomPacket _pkt)
-        {
-            NcomPacketA pkt = (_pkt as NcomPacketA)!;
-
-            return base.IsEqual(pkt)
-                && this.Time == pkt.Time
-                && this.AccelerationX == pkt.AccelerationX
-                && this.AccelerationY == pkt.AccelerationY
-                && this.AccelerationZ == pkt.AccelerationZ
-                && this.AngularRateX == pkt.AngularRateX
-                && this.AngularRateY == pkt.AngularRateY
-                && this.AngularRateZ == pkt.AngularRateZ
-                && this.Latitude == pkt.Latitude
-                && this.Longitude == pkt.Longitude
-                && this.Altitude == pkt.Altitude
-                && this.NorthVelocity == pkt.NorthVelocity
-                && this.EastVelocity == pkt.EastVelocity
-                && this.DownVelocity == pkt.DownVelocity
-                && this.Heading == pkt.Heading
-                && this.Pitch == pkt.Pitch
-                && this.Roll == pkt.Roll
-                && (this.StatusChannel == null ? pkt.StatusChannel == null : this.StatusChannel.Equals(pkt.StatusChannel));
         }
 
     }

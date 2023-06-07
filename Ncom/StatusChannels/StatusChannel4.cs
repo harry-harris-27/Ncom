@@ -58,39 +58,6 @@ namespace Ncom.StatusChannels
         public bool IsAccuracyValid => Age < AgeValidThreshold;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel4"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel4"/> instance to copy.</param>
-        public void Copy(StatusChannel4 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.NorthVelocityAccuracy = source.NorthVelocityAccuracy;
-            this.EastVelocityAccuracy = source.EastVelocityAccuracy;
-            this.DownVelocityAccuracy = source.DownVelocityAccuracy;
-            this.Age = source.Age;
-            this.ProcessingMethod = source.ProcessingMethod;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + NorthVelocityAccuracy.GetHashCode();
-            hash = (hash * mul) + EastVelocityAccuracy.GetHashCode();
-            hash = (hash * mul) + DownVelocityAccuracy.GetHashCode();
-            hash = (hash * mul) + Age;
-            hash = (hash * mul) + (byte)ProcessingMethod;
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -115,18 +82,6 @@ namespace Ncom.StatusChannels
 
             Age = buffer[6];
             ProcessingMethod = ByteHandling.ParseEnum(buffer[7], BlendedProcessingMethod.Unknown);
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel4 other
-                && this.NorthVelocityAccuracy == other.NorthVelocityAccuracy
-                && this.EastVelocityAccuracy == other.EastVelocityAccuracy
-                && this.DownVelocityAccuracy == other.DownVelocityAccuracy
-                && this.Age == other.Age
-                && this.ProcessingMethod == other.ProcessingMethod;
         }
 
     }

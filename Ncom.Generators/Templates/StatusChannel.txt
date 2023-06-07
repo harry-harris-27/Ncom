@@ -9,22 +9,9 @@ namespace {{Namespace}}
         /// </summary>
         public {{ClassName}}() { }
 
-        /// <summary>
-        /// Initializes a new <see cref="{{ClassName}}"/> instance that is logically equal to
-        /// specifed <paramref name="source"/> instance.
-        /// </summary>
-        /// <param name="source">The source <see cref="{{ClassName}}"/> instance to copy.</param>
-        public {{ClassName}}({{ClassName}} source)
-        {
-            Copy(source);
-        }
-
 
         /// <inheritdoc/>
         public override byte StatusChannelByte { get; } = {{StatusChannelByte}};
 
-
-        /// <inheritdoc/>
-        public override IStatusChannel Clone() => new {{ClassName}}(this);
     }
 }

@@ -63,39 +63,6 @@ namespace Ncom.StatusChannels
         public bool IsABDRobotUMACStatusValid => ABDRobotUMACStatus != InvalidABDRobotUMACInterfaceStatus;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel3"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel3"/> instance to copy.</param>
-        public void Copy(StatusChannel3 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.NorthPositionAccuracy = source.NorthPositionAccuracy;
-            this.EastPositionAccuracy = source.EastPositionAccuracy;
-            this.DownPositionAccuracy = source.DownPositionAccuracy;
-            this.Age = source.Age;
-            this.ABDRobotUMACStatus = source.ABDRobotUMACStatus;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + NorthPositionAccuracy.GetHashCode();
-            hash = (hash * mul) + EastPositionAccuracy.GetHashCode();
-            hash = (hash * mul) + DownPositionAccuracy.GetHashCode();
-            hash = (hash * mul) + Age;
-            hash = (hash * mul) + ABDRobotUMACStatus;
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -120,18 +87,6 @@ namespace Ncom.StatusChannels
 
             Age = buffer[6];
             ABDRobotUMACStatus = buffer[7];
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel3 other
-                && this.NorthPositionAccuracy == other.NorthPositionAccuracy
-                && this.EastPositionAccuracy == other.EastPositionAccuracy
-                && this.DownPositionAccuracy == other.DownPositionAccuracy
-                && this.Age == other.Age
-                && this.ABDRobotUMACStatus == other.ABDRobotUMACStatus;
         }
 
     }

@@ -13,23 +13,6 @@ namespace Ncom
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacketB"/> class.
         /// </summary>
-        public NcomPacketB() : this(null) { }
-
-        /// <summary>
-        /// Copy constructor
-        /// </summary>
-        /// <param name="pkt"></param>
-        public NcomPacketB(NcomPacketB pkt) : base(pkt)
-        {
-            if (pkt != null)
-            {
-
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => base.GetHashCode();
-
+        public NcomPacketB() : base() { }
     }
 }

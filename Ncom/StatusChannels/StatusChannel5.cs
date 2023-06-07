@@ -51,37 +51,6 @@ namespace Ncom.StatusChannels
         public bool IsValid => Age < AgeValidThreshold;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel5"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel5"/> instance to copy.</param>
-        public void Copy(StatusChannel5 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.HeadingAccuracy = source.HeadingAccuracy;
-            this.PitchAccuracy = source.PitchAccuracy;
-            this.RollAccuracy = source.RollAccuracy;
-            this.Age = source.Age;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + HeadingAccuracy.GetHashCode();
-            hash = (hash * mul) + PitchAccuracy.GetHashCode();
-            hash = (hash * mul) + RollAccuracy.GetHashCode();
-            hash = (hash * mul) + Age;
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -106,17 +75,6 @@ namespace Ncom.StatusChannels
 
             Age = buffer[6];
             // buffer[7] is reserved
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel5 other
-                && this.HeadingAccuracy == other.HeadingAccuracy
-                && this.PitchAccuracy == other.PitchAccuracy
-                && this.RollAccuracy == other.RollAccuracy
-                && this.Age == other.Age;
         }
 
     }

@@ -63,41 +63,6 @@ namespace Ncom.StatusChannels
         public bool IsValid => Age < AgeValidThreshold;
 
 
-        /// <summary>
-        /// Sets this <see cref="StatusChannel8"/> instance logically equal to the specified
-        /// <paramref name="source"/> instance
-        /// </summary>
-        /// <param name="source">The source <see cref="StatusChannel8"/> instance to copy.</param>
-        public void Copy(StatusChannel8 source)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-
-            this.GyroScaleFactorX = source.GyroScaleFactorX;
-            this.GyroScaleFactorY = source.GyroScaleFactorY;
-            this.GyroScaleFactorZ = source.GyroScaleFactorZ;
-            this.Age = source.Age;
-            this.L1Measurements = source.L1Measurements;
-            this.L2Measurements = source.L2Measurements;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            int hash = 13;
-            int mul = 7;
-
-            hash = (hash * mul) + base.GetHashCode();
-
-            hash = (hash * mul) + GyroScaleFactorX.GetHashCode();
-            hash = (hash * mul) + GyroScaleFactorY.GetHashCode();
-            hash = (hash * mul) + GyroScaleFactorZ.GetHashCode();
-            hash = (hash * mul) + Age;
-            hash = (hash * mul) + L1Measurements.GetHashCode();
-            hash = (hash * mul) + L2Measurements.GetHashCode();
-
-            return hash;
-        }
-
         /// <inheritdoc/>
         public override void Marshal(Span<byte> buffer)
         {
@@ -124,19 +89,6 @@ namespace Ncom.StatusChannels
             Age = buffer[6];
             L1Measurements = (byte)(buffer[7] & MeasurementsMask);
             L2Measurements = (byte)((buffer[7] >> 4) & MeasurementsMask);
-        }
-
-
-        /// <inheritdoc/>
-        protected override bool EqualsIntl(IStatusChannel data)
-        {
-            return data is StatusChannel8 other
-                && this.GyroScaleFactorX == other.GyroScaleFactorX
-                && this.GyroScaleFactorY == other.GyroScaleFactorY
-                && this.GyroScaleFactorZ == other.GyroScaleFactorZ
-                && this.Age == other.Age
-                && this.L1Measurements == other.L1Measurements
-                && this.L2Measurements == other.L2Measurements;
         }
 
     }

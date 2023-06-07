@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Deterministic>true</Deterministic>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\.generated</CompilerGeneratedFilesOutputPath>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+
+        <PackageId>OxTS</PackageId>
+        <Product>OxTS</Product>
+        <Authors>eXtrac Ltd</Authors>
+        <Company>eXtrac Ltd</Company>
+
+        <Version>1.0.0-dev.1</Version>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+
+        <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
+        <Description>Base package for all OxTS packages</Description>
+        <Copyright>Copyright © Harry Harris $(CurrentYear)</Copyright>
+
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/harry-harris-27/Ncom</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/harry-harris-27/Ncom</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageTags>OxTS</PackageTags>
+
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NeutralLanguage>en</NeutralLanguage>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="OxTS.Tests" />
+        <InternalsVisibleTo Include="OxTS.NCOM" />
+        <InternalsVisibleTo Include="OxTS.NCOM.Tests" />
+        <InternalsVisibleTo Include="OxTS.RCOM" />
+        <InternalsVisibleTo Include="OxTS.RCOM.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Memory" Version="4.5.5" />
+    </ItemGroup>
+
+
+</Project>

@@ -21,8 +21,9 @@ Once a initial release of the library has been created, it is planned that a nug
 ```C#
 // Get Ncom data from somewhere. E.g. an UDP packet.
 byte[] data;
+var buffer = data.AsSpan();
 
-List<NcomPacket> pkts = new NcomPacketFactory().ProcessNcom(data, 0);
+List<NcomPacket> pkts = new NcomPacketFactory().ProcessNcom(buffer);
 foreach (NcomPacket pkt in pkts)
 {
     // Check that decoded packet was of type Structure-A.
@@ -39,22 +40,27 @@ or
 NcomPacketA pkt = new NcomPacketA();
 
 // Get NCOM data from somewhere...
-byte[] data;
+Span<byte> data;
 
 // Decode
-pkt.Unmarshal(data, 0);
+pkt.Unmarshal(data);
 ```
 
 ### Encoding
 ```C#
 NcomPacketA ncom = new NcomPacketA();
-
-// ...
-
 byte[] encoded = ncom.Marshal();
 
 // Now do want you want with marshalled NCOM data. E.g. send out in UDP packet.
-// ...
+```
+or
+```C#
+NcomPacketA ncom = new NcomPacketA();
+byte[] buffer = new byte[NcomPacketA.PacketLength];
+
+ncom.Marshal(buffer.AsSpan());
+
+// Note: This method allows for reuse of buffer. If regular marshalling is require this method will seriously reduce excessive memory allocation
 ```
 
 ## Contributing

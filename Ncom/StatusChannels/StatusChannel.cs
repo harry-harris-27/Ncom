@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Ncom.StatusChannels
 {
@@ -15,26 +13,12 @@ namespace Ncom.StatusChannels
         /// </summary>
         internal const int StatusChannelLength = 8;
 
-        private static readonly IDictionary<byte, Type> statusChannelTypeLookup = new Dictionary<byte, Type>();
-
-
-        internal protected static void RegisterStatusChannel(byte statusChannel, Type type)
-        {
-            statusChannelTypeLookup[statusChannel] = type;
-        }
-
-        internal static bool TryGetStatusChannelType(byte statusChannelByte, out Type statusChannelType)
-        {
-            return statusChannelTypeLookup.TryGetValue(statusChannelByte, out statusChannelType);
-        }
-
 
         /// <inheritdoc/>
         public abstract byte StatusChannelByte { get; }
 
         /// <inheritdoc/>
         public int MarshalledSize => StatusChannelLength;
-
 
 
         /// <inheritdoc/>

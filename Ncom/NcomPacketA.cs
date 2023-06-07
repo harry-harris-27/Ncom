@@ -1,6 +1,7 @@
 ﻿using Ncom.Enumerations;
 using Ncom.StatusChannels;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace Ncom
@@ -29,7 +30,7 @@ namespace Ncom
     /// </remarks>
     /// <seealso cref="Ncom.NcomPacket" />
     /// <seealso cref="Ncom.NcomPacketB" />
-    public class NcomPacketA : NcomPacket
+    public class NcomPacketA : NcomPacket, IEquatable<NcomPacketA>
     {
 
         internal const float AccelerationScaling    = 1e-4f;
@@ -122,72 +123,109 @@ namespace Ncom
 
 
         /// <summary>
-        /// Time is transmitted as milliseconds into the current GPS minute. Range = [0 - 59,999].
+        /// Gets or sets the time transmitted, expressed as milliseconds into the current GPS minute [0 - 59,999].
         /// </summary>
         public ushort Time { get => m_Time; set => m_Time = value; }
 
         /// <summary>
-        /// Acceleration <i>X</i> is the host object's acceleration in the <i>X</i>-direction (i.e.
+        /// Gets or sets the component of the host object's acceleration in the <i>X</i>-direction (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// ms^-2.
         /// </summary>
         public float AccelerationX { get => m_AccelerationX; set => m_AccelerationX = value; }
 
         /// <summary>
-        /// Acceleration <i>Y</i> is the host object's acceleration in the <i>Y</i>-direction (i.e.
+        /// Gets or sets the component of the host object's acceleration in the <i>Y</i>-direction (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// ms^-2.
         /// </summary>
         public float AccelerationY { get => m_AccelerationY; set => m_AccelerationY = value; }
 
         /// <summary>
-        /// Acceleration <i>Z</i> is the host object's acceleration in the <i>Z</i>-direction (i.e.
+        /// Gets or sets the component of the host object's acceleration in the <i>Z</i>-direction (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// ms^-2.
         /// </summary>
         public float AccelerationZ { get => m_AccelerationZ; set => m_AccelerationZ = value; }
 
         /// <summary>
-        /// Angular rate <i>X</i> is the host object's angular rate about its <i>X</i>-axis (i.e.
+        /// Gets or sets the component of the host object's angular rate about its <i>X</i>-axis (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// radians per second
         /// </summary>
         public float AngularRateX { get => m_AngularRateX; set => m_AngularRateX = value; }
 
         /// <summary>
-        /// Angular rate <i>Y</i> is the host object's angular rate about its <i>Y</i>-axis (i.e.
+        /// Gets or sets the component of the host object's angular rate about its <i>Y</i>-axis (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// radians per second
+        /// </summary>
         /// </summary>
         public float AngularRateY { get => m_AngularRateY; set => m_AngularRateY = value; }
 
         /// <summary>
-        /// Angular rate <i>Z</i> is the host object's angular rate about its <i>Z</i>-axis (i.e.
+        /// Gets or sets the component of the host object's angular rate about its <i>Z</i>-axis (i.e.
         /// after the IMU to host attitude matrix has been applied). It is expressed in units of
         /// radians per second
         /// </summary>
         public float AngularRateZ { get => m_AngularRateZ; set => m_AngularRateZ = value; }
 
-        /// <summary>
-        /// Checksum 1 allows the software to verify the integrity of bytes 1-21. The sync byte if
-        /// ignored. In low-latency applications the inertial measurements in Batch A can be used
-        /// to update a previous solution without waiting for the rest of the packet to be
-        /// received.
-        /// </summary>
-        public bool Checksum1 { get; set; } = false;
+        /// <inheritdoc/>
+        /// <exception cref="NcomException">
+        /// When set to an invalid <see cref="NavigationStatus"/>. See <see cref="NcomPacketA"/> for
+        /// permissable values.
+        /// </exception>
+        public override NavigationStatus NavigationStatus
+        {
+            get => base.NavigationStatus;
+            set
+            {
+                if (!AllowedNavigationStatus.Contains(value))
+                {
+                    throw new NcomException("NavigationStatus value not allowed for NCOM Packet A.");
+                }
+
+                base.NavigationStatus = value;
+            }
+        }
 
         /// <summary>
-        /// The latitude of the INS. Expressed in units of radians.
+        /// Indicates whether the first checksum was correct for the most recent
+        /// <see cref="Unmarshal(ReadOnlySpan{byte})"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value is only set during <see cref="Unmarshal(ReadOnlySpan{byte})"/>; otherwise
+        /// defaults to <c>false</c>.
+        /// </para>
+        /// <para>
+        /// This checksum validates:
+        /// <list type="=bullet">
+        /// <item><see cref="Time"/></item>
+        /// <item><see cref="AccelerationX"/></item>
+        /// <item><see cref="AccelerationY"/></item>
+        /// <item><see cref="AccelerationZ"/></item>
+        /// <item><see cref="AngularRateX"/></item>
+        /// <item><see cref="AngularRateY"/></item>
+        /// <item><see cref="AngularRateZ"/></item>
+        /// <item><see cref="NavigationStatus"/></item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public bool Checksum1 { get; private set; } = false;
+
+        /// <summary>
+        /// Gets or sets the latitude of the INS. Expressed in units of radians.
         /// </summary>
         public double Latitude { get => m_Latitude; set => m_Latitude = value; }
 
         /// <summary>
-        /// The longitude of the INS. Expressed in units of radians.
+        /// Gets or sets the longitude of the INS. Expressed in units of radians.
         /// </summary>
         public double Longitude { get => m_Longitude; set => m_Longitude = value; }
 
         /// <summary>
-        /// The altitude of the INS. Expressed in units of radians.
+        /// Gets or sets the altitude of the INS. Expressed in units of metres.
         /// </summary>
         public float Altitude { get => m_Altitude; set => m_Altitude = value; }
 
@@ -197,58 +235,73 @@ namespace Ncom
         public float NorthVelocity { get => m_NorthVelocity; set => m_NorthVelocity = value; }
 
         /// <summary>
-        /// East velocity in units m/s
+        /// Gets or sets the east velocity in units m/s
         /// </summary>
         public float EastVelocity { get => m_EastVelocity; set => m_EastVelocity = value; }
 
         /// <summary>
-        /// Down velocity in units m/s
+        /// Gets or sets the down velocity in units m/s
         /// </summary>
         public float DownVelocity { get => m_DownVelocity; set => m_DownVelocity = value; }
 
         /// <summary>
-        /// Heading in units of radians. Range +-PI
+        /// Gets or sets the heading in units of radians. Range +-PI
         /// </summary>
         public float Heading { get => m_Heading; set => m_Heading = value; }
 
         /// <summary>
-        /// Pitch in units of radians. Range +-PI/2
+        /// Gets or sets the pitch in units of radians. Range +-PI/2
         /// </summary>
         public float Pitch { get => m_Pitch; set => m_Pitch = value; }
 
         /// <summary>
-        /// Roll in units of radians. Range +-PI
+        /// Gets or sets the roll in units of radians. Range +-PI
         /// </summary>
         public float Roll { get => m_Roll; set => m_Roll = value; }
 
         /// <summary>
-        /// Checksum 2 allows the software to verify the integrity of bytes 1-60. The sync byte if
-        /// ignored. For medium-latency output, the full navigation solution is now available
-        /// without waiting for the status updated in the rest of the packet.
+        /// Indicates whether the second checksum was correct for the most recent
+        /// <see cref="Unmarshal(ReadOnlySpan{byte})"/>.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value is only set during <see cref="Unmarshal(ReadOnlySpan{byte})"/>; otherwise
+        /// defaults to <c>false</c>.
+        /// </para>
+        /// <para>
+        /// This checksum validates all values validated by <see cref="Checksum1"/> in addition to:
+        /// <list type="=bullet">
+        /// <item><see cref="Latitude"/></item>
+        /// <item><see cref="Longitude"/></item>
+        /// <item><see cref="Altitude"/></item>
+        /// <item><see cref="NorthVelocity"/></item>
+        /// <item><see cref="EastVelocity"/></item>
+        /// <item><see cref="DownVelocity"/></item>
+        /// <item><see cref="Heading"/></item>
+        /// <item><see cref="Pitch"/></item>
+        /// <item><see cref="Roll"/></item>
+        /// </list>
+        /// </para>
+        /// </remarks>
         public bool Checksum2 { get; set; } = false;
 
         /// <summary>
-        /// Bytes 63 to 70 of an NCOM structure-A packet are collectively called Batch S. Batch S
-        /// contains status channel information from the INS. The information transmitted in Batch
-        /// S is defined by the value of the status channel byte, which defines the structure of
-        /// each status channel and the information it contains.
+        /// Gets or sets the <see cref="IStatusChannel"/> information.
         /// </summary>
-        public IStatusChannel StatusChannel { get; set; } = null;
+        /// <remarks>
+        /// <para>
+        /// Setting to null with assume an invalid status channel of 255.
+        /// </para>
+        /// </remarks>
+        public IStatusChannel? StatusChannel { get; set; } = null;
 
 
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data
-        /// structures like a hash table.
-        /// </returns>
         /// <remarks>
         /// The hash code generation process ignores properties <see cref="Checksum1" />,
         /// <see cref="Checksum2" /> and <see cref="NcomPacket.Checksum3" />, since they are not
         /// used when testing for equality.
         /// </remarks>
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             int hash = 13;
@@ -290,7 +343,6 @@ namespace Ncom
 
             int offset = 1;
 
-
             // Batch A
             // --------
 
@@ -307,12 +359,8 @@ namespace Ncom
             ByteHandling.MarshalInt24(buffer, ref offset, (int)(AngularRateY / AngularRateScaling));
             ByteHandling.MarshalInt24(buffer, ref offset, (int)(AngularRateZ / AngularRateScaling));
 
-            // Skip over nav. status
-            offset++;
-
-            // Calculate and insert Checksum 1
-            buffer[offset] = CalculateChecksum(buffer.Slice(1, offset - 2));
-            offset++;
+            // Skip over nav. status and checksum 1
+            offset += 2;
 
 
             // Batch B
@@ -333,8 +381,7 @@ namespace Ncom
             ByteHandling.MarshalInt24(buffer, ref offset, (int)(Pitch / OrientationScaling));
             ByteHandling.MarshalInt24(buffer, ref offset, (int)(Roll / OrientationScaling));
 
-            // Calculate and insert Checksum 2
-            buffer[offset] = CalculateChecksum(buffer.Slice(1, offset - 2));
+            // Skip over checksum 2
             offset++;
 
 
@@ -350,8 +397,13 @@ namespace Ncom
             else
             {
                 buffer[offset++] = 0xFF;
-                offset += StatusChannels.StatusChannel.StatusChannelLength;
+                buffer.Slice(offset, StatusChannels.StatusChannel.StatusChannelLength).Fill(0);
             }
+
+            // Calculate and insert checksums
+            buffer[Checksum1Index] = CalculateChecksum(buffer.Slice(1, Checksum1Index - 1));
+            buffer[Checksum2Index] = CalculateChecksum(buffer.Slice(1, Checksum2Index - 1));
+            buffer[Checksum3Index] = CalculateChecksum(buffer.Slice(1, Checksum3Index - 1));
         }
 
         /// <inheritdoc/>
@@ -359,15 +411,8 @@ namespace Ncom
         {
             base.Unmarshal(buffer);
 
+            // offset points to pkt[1] to skip over the Sync byte.
             int offset = 1;
-
-            // offset points to pkt[1]
-
-            // Check the navigation status byte
-            if (!AllowedNavigationStatus.Contains(NavigationStatus))
-            {
-                //throw new Exception("Invalid NavigationStatus value");
-            }
 
             // Batch A
             // --------
@@ -385,7 +430,7 @@ namespace Ncom
             ByteHandling.UnmarshalInt24(buffer, ref offset, out m_AngularRateY, AngularRateScaling);
             ByteHandling.UnmarshalInt24(buffer, ref offset, out m_AngularRateZ, AngularRateScaling);
 
-            // Skip a bit for the nav status byte
+            // Skip a over the nav status byte. Handled in base implementation
             offset++;
 
             // Extract checksum 1
@@ -417,9 +462,9 @@ namespace Ncom
             // Batch S
             // --------
 
-            // Extract status channel (and status channel byte)
             byte statusChannelByte = buffer[offset++];
-            StatusChannel = StatusChannelFactory.Unmarshal(statusChannelByte, buffer.Slice(offset));
+            StatusChannel = StatusChannelFactory.Create(statusChannelByte);
+            StatusChannel?.Unmarshal(buffer.Slice(offset));
         }
 
         /// <inheritdoc/>

@@ -48,6 +48,8 @@ namespace Ncom
         /// </summary>
         public const int PacketLength = 72;
 
+        internal const int Checksum3Index = PacketLength - 1;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NcomPacket"/> class.
@@ -101,7 +103,7 @@ namespace Ncom
         /// what triggered the packet.
         /// </para>
         /// </remarks>
-        public NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
+        public virtual NavigationStatus NavigationStatus { get; set; } = NavigationStatus.Invalid;
 
 
         /// <summary>
@@ -155,19 +157,11 @@ namespace Ncom
         /// <inheritdoc/>
         public virtual void Marshal(Span<byte> buffer)
         {
-            // NOTE: When overriden, this base method should be called after the buffer has been filled.
-
-            // Check that the buffer is largew enough to contain a marshalled NCOM packet
-            this.CheckedBufferSize(buffer);
-
              // Add the Sync byte
             buffer[0] = SyncByte;
 
             // Add the Navigation status byte to the buffer
             buffer[21] = (byte)NavigationStatus;
-
-            // Calculate and insert Checksum 3
-            buffer[PacketLength - 1] = CalculateChecksum(buffer.Slice(1, PacketLength - 2));
         }
 
         /// <inheritdoc/>
@@ -189,7 +183,7 @@ namespace Ncom
             NavigationStatus = ByteHandling.ParseEnum(buffer[21], NavigationStatus.Unknown);
 
             // Calculate Checksum 3
-            Checksum3 = CalculateChecksum(buffer.Slice(1, 70)) == buffer[PacketLength - 2];
+            Checksum3 = CalculateChecksum(buffer.Slice(1, PacketLength - 2)) == buffer[PacketLength - 1];
         }
 
 

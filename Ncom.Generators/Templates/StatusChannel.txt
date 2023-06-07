@@ -4,18 +4,13 @@ namespace {{Namespace}}
 {
     public partial class {{ClassName}}
     {
-        static {{ClassName}}()
-        {
-            RegisterStatusChannel({{StatusChannelByte}}, typeof({{ClassName}}));
-        }
-
         /// <summary>
         /// Initializes a new <see cref="{{ClassName}}"/> instance.
         /// </summary>
         public {{ClassName}}() { }
 
         /// <summary>
-        /// Initializes a new <see cref="{{ClassName}}"/> instance that is logically equal to 
+        /// Initializes a new <see cref="{{ClassName}}"/> instance that is logically equal to
         /// specifed <paramref name="source"/> instance.
         /// </summary>
         /// <param name="source">The source <see cref="{{ClassName}}"/> instance to copy.</param>
@@ -27,7 +22,7 @@ namespace {{Namespace}}
 
         /// <inheritdoc/>
         public override byte StatusChannelByte { get; } = {{StatusChannelByte}};
-        
+
 
         /// <inheritdoc/>
         public override IStatusChannel Clone() => new {{ClassName}}(this);

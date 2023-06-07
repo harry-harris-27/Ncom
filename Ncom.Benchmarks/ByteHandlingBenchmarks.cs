@@ -47,7 +47,7 @@ namespace Ncom.Benchmarks
         {
             double valueCopy = Value;
             long value = *(long*)&valueCopy;
-            Span<byte> buffer_span = new Span<byte>(buffer_array);
+            Span<byte> buffer_span = new Span<byte>(buffer_array, Offset, buffer_array.Length - Offset);
 
             fixed (byte* ptr = buffer_span)
             {
@@ -58,9 +58,19 @@ namespace Ncom.Benchmarks
         [Benchmark]
         public void WriteUnaligned_MemoryMarshal()
         {
-            Span<byte> buffer_span = new Span<byte>(buffer_array);
+            Span<byte> buffer_span = new Span<byte>(buffer_array, Offset, buffer_array.Length - Offset);
 
             Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer_span), Value);
+        }
+
+        [Benchmark]
+        public void WriteUnaligned_MemoryMarshal_Reversed()
+        {
+            Span<byte> buffer_span = new Span<byte>(buffer_array, Offset, buffer_array.Length - Offset);
+
+            Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer_span), Value);
+
+            buffer_span.Slice(0, 4).Reverse();
         }
     }
 }

@@ -29,7 +29,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-build --no-restore --filter "FullyQualifiedName~.Tests" /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --no-restore --filter "FullyQualifiedName~.Tests" /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master

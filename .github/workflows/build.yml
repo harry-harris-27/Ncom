@@ -22,17 +22,8 @@ jobs:
           6.0.x
           7.0.x
 
-    - name: Restore
-      run: dotnet restore
-
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release
 
     - name: Test
-      run: dotnet test --no-restore --filter "FullyQualifiedName~.Tests" /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
-
-    - name: Publish coverage report to coveralls.io
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./src/Ncom.Tests/TestResults/coverage.info
+      run: dotnet test --configuration Release

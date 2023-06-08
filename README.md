@@ -1,7 +1,7 @@
-# Ncom
+# NCOM
 
-![Build](https://github.com/harry-harris-27/Ncom/workflows/Build/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/harry-harris-27/Ncom/badge.svg?branch=master)](https://coveralls.io/github/harry-harris-27/Ncom?branch=master)
+![Build](https://github.com/harry-harris-27/NCOM/workflows/Build/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/harry-harris-27/NCOM/badge.svg?branch=master)](https://coveralls.io/github/harry-harris-27/NCOM?branch=master)
 
 A small portable .NET library built for encoding and decoding [OxTS](https://www.oxts.com/) NCOM binary data packets. Note that this library is not currently complete.
 
@@ -12,22 +12,22 @@ This library is designed to allow developers to create their own custom .NET app
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. Since this project is not complete and still under development, it should not be used as part of any deployment.
 
-To include this project as part of an existing solution, [download](https://github.com/harry-harris-27/Ncom/master/archive/master.zip) the repository and unzip. Now add the unzipped Ncom and Ncom.Test projects to your solution and add references as required.
+To include this project as part of an existing solution, [download](https://github.com/harry-harris-27/NCOM/master/archive/master.zip) the repository and unzip. Now add the unzipped NCOM and NCOM.Test projects to your solution and add references as required.
 
 Once a initial release of the library has been created, it is planned that a nuget package will be created.
 
 ## Code Example
 ### Decoding
 ```C#
-// Get Ncom data from somewhere. E.g. an UDP packet.
+// Get NCOM data from somewhere. E.g. an UDP packet.
 byte[] data;
 var buffer = data.AsSpan();
 
-List<NcomPacket> pkts = new NcomPacketFactory().ProcessNcom(buffer);
-foreach (NcomPacket pkt in pkts)
+List<NCOMPacket> pkts = new NCOMPacketFactory().ProcessNCOM(buffer);
+foreach (NCOMPacket pkt in pkts)
 {
     // Check that decoded packet was of type Structure-A.
-    if (pkt is NcomPacketA ncomData)
+    if (pkt is NCOMPacketA ncomData)
     {
         // Here we have our decoded NCOM data.
         // ...
@@ -37,7 +37,7 @@ foreach (NcomPacket pkt in pkts)
 or
 ```C#
 // Decoding a single NCOM packet
-NcomPacketA pkt = new NcomPacketA();
+NCOMPacketA pkt = new NCOMPacketA();
 
 // Get NCOM data from somewhere...
 Span<byte> data;
@@ -48,15 +48,15 @@ pkt.Unmarshal(data);
 
 ### Encoding
 ```C#
-NcomPacketA ncom = new NcomPacketA();
+NCOMPacketA ncom = new NCOMPacketA();
 byte[] encoded = ncom.Marshal();
 
 // Now do want you want with marshalled NCOM data. E.g. send out in UDP packet.
 ```
 or
 ```C#
-NcomPacketA ncom = new NcomPacketA();
-byte[] buffer = new byte[NcomPacketA.PacketLength];
+NCOMPacketA ncom = new NCOMPacketA();
+byte[] buffer = new byte[NCOMPacketA.PacketLength];
 
 ncom.Marshal(buffer.AsSpan());
 

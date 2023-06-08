@@ -1,13 +1,13 @@
 ﻿using OxTS.NCOM.Generators;
 using System;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Accelerometer Biases
     /// </summary>
     [StatusChannel(7)]
-    public partial class StatusChannel7 : StatusChannel
+    public partial class NCOMStatusChannel7 : StatusChannel
     {
 
         /// <summary>
@@ -64,10 +64,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer, AccelerometerBiasX);
             ByteHandling.Marshal(buffer, AccelerometerBiasY);
             ByteHandling.Marshal(buffer, AccelerometerBiasZ);
@@ -78,10 +76,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasX);
             ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasY);
             ByteHandling.Unmarshal(buffer, out m_AccelerometerBiasZ);

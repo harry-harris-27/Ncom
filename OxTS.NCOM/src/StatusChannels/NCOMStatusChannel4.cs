@@ -1,14 +1,13 @@
-﻿using OxTS.NCOM.Enumerations;
-using OxTS.NCOM.Generators;
+﻿using OxTS.NCOM.Generators;
 using System;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Velocity accuracies.
     /// </summary>
     [StatusChannel(4)]
-    public partial class StatusChannel4 : StatusChannel
+    public partial class NCOMStatusChannel4 : StatusChannel
     {
 
         /// <summary>
@@ -59,10 +58,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer.Slice(0), NorthVelocityAccuracy);
             ByteHandling.Marshal(buffer.Slice(2), EastVelocityAccuracy);
             ByteHandling.Marshal(buffer.Slice(4), DownVelocityAccuracy);
@@ -72,10 +69,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer.Slice(0), out m_NorthVelocityAccuracy);
             ByteHandling.Unmarshal(buffer.Slice(2), out m_EastVelocityAccuracy);
             ByteHandling.Unmarshal(buffer.Slice(4), out m_DownVelocityAccuracy);

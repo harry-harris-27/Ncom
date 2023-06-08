@@ -8,30 +8,42 @@ namespace OxTS
     public interface IMarshallable
     {
         /// <summary>
-        /// Gets the marshalled size of this data structure, expressed in number of bytes.
+        /// Returns the number bytes required to store this marshalled data structure.
         /// </summary>
-        /// <seealso cref="Marshal(Span{byte})"/>
-        /// <seealso cref="Unmarshal(ReadOnlySpan{byte})"/>
-        int MarshalledSize { get; }
+        /// <returns>The number of bytes required to store this marshalled data structure.</returns>
+        int GetMarshalledSize();
 
 
         /// <summary>
-        /// Marshalls the data structure in the specified position in the <paramref name="buffer"/>.
+        /// Attempts to marshal the data structure into the specified <paramref name="buffer"/>.
         /// </summary>
-        /// <param name="buffer">The buffer to writed the marshalled bytes to.</param>
-        /// <exception cref="IndexOutOfRangeException">
-        /// When the <paramref name="buffer"/> is not large enough to contain the marshalled data structure.
-        /// </exception>
-        /// <seealso cref="MarshalledSize"/>
+        /// <param name="buffer">The buffer to write the marshalled data structure to.</param>
+        /// <param name="bytes">
+        /// If successful, set to the number of bytes written to the <paramref name="buffer"/>;
+        /// otherwise <c>-1</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if successful; otherwise <c>false</c>. If successful then
+        /// <paramref name="bytes"/> is set to the number of bytes written to the
+        /// <paramref name="buffer"/>.
+        /// </returns>
         /// <seealso cref="Unmarshal(ReadOnlySpan{byte})"/>
-        void Marshal(Span<byte> buffer);
+        bool TryMarshal(Span<byte> buffer, out int bytes);
 
         /// <summary>
-        /// Unmarshalled the data structure from the specified buffer.
+        /// Attempts to unmarshal the data structure from the specified <paramref name="buffer"/>.
         /// </summary>
-        /// <param name="buffer">The buffer to unmarhsal the data structure from.</param>
-        /// <seealso cref="MarshalledSize"/>
+        /// <param name="buffer">The buffer to read the marshalled data structure from.</param>
+        /// <param name="bytes">
+        /// If successful, set to the number of bytes read from the <paramref name="buffer"/>;
+        /// otherwise <c>-1</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if successful; otherwise <c>false</c>. If successful then
+        /// <paramref name="bytes"/> is set to the number of bytes read from the
+        /// <paramref name="buffer"/>.
+        /// </returns>
         /// <seealso cref="Marshal(Span{byte})"/>
-        void Unmarshal(ReadOnlySpan<byte> buffer);
+        bool TryUnmarshal(ReadOnlySpan<byte> buffer, out int bytes);
     }
 }

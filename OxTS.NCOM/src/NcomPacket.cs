@@ -1,5 +1,4 @@
-﻿using OxTS.NCOM.Enumerations;
-using System;
+﻿using System;
 
 namespace OxTS.NCOM
 {
@@ -8,26 +7,25 @@ namespace OxTS.NCOM
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Ncom is a data format designed by OxTS for the efficient communication of navigation
+    /// NCOM is a data format designed by OxTS for the efficient communication of navigation
     /// measurements and other data. It is a very compact format and only includes core
     /// measurements, which makes it particularly suitable for inertial navigation systems.
     /// </para>
     /// <para>
     /// Two versions of the NCOM packet exist, referred to as NCOM structure-A and NCOM
-    /// structure-B. Byte 21 of an Ncom packet, the <see cref="NavigationStatus"/> byte, identifies
-    /// which structure a packet employs. See <see cref="NcomPacketA" /> and
-    /// <see cref="NcomPacketB" /> respectively.
+    /// structure-B. Byte 21 of an NCOM packet, the <see cref="NavigationStatus"/> byte, identifies
+    /// which structure a packet employs. See <see cref="NCOMPacketA" /> and
+    /// <see cref="NCOMPacketB" /> respectively.
     /// </para>
     /// </remarks>
-    /// <seealso cref="NcomPacketA" />
-    /// <seealso cref="NcomPacketB" />
-    public abstract class NcomPacket : IMarshallable
+    /// <seealso cref="NCOMPacketA" />
+    /// <seealso cref="NCOMPacketB" />
+    public abstract class NCOMPacket : IMarshallable
     {
 
         /// <summary>
         /// <para>
-        /// The first-byte of an NCOM packet is the sync byte, which always has a value of
-        /// <c>0xE7</c>.
+        /// The first byte of an NCOM packet.
         /// </para>
         /// <para>
         /// Note the in order to reduce latency with RS232 serial transmissions, the sync character
@@ -48,24 +46,22 @@ namespace OxTS.NCOM
         /// </summary>
         public const int PacketLength = 72;
 
+        internal const int NavigationStatusIndex = 21;
         internal const int Checksum3Index = PacketLength - 1;
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NcomPacket"/> class.
+        /// Initializes a new instance of the <see cref="NCOMPacket"/> class.
         /// </summary>
-        public NcomPacket() { }
+        public NCOMPacket() { }
 
-
-        /// <inheritdoc/>
-        public int MarshalledSize => PacketLength;
 
         /// <summary>
         /// The final checksum that verifies the entire encoded NCOM packet (bytes 1-70), ignoring the <see cref="SyncByte"/>.
         /// </summary>
         /// <remarks>
         /// Note that this value is only set when an NCOM packet has been decoded using
-        /// <see cref="Unmarshal(ReadOnlySpan{byte})"/>. When <c>false</c>, one should assume that all the
+        /// <see cref="TryUnmarshal(ReadOnlySpan{byte}, out int)"/>. When <c>false</c>, one should assume that all the
         /// members of this instance are incorrect/unreliable.
         /// </remarks>
         public bool Checksum3 { get; protected set; } = false;
@@ -76,7 +72,7 @@ namespace OxTS.NCOM
         /// <remarks>
         /// <para>
         /// The value of this status byte is initially used to the structure of the encoded packet
-        /// (see <see cref="NcomPacketA"/> and <see cref="NcomPacketB"/>).
+        /// (see <see cref="NCOMPacketA"/> and <see cref="NCOMPacketB"/>).
         /// </para><para>
         /// As well as revealing the packet structure, the navigation status byte also describes the
         /// state of inertial navigation system (INS) and when the packet was created. In the case of
@@ -88,62 +84,75 @@ namespace OxTS.NCOM
 
 
         /// <inheritdoc/>
-        public virtual void Marshal(Span<byte> buffer)
+        public int GetMarshalledSize() => PacketLength;
+
+        /// <inheritdoc/>
+        public bool TryMarshal(Span<byte> buffer, out int bytes)
         {
+            if (buffer.Length < PacketLength)
+            {
+                bytes = -1;
+                return false;
+            }
+            bytes = PacketLength;
+
              // Add the Sync byte
             buffer[0] = SyncByte;
 
             // Add the Navigation status byte to the buffer
-            buffer[21] = (byte)NavigationStatus;
+            buffer[NavigationStatusIndex] = (byte)NavigationStatus;
+
+            // Marshal packet-specified data
+            Marshal(buffer);
+
+            // Perform final checksum
+            buffer[Checksum3Index] = ByteHandling.CalculateChecksum(buffer.Slice(1, Checksum3Index - 1));
+
+            return true;
         }
 
         /// <inheritdoc/>
-        /// <exception cref="ArgumentException">
-        /// When the first byte of the <paramref name="buffer"/> is not equals to <see cref="SyncByte"/>.
-        /// </exception>
-        public virtual void Unmarshal(ReadOnlySpan<byte> buffer)
+        public bool TryUnmarshal(ReadOnlySpan<byte> buffer, out int bytes)
         {
-            // Check that the buffer is largew enough to contain a marshalled NCOM packet
-            this.CheckedBufferSize(buffer);
-
-            // Check that it starts wit the sync byte
-            if (buffer[0] != SyncByte)
+            if (buffer.Length < PacketLength || buffer[0] != SyncByte)
             {
-                throw new ArgumentNullException("Marshalled NCOM packet starts with unexpected value. Expected 0x" + SyncByte.ToString("X2") + ".");
+                bytes = -1;
+                return false;
             }
+            bytes = PacketLength;
 
             // Get navigation status byte
-            NavigationStatus = ByteHandling.ParseEnum(buffer[21], NavigationStatus.Unknown);
+            NavigationStatus = ByteHandling.ParseEnum(buffer[NavigationStatusIndex], NavigationStatus.Unknown);
 
-            // Calculate Checksum 3
-            Checksum3 = CalculateChecksum(buffer.Slice(1, PacketLength - 2)) == buffer[PacketLength - 1];
+            // Validate Checksum 3
+            Checksum3 = ByteHandling.CalculateChecksum(buffer.Slice(1, PacketLength - 2)) == buffer[PacketLength - 1];
+
+            // Unmarshal packet-specific data
+            Unmarshal(buffer);
+
+            return true;
         }
 
 
         /// <summary>
-        /// Calculates the NCOM packet checksums. Note that the Sync byte is not included in any
-        /// checksum calculations.
+        /// Marshals this data structure into the specified <paramref name="buffer"/>.
         /// </summary>
-        /// <param name="buffer">The buffer contain data to calculate the checksum from</param>
-        /// <returns></returns>
+        /// <param name="buffer">The buffer to write marshalled data to.</param>
         /// <remarks>
-        /// Checksums allow the integrity of the NCOM packet to be checked and intermediate
-        /// checksums also allow check validity of data upto that point without having to wait for
-        /// the whole packet.
+        /// The called to this method guarentees that the <paramref name="buffer"/> is large enough
+        /// to store the marshalled data.
         /// </remarks>
-        protected static byte CalculateChecksum(ReadOnlySpan<byte> buffer)
-        {
-            byte cs = 0;
-            unchecked
-            {
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    cs += buffer[i];
-                }
-            }
+        protected abstract void Marshal(Span<byte> buffer);
 
-            return cs;
-        }
+        /// <summary>
+        /// Unmsarshals this data structure from the specified <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="buffer">The buffer to read marshalled data from.</param>
+        /// <remarks>
+        /// The called to this method guarentees that the <paramref name="buffer"/> is large enough
+        /// to store the marshalled data.
+        /// </remarks>
+        protected abstract void Unmarshal(ReadOnlySpan<byte> buffer);
 
     }
 }

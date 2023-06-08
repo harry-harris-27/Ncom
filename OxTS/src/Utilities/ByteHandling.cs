@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,12 +6,46 @@ namespace OxTS
 {
     internal static class ByteHandling
     {
+        /// <summary>
+        /// Calculates the checksums.
+        /// </summary>
+        /// <param name="buffer">The buffer contain data to calculate the checksum from</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Checksums allow the integrity of the data packets to be checked and intermediate
+        /// checksums also allow check validity of data upto that point without having to wait for
+        /// the whole packet.
+        /// </remarks>
+        public static byte CalculateChecksum(ReadOnlySpan<byte> buffer)
+        {
+            byte cs = 0;
+            unchecked
+            {
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    cs += buffer[i];
+                }
+            }
+
+            return cs;
+        }
+
         #region Marshalling
+
+        public static void Marshal(Span<byte> buffer, short value)
+        {
+            MarshalPrimitive(buffer, value);
+        }
 
         public static void Marshal(Span<byte> buffer, ref int offset, short value)
         {
             Marshal(buffer.Slice(offset), value);
             offset += 2;
+        }
+
+        public static void Marshal(Span<byte> buffer, ushort value)
+        {
+            MarshalPrimitive(buffer, value);
         }
 
         public static void Marshal(Span<byte> buffer, ref int offset, ushort value)
@@ -21,21 +54,29 @@ namespace OxTS
             offset += 2;
         }
 
-        public static void MarshalInt24(Span<byte> buffer, ref int offset, int value)
+        public static void MarshalInt24(Span<byte> buffer, int value)
         {
-            buffer = buffer.Slice(offset);
             if (buffer.Length > 3)
             {
                 byte temp = buffer[3];
-                Marshal(buffer, value);
+                MarshalPrimitive(buffer, value);
                 buffer[3] = temp;
             }
             else
             {
-                Marshal(buffer.Slice(offset, 3), value);
+                MarshalPrimitive(buffer.Slice(0, 3), value);
             }
+        }
 
+        public static void MarshalInt24(Span<byte> buffer, ref int offset, int value)
+        {
+            MarshalInt24(buffer.Slice(offset), value);
             offset += 3;
+        }
+
+        public static void Marshal(Span<byte> buffer, int value)
+        {
+            MarshalPrimitive(buffer, value);
         }
 
         public static void Marshal(Span<byte> buffer, ref int offset, int value)
@@ -44,10 +85,20 @@ namespace OxTS
             offset += 4;
         }
 
+        public static void Marshal(Span<byte> buffer, uint value)
+        {
+            MarshalPrimitive(buffer, value);
+        }
+
         public static void Marshal(Span<byte> buffer, ref int offset, uint value)
         {
             Marshal(buffer.Slice(offset), value);
             offset += 4;
+        }
+
+        public static void Marshal(Span<byte> buffer, float value)
+        {
+            MarshalPrimitive(buffer, value);
         }
 
         public static void Marshal(Span<byte> buffer, ref int offset, float value)
@@ -56,31 +107,41 @@ namespace OxTS
             offset += 4;
         }
 
+        public static void Marshal(Span<byte> buffer, double value)
+        {
+            MarshalPrimitive(buffer, value);
+        }
+
         public static void Marshal(Span<byte> buffer, ref int offset, double value)
         {
             Marshal(buffer.Slice(offset), value);
             offset += 8;
         }
 
-        public static void Marshal<T>(Span<byte> buffer, T value)
+        private static void MarshalPrimitive<T>(Span<byte> buffer, T value)
+            where T : struct
         {
             Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
-        }
-
-        public static void Marshal(Span<byte> buffer, ref int offset, IMarshallable marshallable)
-        {
-            marshallable.Marshal(buffer.Slice(offset));
-            offset += marshallable.MarshalledSize;
         }
 
         #endregion
 
         #region Unmarshalled
 
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out short storage)
+        {
+            UnmarshalPrimitive(buffer, out storage);
+        }
+
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out short storage)
         {
             Unmarshal(buffer.Slice(offset), out storage);
             offset += 2;
+        }
+
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out ushort storage)
+        {
+            UnmarshalPrimitive(buffer, out storage);
         }
 
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out ushort storage)
@@ -103,10 +164,9 @@ namespace OxTS
             offset += 3;
         }
 
-        public static void UnmarshalInt24(ReadOnlySpan<byte> buffer, ref int offset, out float storage, float scaling)
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out int storage)
         {
-            UnmarshalInt24(buffer, ref offset, out int int24);
-            storage = int24 * scaling;
+            UnmarshalPrimitive(buffer, out storage);
         }
 
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out int storage)
@@ -115,10 +175,20 @@ namespace OxTS
             offset += 4;
         }
 
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out uint storage)
+        {
+            UnmarshalPrimitive(buffer, out storage);
+        }
+
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out uint storage)
         {
             Unmarshal(buffer.Slice(offset), out storage);
             offset += 4;
+        }
+
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out float storage)
+        {
+            UnmarshalPrimitive(buffer, out storage);
         }
 
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out float storage)
@@ -127,23 +197,22 @@ namespace OxTS
             offset += 4;
         }
 
+        public static void Unmarshal(ReadOnlySpan<byte> buffer, out double storage)
+        {
+            UnmarshalPrimitive(buffer, out storage);
+        }
+
         public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, out double storage)
         {
             Unmarshal(buffer.Slice(offset), out storage);
             offset += 8;
         }
 
-        public static void Unmarshal<T>(ReadOnlySpan<byte> buffer, out T storage)
+        public static void UnmarshalPrimitive<T>(ReadOnlySpan<byte> buffer, out T storage)
             where T : struct
         {
             ref byte reference = ref MemoryMarshal.GetReference(buffer);
             storage = Unsafe.ReadUnaligned<T>(ref reference);
-        }
-
-        public static void Unmarshal(ReadOnlySpan<byte> buffer, ref int offset, IMarshallable marshallable)
-        {
-            marshallable.Unmarshal(buffer.Slice(offset));
-            offset += marshallable.MarshalledSize;
         }
 
         #endregion

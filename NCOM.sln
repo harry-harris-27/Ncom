@@ -30,6 +30,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxTS.RCOM.Generators", "OxT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxTS.RCOM.Tests", "OxTS.RCOM\tests\OxTS.RCOM.Tests.csproj", "{47D39193-17A9-43BB-A968-9746B7FF89DA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{B99CC9C5-0E43-4CD9-B39B-9AC298FD66B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{DD07F0EA-F8AA-443F-8EFB-974E48564B80}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +88,7 @@ Global
 		{46870552-64C2-40B6-9562-77D09604FA39} = {1978E41E-7362-4C93-94C4-B05E2DB2F6BC}
 		{9D77B490-0DB1-4A1D-B612-E258856FA1C9} = {1978E41E-7362-4C93-94C4-B05E2DB2F6BC}
 		{47D39193-17A9-43BB-A968-9746B7FF89DA} = {1978E41E-7362-4C93-94C4-B05E2DB2F6BC}
+		{DD07F0EA-F8AA-443F-8EFB-974E48564B80} = {B99CC9C5-0E43-4CD9-B39B-9AC298FD66B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5547EB9-B5CE-4982-9DB2-BBF5E12453E9}

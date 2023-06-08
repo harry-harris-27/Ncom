@@ -28,8 +28,8 @@
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/harry-harris-27/Ncom</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/harry-harris-27/Ncom</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/harry-harris-27/NCOM</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/harry-harris-27/NCOM</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReleaseNotes></PackageReleaseNotes>
         <PackageTags>OxTS</PackageTags>

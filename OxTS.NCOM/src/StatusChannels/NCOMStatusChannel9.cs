@@ -1,13 +1,13 @@
 ﻿using OxTS.NCOM.Generators;
 using System;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
-    /// Gyro scale factors
+    /// Gyro bias accuracy
     /// </summary>
-    [StatusChannel(8)]
-    public partial class StatusChannel8 : StatusChannel
+    [StatusChannel(9)]
+    public partial class NCOMStatusChannel9 : StatusChannel
     {
 
         /// <summary>
@@ -18,28 +18,28 @@ namespace OxTS.NCOM.StatusChannels
         private const byte MeasurementsMask = 0b00001111;
 
 
-        private short m_GyroScaleFactorX = 0;
-        private short m_GyroScaleFactorY = 0;
-        private short m_GyroScaleFactorZ = 0;
+        private short m_GyroBiasAccuracyX = 0;
+        private short m_GyroBiasAccuracyY = 0;
+        private short m_GyroBiasAccuracyZ = 0;
 
 
         /// <summary>
-        /// Gets or sets the X Gyro scale factor, units 1 ppm (0.0001%).
+        /// Gets or sets the X Gyro bias accuracy factor, units 1e-6 radians/s.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorX { get; set; } = 0;
+        public short GyroBiasAccuracyX { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets the y Gyro scale factor, units 1 ppm (0.0001%).
+        /// Gets or sets the Y Gyro bias accuracy factor, units 1e-6 radians/s.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorY { get => m_GyroScaleFactorY; set => m_GyroScaleFactorY = value; }
+        public short GyroBiasAccuracyY { get => m_GyroBiasAccuracyY; set => m_GyroBiasAccuracyY = value; }
 
         /// <summary>
-        /// Gets or sets the Z Gyro scale factor, units 1 ppm (0.0001%).
+        /// Gets or sets the Z Gyro bias accuracy factor, units 1e-6 radians/s.
         /// </summary>
         /// <seealso cref="IsValid"/>
-        public short GyroScaleFactorZ { get => m_GyroScaleFactorZ; set => m_GyroScaleFactorZ = value; }
+        public short GyroBiasAccuracyZ { get => m_GyroBiasAccuracyZ; set => m_GyroBiasAccuracyZ = value; }
 
         /// <summary>
         /// Gets or sets the Age.
@@ -57,20 +57,18 @@ namespace OxTS.NCOM.StatusChannels
         public byte L2Measurements { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the  <see cref="GyroScaleFactorX"/>, <see cref="GyroScaleFactorY"/>
-        /// and <see cref="GyroScaleFactorZ"/> values are valid.
+        /// Gets a value indicating whether the  <see cref="GyroBiasAccuracyX"/>, <see cref="GyroBiasAccuracyY"/>
+        /// and <see cref="GyroBiasAccuracyZ"/> values are valid.
         /// </summary>
         public bool IsValid => Age < AgeValidThreshold;
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
-            ByteHandling.Marshal(buffer, GyroScaleFactorX);
-            ByteHandling.Marshal(buffer, GyroScaleFactorY);
-            ByteHandling.Marshal(buffer, GyroScaleFactorZ);
+            ByteHandling.Marshal(buffer, GyroBiasAccuracyX);
+            ByteHandling.Marshal(buffer, GyroBiasAccuracyY);
+            ByteHandling.Marshal(buffer, GyroBiasAccuracyZ);
 
             buffer[6] = Age;
             buffer[7] = (byte)(L1Measurements & MeasurementsMask);
@@ -78,13 +76,11 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
-            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorX);
-            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorY);
-            ByteHandling.Unmarshal(buffer, out m_GyroScaleFactorZ);
+            ByteHandling.Unmarshal(buffer, out m_GyroBiasAccuracyX);
+            ByteHandling.Unmarshal(buffer, out m_GyroBiasAccuracyY);
+            ByteHandling.Unmarshal(buffer, out m_GyroBiasAccuracyZ);
 
             Age = buffer[6];
             L1Measurements = (byte)(buffer[7] & MeasurementsMask);

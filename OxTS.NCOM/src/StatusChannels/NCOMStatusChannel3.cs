@@ -1,13 +1,13 @@
 ﻿using System;
 using OxTS.NCOM.Generators;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Position accuracies.
     /// </summary>
     [StatusChannel(3)]
-    public partial class StatusChannel3 : StatusChannel
+    public partial class NCOMStatusChannel3 : StatusChannel
     {
 
         /// <summary>
@@ -64,10 +64,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer.Slice(0), m_NorthPositionAccuracy);
             ByteHandling.Marshal(buffer.Slice(2), m_EastPositionAccuracy);
             ByteHandling.Marshal(buffer.Slice(4), m_DownPositionAccuracy);
@@ -77,10 +75,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer.Slice(0), out m_NorthPositionAccuracy);
             ByteHandling.Unmarshal(buffer.Slice(2), out m_EastPositionAccuracy);
             ByteHandling.Unmarshal(buffer.Slice(4), out m_DownPositionAccuracy);

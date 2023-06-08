@@ -1,14 +1,10 @@
-﻿using OxTS.NCOM.Enumerations;
-using OxTS.NCOM.StatusChannels;
-using Shouldly;
+﻿using Shouldly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace OxTS.NCOM.Tests
 {
-    public class NcomPacketATests
+    public class NCOMPacketATests
     {
         // Values taken from wireshark NCOM decode
         byte[] marshalled = new byte[]
@@ -43,19 +39,22 @@ namespace OxTS.NCOM.Tests
         public void Test_Unmarshal()
         {
             // Arrange
-            var ncom = new NcomPacketA();
+            var ncom = new NCOMPacketA();
 
             // Act
-            ncom.Unmarshal(marshalled.AsSpan());
+            bool result = ncom.TryUnmarshal(marshalled.AsSpan(), out int bytes);
 
             // Assert
+            result.ShouldBeTrue();
+            bytes.ShouldBe(NCOMPacket.PacketLength);
+
             ncom.Time.ShouldBe((ushort)22913);
-            ncom.AccelerationX.ShouldBe(0.3070f, NcomPacketA.AccelerationScaling);
-            ncom.AccelerationY.ShouldBe(0.0802f, NcomPacketA.AccelerationScaling);
-            ncom.AccelerationZ.ShouldBe(-9.7625f, NcomPacketA.AccelerationScaling);
-            ncom.AngularRateX.ShouldBe(-0.00299f, NcomPacketA.AngularRateScaling);
-            ncom.AngularRateY.ShouldBe(0.00165f, NcomPacketA.AngularRateScaling);
-            ncom.AngularRateZ.ShouldBe(-0.00008f, NcomPacketA.AngularRateScaling);
+            ncom.AccelerationX.ShouldBe(0.3070f, NCOMPacketA.AccelerationScaling);
+            ncom.AccelerationY.ShouldBe(0.0802f, NCOMPacketA.AccelerationScaling);
+            ncom.AccelerationZ.ShouldBe(-9.7625f, NCOMPacketA.AccelerationScaling);
+            ncom.AngularRateX.ShouldBe(-0.00299f, NCOMPacketA.AngularRateScaling);
+            ncom.AngularRateY.ShouldBe(0.00165f, NCOMPacketA.AngularRateScaling);
+            ncom.AngularRateZ.ShouldBe(-0.00008f, NCOMPacketA.AngularRateScaling);
 
             ncom.NavigationStatus.ShouldBe((NavigationStatus)2);
             ncom.Checksum1.ShouldBeTrue();
@@ -63,12 +62,12 @@ namespace OxTS.NCOM.Tests
             ncom.Latitude.ShouldBe(0.6542659603273426);
             ncom.Longitude.ShouldBe(-2.1331086697437014);
             ncom.Altitude.ShouldBe(1.1552278f);
-            ncom.NorthVelocity.ShouldBe(0.0091f, NcomPacketA.VelocityScaling);
-            ncom.EastVelocity.ShouldBe(0.0103f, NcomPacketA.VelocityScaling);
-            ncom.DownVelocity.ShouldBe(-0.0255f, NcomPacketA.VelocityScaling);
-            ncom.Heading.ShouldBe(-8.388608f, NcomPacketA.OrientationScaling);
-            ncom.Pitch.ShouldBe(-8.388608f, NcomPacketA.OrientationScaling);
-            ncom.Roll.ShouldBe(-8.388608f, NcomPacketA.OrientationScaling);
+            ncom.NorthVelocity.ShouldBe(0.0091f, NCOMPacketA.VelocityScaling);
+            ncom.EastVelocity.ShouldBe(0.0103f, NCOMPacketA.VelocityScaling);
+            ncom.DownVelocity.ShouldBe(-0.0255f, NCOMPacketA.VelocityScaling);
+            ncom.Heading.ShouldBe(-8.388608f, NCOMPacketA.OrientationScaling);
+            ncom.Pitch.ShouldBe(-8.388608f, NCOMPacketA.OrientationScaling);
+            ncom.Roll.ShouldBe(-8.388608f, NCOMPacketA.OrientationScaling);
 
             ncom.Checksum2.ShouldBeTrue();
             ncom.StatusChannel.ShouldNotBeNull();
@@ -81,7 +80,7 @@ namespace OxTS.NCOM.Tests
         public void Test_Marshal()
         {
             // Arrange
-            var ncom = new NcomPacketA
+            var ncom = new NCOMPacketA
             {
                 Time = 22913,
                 AccelerationX = 0.3070f,
@@ -100,7 +99,7 @@ namespace OxTS.NCOM.Tests
                 Heading = -8.388608f,
                 Pitch = -8.388608f,
                 Roll = -8.388608f,
-                StatusChannel = new StatusChannel0
+                StatusChannel = new NCOMStatusChannel0
                 {
                     FullTime = 19873636,
                     NumberOfSatellites = 15,
@@ -111,9 +110,12 @@ namespace OxTS.NCOM.Tests
             };
 
             // Act
-            var buffer = ncom.Marshal();
+            byte[] buffer = new byte[NCOMPacket.PacketLength];
+            bool result = ncom.TryMarshal(buffer.AsSpan(), out int bytes);
 
             // Assert
+            result.ShouldBeTrue();
+            bytes.ShouldBe(NCOMPacket.PacketLength);
             OxTS.Tests.Assert.AssertArraysAreEqual(buffer.AsSpan(), marshalled.AsSpan());
         }
 

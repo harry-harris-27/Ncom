@@ -1,4 +1,4 @@
-﻿namespace OxTS.NCOM.Enumerations
+﻿namespace OxTS.NCOM
 {
     public enum NavigationStatus : byte
     {
@@ -76,7 +76,7 @@
         /// Status Only
         /// <para>
         /// Only the Batch S part of the message (Bytes 63–70) should be decoded. This is used at the start of some
-        /// logged Ncom files in order to save a complete set of status messages before the real data begins.
+        /// logged NCOM files in order to save a complete set of status messages before the real data begins.
         /// </para>
         /// </summary>
         StatusOnly = 10,

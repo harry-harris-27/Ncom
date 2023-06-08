@@ -2,9 +2,9 @@
 
 namespace OxTS.NCOM
 {
-    public class NcomException : OxTSException
+    public class NCOMException : OxTSException
     {
-        public NcomException(string message)
+        public NCOMException(string message)
             : base(message)
         { }
     }

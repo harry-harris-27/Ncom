@@ -1,7 +1,7 @@
 ﻿using System;
 using OxTS.NCOM.Generators;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Internal information about primary GNSS receiver.
@@ -10,7 +10,7 @@ namespace OxTS.NCOM.StatusChannels
     /// These counters are cyclic and will wrap when they exceed the limit of the format used.
     /// </remarks>
     [StatusChannel(2)]
-    public partial class StatusChannel2 : StatusChannel
+    public partial class NCOMStatusChannel2 : StatusChannel
     {
 
         private ushort m_PrimaryGNSSReceiverCharacters = 0;
@@ -61,10 +61,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer.Slice(0), m_PrimaryGNSSReceiverCharacters);
             ByteHandling.Marshal(buffer.Slice(2), m_PrimaryGNSSReceiverPackets);
             ByteHandling.Marshal(buffer.Slice(4), m_PrimaryGNSSReceiverCharactersNotUnderstood);
@@ -72,10 +70,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer.Slice(0), out m_PrimaryGNSSReceiverCharacters);
             ByteHandling.Unmarshal(buffer.Slice(2), out m_PrimaryGNSSReceiverPackets);
             ByteHandling.Unmarshal(buffer.Slice(4), out m_PrimaryGNSSReceiverCharactersNotUnderstood);

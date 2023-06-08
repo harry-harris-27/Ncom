@@ -1,14 +1,13 @@
-﻿using OxTS.NCOM.Enumerations;
-using OxTS.NCOM.Generators;
+﻿using OxTS.NCOM.Generators;
 using System;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Full time, number of satellites, position mode, velocity mode, dual antenna mode.
     /// </summary>
     [StatusChannel(0)]
-    public partial class StatusChannel0 : StatusChannel
+    public partial class NCOMStatusChannel0 : StatusChannel
     {
 
         private int m_FullTime = 0;
@@ -41,10 +40,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer, m_FullTime);
             buffer[4] = NumberOfSatellites;
             buffer[5] = (byte)PositionMode;
@@ -53,10 +50,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer, out m_FullTime);
             NumberOfSatellites = buffer[4];
             PositionMode = ByteHandling.ParseEnum(buffer[5], PositionVelocityOrientationMode.Unknown);

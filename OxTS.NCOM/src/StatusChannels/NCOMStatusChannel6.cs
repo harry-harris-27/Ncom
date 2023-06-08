@@ -1,13 +1,13 @@
 ﻿using OxTS.NCOM.Generators;
 using System;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Gyro Biases
     /// </summary>
     [StatusChannel(6)]
-    public partial class StatusChannel6 : StatusChannel
+    public partial class NCOMStatusChannel6 : StatusChannel
     {
 
         /// <summary>
@@ -64,10 +64,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             ByteHandling.Marshal(buffer, GyroBiasX);
             ByteHandling.Marshal(buffer, GyroBiasY);
             ByteHandling.Marshal(buffer, GyroBiasZ);
@@ -78,10 +76,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             ByteHandling.Unmarshal(buffer, out m_GyroBiasX);
             ByteHandling.Unmarshal(buffer, out m_GyroBiasY);
             ByteHandling.Unmarshal(buffer, out m_GyroBiasZ);

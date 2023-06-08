@@ -1,4 +1,4 @@
-﻿namespace OxTS.NCOM.Enumerations
+﻿namespace OxTS.NCOM
 {
     public enum BlendedProcessingMethod : byte
     {

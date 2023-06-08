@@ -1,7 +1,7 @@
 ﻿using System;
 using OxTS.NCOM.Generators;
 
-namespace OxTS.NCOM.StatusChannels
+namespace OxTS.NCOM
 {
     /// <summary>
     /// Kalman filter innovations set 1 (position, velocity, attitude).
@@ -21,7 +21,7 @@ namespace OxTS.NCOM.StatusChannels
     /// </para>
     /// </remarks>
     [StatusChannel(1)]
-    public partial class StatusChannel1 : StatusChannel
+    public partial class NCOMStatusChannel1 : StatusChannel
     {
 
         private const byte InnovationValidityMask = 0x01;
@@ -47,49 +47,49 @@ namespace OxTS.NCOM.StatusChannels
         /// <summary>
         /// Gets or sets the Position X innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte PositionXInnovation { get => m_PositionXInnovation; set => m_PositionXInnovation = value; }
 
         /// <summary>
         /// Gets or sets the Position Y innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte PositionYInnovation { get => m_PositionYInnovation; set => m_PositionYInnovation = value; }
 
         /// <summary>
         /// Gets or sets the Position Z innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte PositionZInnovation { get => m_PositionZInnovation; set => m_PositionZInnovation = value; }
 
         /// <summary>
         /// Gets or sets the Velocity X innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte VelocityXInnovation { get => m_VelocityXInnovation; set => m_VelocityXInnovation = value; }
 
         /// <summary>
         /// Gets or sets the Velocity Y innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte VelocityYInnovation { get => m_VelocityYInnovation; set => m_VelocityYInnovation = value; }
 
         /// <summary>
         /// Gets or sets the Velocity Z innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte VelocityZInnovation { get => m_VelocityZInnovation; set => m_VelocityZInnovation = value; }
 
         /// <summary>
         /// Gets or sets the orientation pitch innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte OrientationPitchInnovation { get => m_OrientationPitchInnovation; set => m_OrientationPitchInnovation = value; }
 
         /// <summary>
         /// Gets or sets the orientation heading innovation.
         /// </summary>
-        /// <seealso cref="StatusChannel1"/>
+        /// <seealso cref="NCOMStatusChannel1"/>
         public byte OrientationHeadingInnovation { get => m_OrientationHeadingInnovation; set => m_OrientationHeadingInnovation = value; }
 
         /// <summary>
@@ -134,10 +134,8 @@ namespace OxTS.NCOM.StatusChannels
 
 
         /// <inheritdoc/>
-        public override void Marshal(Span<byte> buffer)
+        protected override void Marshal(Span<byte> buffer)
         {
-            base.Marshal(buffer);
-
             buffer[0] = MarshalInnonvation(PositionXInnovation, IsPositionXInnovationValid);
             buffer[1] = MarshalInnonvation(PositionYInnovation, IsPositionYInnovationValid);
             buffer[2] = MarshalInnonvation(PositionZInnovation, IsPositionZInnovationValid);
@@ -149,10 +147,8 @@ namespace OxTS.NCOM.StatusChannels
         }
 
         /// <inheritdoc/>
-        public override void Unmarshal(ReadOnlySpan<byte> buffer)
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer)
         {
-            base.Unmarshal(buffer);
-
             UnmarshalInnovation(buffer[0], ref m_PositionXInnovation, ref m_IsPositionXInnovationValid);
             UnmarshalInnovation(buffer[1], ref m_PositionYInnovation, ref m_IsPositionYInnovationValid);
             UnmarshalInnovation(buffer[2], ref m_PositionZInnovation, ref m_IsPositionZInnovationValid);

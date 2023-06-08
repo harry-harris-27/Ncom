@@ -3,16 +3,22 @@
 namespace OxTS.NCOM
 {
     /// <summary>
-    /// Ncom structure-B packets are not intended to be used by customers; they are used internally
+    /// NCOM structure-B packets are not intended to be used by customers; they are used internally
     /// by OxTS. They can be disabled over Ethernet by entering the following advanced command:
-    /// <i>-udp_Ncomx_0</i>.
+    /// <i>-udp_NCOMx_0</i>.
     /// </summary>
-    public class NcomPacketB : NcomPacket
+    public class NCOMPacketB : NCOMPacket
     {
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="NcomPacketB"/> class.
+        /// Initializes a new instance of the <see cref="NCOMPacketB"/> class.
         /// </summary>
-        public NcomPacketB() : base() { }
+        public NCOMPacketB() : base() { }
+
+
+        /// <inheritdoc/>
+        protected override void Marshal(Span<byte> buffer) { }
+
+        /// <inheritdoc/>
+        protected override void Unmarshal(ReadOnlySpan<byte> buffer) { }
     }
 }
